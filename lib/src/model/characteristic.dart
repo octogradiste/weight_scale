@@ -1,5 +1,5 @@
-import 'package:weight_scale/src/model/descriptor.dart';
-import 'package:weight_scale/src/model/uuid.dart';
+import 'descriptor.dart';
+import 'uuid.dart';
 
 class Characteristic {
   final String deviceId;

@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:weight_scale/src/ble_device.dart';
-import 'package:weight_scale/src/model/characteristic.dart';
-import 'package:weight_scale/src/model/scan_result.dart';
-import 'package:weight_scale/src/model/service.dart';
-import 'package:weight_scale/src/model/uuid.dart';
+import 'ble_device.dart';
+import 'model/characteristic.dart';
+import 'model/scan_result.dart';
+import 'model/service.dart';
+import 'model/uuid.dart';
 
 /// An exception thrown when a ble operation fails.
 class BleOperationException implements Exception {

@@ -1,4 +1,4 @@
-import 'package:weight_scale/src/model/uuid.dart';
+import 'uuid.dart';
 
 class Descriptor {
   final String deviceId;

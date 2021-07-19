@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:weight_scale/src/ble_operations.dart';
-import 'package:weight_scale/src/model/characteristic.dart';
-import 'package:weight_scale/src/model/service.dart';
-import 'package:weight_scale/src/util/state_stream.dart';
+import 'ble_operations.dart';
+import 'model/characteristic.dart';
+import 'model/service.dart';
+import 'util/state_stream.dart';
 
 enum BleDeviceState {
   connected,

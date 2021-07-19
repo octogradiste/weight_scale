@@ -1,5 +1,5 @@
-import 'package:weight_scale/src/model/characteristic.dart';
-import 'package:weight_scale/src/model/uuid.dart';
+import 'characteristic.dart';
+import 'uuid.dart';
 
 class Service {
   final String deviceId;

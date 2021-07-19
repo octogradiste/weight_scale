@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:weight_scale/src/ble_device.dart';
-import 'package:weight_scale/src/model/uuid.dart';
+import '../ble_device.dart';
+import 'uuid.dart';
 
 class ScanResult {
   final BleDevice device;
