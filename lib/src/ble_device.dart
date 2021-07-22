@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'ble_operations.dart';
-import 'model/characteristic.dart';
-import 'model/service.dart';
-import 'util/state_stream.dart';
+import 'package:flutter/widgets.dart';
+
+import 'package:weight_scale/src/ble_operations.dart';
+import 'package:weight_scale/src/model/characteristic.dart';
+import 'package:weight_scale/src/model/service.dart';
+import 'package:weight_scale/src/util/state_stream.dart';
 
 enum BleDeviceState {
   connected,
@@ -41,6 +43,14 @@ class BleDevice {
   Stream<BleDeviceState> get state => _state.events;
   BleDeviceState get currentState => _state.state;
   List<Service> get services => _services;
+
+  @override
+  bool operator ==(Object other) {
+    return other is BleDevice && other.id == id && other.name == name;
+  }
+
+  @override
+  int get hashCode => hashValues(id, name);
 
   /// Connects to this device.
   ///

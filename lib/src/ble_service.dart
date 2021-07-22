@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'ble_operations.dart';
-import 'model/scan_result.dart';
-import 'model/uuid.dart';
-import 'util/state_stream.dart';
+import 'package:weight_scale/src/ble_operations.dart';
+import 'package:weight_scale/src/model/scan_result.dart';
+import 'package:weight_scale/src/model/uuid.dart';
+import 'package:weight_scale/src/util/state_stream.dart';
 
 enum BleServiceState {
   idle,

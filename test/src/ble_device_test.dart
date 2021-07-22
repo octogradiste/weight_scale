@@ -41,6 +41,43 @@ Uint8List createFakeValue() => Uint8List.fromList(List.empty());
 
 void main() {
   group('BleDevice', () {
+    group('equality', () {
+      late BleOperations operations;
+      late BleDevice device;
+
+      setUp(() {
+        operations = MockBleOperations();
+        device = BleDevice(id: "id", name: "name", operations: operations);
+      });
+
+      test('equal id and name', () {
+        BleDevice other = BleDevice(
+          id: "id",
+          name: "name",
+          operations: operations,
+        );
+        expect(device, equals(other));
+      });
+
+      test('equal id and different name', () {
+        BleDevice other = BleDevice(
+          id: "id",
+          name: "other",
+          operations: operations,
+        );
+        expect(device != other, true);
+      });
+
+      test('different id and equal name', () {
+        BleDevice other = BleDevice(
+          id: "other",
+          name: "name",
+          operations: operations,
+        );
+        expect(device != other, true);
+      });
+    });
+
     group('methods', () {
       late BleOperations bleOperations;
       late BleDevice device;
