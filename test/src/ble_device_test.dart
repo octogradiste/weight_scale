@@ -10,7 +10,7 @@ import 'package:weight_scale/src/model/characteristic.dart';
 import 'package:weight_scale/src/model/service.dart';
 import 'package:weight_scale/src/model/uuid.dart';
 
-import 'ble_operations_fake.dart';
+import 'fake_ble_operations.dart';
 import 'ble_service_test.mocks.dart';
 
 BleDevice createFakeBleDevice(BleOperations operations) {
@@ -144,7 +144,7 @@ void main() {
     test('operations are queued', () {
       fakeAsync((async) {
         Duration operationDuration = Duration(seconds: 1);
-        BleOperations bleOperations = BleOperationsFake(operationDuration);
+        BleOperations bleOperations = FakeBleOperations(operationDuration);
         BleDevice device = createFakeBleDevice(bleOperations);
         Characteristic characteristic = createFakeCharacteristic();
 
@@ -174,24 +174,31 @@ void main() {
         device.disconnect().then((_) => order.add(7));
 
         async.elapse(operationDuration);
+        expect(order.length, 1);
         expect(order, containsAllInOrder([1]));
 
         async.elapse(operationDuration);
+        expect(order.length, 2);
         expect(order, containsAllInOrder([1, 2]));
 
         async.elapse(operationDuration);
+        expect(order.length, 3);
         expect(order, containsAllInOrder([1, 2, 3]));
 
         async.elapse(operationDuration);
+        expect(order.length, 4);
         expect(order, containsAllInOrder([1, 2, 3, 4]));
 
         async.elapse(operationDuration);
+        expect(order.length, 5);
         expect(order, containsAllInOrder([1, 2, 3, 4, 5]));
 
         async.elapse(operationDuration);
+        expect(order.length, 6);
         expect(order, containsAllInOrder([1, 2, 3, 4, 5, 6]));
 
         async.elapse(operationDuration);
+        expect(order.length, 7);
         expect(order, containsAllInOrder([1, 2, 3, 4, 5, 6, 7]));
       });
     });

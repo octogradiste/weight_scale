@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:weight_scale/src/ble_operations.dart';
 import 'package:weight_scale/src/model/characteristic.dart';
 import 'package:weight_scale/src/model/service.dart';
+import 'package:weight_scale/src/util/async_task_queue.dart';
 import 'package:weight_scale/src/util/state_stream.dart';
 
 enum BleDeviceState {
@@ -24,6 +25,7 @@ enum BleDeviceState {
 /// All operations are guaranteed to be queued and run synchronously. This
 /// results in a more sable way to communicate with the device.
 class BleDevice {
+  final AsyncTaskQueue _queue = AsyncTaskQueue();
   final StateStream<BleDeviceState> _state =
       StateStream(initValue: BleDeviceState.disconnected);
   late final BleOperations _operations;
@@ -62,9 +64,11 @@ class BleDevice {
     _state.setState(BleDeviceState.connecting);
     bool connected = false;
     try {
-      await _operations
-          .connect(device: this, timeout: timeout)
-          .timeout(timeout);
+      await _queue.add(() async {
+        await _operations
+            .connect(device: this, timeout: timeout)
+            .timeout(timeout);
+      });
       connected = true;
     } finally {
       if (connected) {
@@ -79,7 +83,9 @@ class BleDevice {
   Future<void> disconnect() async {
     _state.setState(BleDeviceState.disconnecting);
     try {
-      await _operations.disconnect(device: this);
+      await _queue.add(() async {
+        await _operations.disconnect(device: this);
+      });
     } finally {
       _state.setState(BleDeviceState.disconnected);
     }
@@ -92,7 +98,8 @@ class BleDevice {
   Future<List<Service>> discoverService() async {
     _state.setState(BleDeviceState.discoveringServices);
     try {
-      _services = await _operations.discoverService(device: this);
+      _services = await _queue.add<List<Service>>(
+          () async => await _operations.discoverService(device: this));
     } finally {
       _state.setState(BleDeviceState.connected);
     }
@@ -106,8 +113,8 @@ class BleDevice {
     _state.setState(BleDeviceState.readingCharacteristic);
     late final Uint8List value;
     try {
-      value =
-          await _operations.readCharacteristic(characteristic: characteristic);
+      value = await _queue.add<Uint8List>(() async =>
+          await _operations.readCharacteristic(characteristic: characteristic));
     } finally {
       _state.setState(BleDeviceState.connected);
     }
@@ -122,11 +129,13 @@ class BleDevice {
   }) async {
     _state.setState(BleDeviceState.writingCharacteristic);
     try {
-      await _operations.writeCharacteristic(
-        characteristic: characteristic,
-        value: value,
-        response: response,
-      );
+      await _queue.add(() async {
+        await _operations.writeCharacteristic(
+          characteristic: characteristic,
+          value: value,
+          response: response,
+        );
+      });
     } finally {
       _state.setState(BleDeviceState.connected);
     }
@@ -145,8 +154,8 @@ class BleDevice {
     _state.setState(BleDeviceState.subscribingCharacteristic);
     late Stream<Uint8List> stream;
     try {
-      stream = await _operations.subscribeCharacteristic(
-          characteristic: characteristic);
+      stream = await _queue.add<Stream<Uint8List>>(() async => await _operations
+          .subscribeCharacteristic(characteristic: characteristic));
     } finally {
       _state.setState(BleDeviceState.connected);
     }
