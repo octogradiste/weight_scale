@@ -7,10 +7,10 @@ import 'package:weight_scale/src/model/service.dart';
 import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/model/characteristic.dart';
 
-class BleOperationsFake implements BleOperations {
+class FakeBleOperations implements BleOperations {
   final Duration operationDuration;
 
-  BleOperationsFake(this.operationDuration);
+  FakeBleOperations(this.operationDuration);
 
   @override
   Future<void> connect({
@@ -76,4 +76,10 @@ class BleOperationsFake implements BleOperations {
   }) {
     return Future.delayed(operationDuration);
   }
+
+  @override
+  Future<void> addDisconnectCallback({
+    required BleDevice device,
+    required Future<void> Function() callback,
+  }) async {}
 }

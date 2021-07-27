@@ -29,6 +29,11 @@ abstract class BleOperations {
 
   Future<void> disconnect({required BleDevice device});
 
+  Future<void> addDisconnectCallback({
+    required BleDevice device,
+    required Future<void> Function() callback,
+  });
+
   Future<List<Service>> discoverService({required BleDevice device});
 
   Future<Uint8List> readCharacteristic({

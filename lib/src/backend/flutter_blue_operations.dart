@@ -45,6 +45,19 @@ class FlutterBlueOperations implements BleOperations {
   }
 
   @override
+  Future<void> addDisconnectCallback({
+    required BleDevice device,
+    required Future<void> Function() callback,
+  }) async {
+    fb.BluetoothDevice bluetoothDevice = fbConvert.toBluetoothDevice(device);
+    await bluetoothDevice.state.forEach((element) async {
+      if (element == fb.BluetoothDeviceState.disconnected) {
+        await callback();
+      }
+    });
+  }
+
+  @override
   Future<List<Service>> discoverService({required BleDevice device}) async {
     fb.BluetoothDevice bluetoothDevice = fbConvert.toBluetoothDevice(device);
     try {

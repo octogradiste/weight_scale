@@ -11,7 +11,7 @@ import 'package:weight_scale/src/ble_service.dart';
 import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/model/uuid.dart';
 
-import 'ble_operations_fake.dart';
+import 'fake_ble_operations.dart';
 import 'ble_service_test.mocks.dart';
 
 @GenerateMocks([BleOperations])
@@ -130,8 +130,8 @@ void main() {
       late BleService bleService;
       final Duration operationDuration = Duration.zero;
 
-      setUp(() async{
-        bleOperations = BleOperationsFake(operationDuration);
+      setUp(() async {
+        bleOperations = FakeBleOperations(operationDuration);
         bleService = BleService(); // A new instance for every test
         await bleService.initialize(operations: bleOperations);
       });
@@ -156,10 +156,11 @@ void main() {
         );
       });
 
-      test('[stopScan] changes [state] to idle and [isScanning] is false.', () async {
+      test('[stopScan] changes [state] to idle and [isScanning] is false.',
+          () async {
         Future<List<BleServiceState>> states =
             bleService.state.take(2).toList();
-            
+
         bleService.startScan(timeout: Duration.zero);
         await bleService.stopScan();
         expect(bleService.isScanning, isFalse);
