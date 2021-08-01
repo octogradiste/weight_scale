@@ -10,9 +10,18 @@ class AsyncTaskQueue {
   final Queue<Work> _queue = Queue();
 
   /// Adds a [task] and returns a [Future] with the result [T] of the [task].
+  /// If [taks] throws an error
   Future<T> add<T>(Task<T> task) {
     Completer<T> completer = Completer();
-    _queue.add(() async => completer.complete(await task()));
+    _queue.add(() async {
+      try {
+        T result = await task();
+        completer.complete(result);
+      } catch (e) {
+        completer.completeError(e);
+      }
+    });
+    //_queue.add(() async => completer.complete(await task()));
     if (!_isWorking) _work();
     return completer.future;
   }

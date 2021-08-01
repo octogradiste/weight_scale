@@ -36,14 +36,6 @@ Characteristic createFakeCharacteristic() {
   fb.BluetoothCharacteristic,
 ])
 void main() {
-  test('addDisconnectCallback', () {
-    fb.FlutterBlue fbInstatce = MockFlutterBlue();
-    FlutterBlueConvert fbConvert = FlutterBlueConvert();
-    fb.BluetoothDevice fbDevice = MockBluetoothDevice();
-    FlutterBlueOperations fbOperations =
-        FlutterBlueOperations(fbInstatce, fbConvert);
-    BleDevice bleDevice = createFakeBleDevice(fbOperations);
-  });
   group('verify fb calls', () {
     late fb.FlutterBlue fbInstance;
     late fb.BluetoothDevice fbDevice;
@@ -59,6 +51,9 @@ void main() {
       fbCharacteristic = MockBluetoothCharacteristic();
       fbConvert = MockFlutterBlueConvert();
       fbOperations = FlutterBlueOperations(fbInstance, fbConvert);
+      when((fbConvert as MockFlutterBlueConvert).toBluetoothDevice(any))
+          .thenReturn(fbDevice);
+      when(fbDevice.state).thenAnswer((_) => Stream.empty());
       bleDevice = createFakeBleDevice(fbOperations);
       characteristic = createFakeCharacteristic();
     });
@@ -166,6 +161,9 @@ void main() {
       fbCharacteristic = MockBluetoothCharacteristic();
       fbConvert = MockFlutterBlueConvert();
       fbOperations = FlutterBlueOperations(fbInstance, fbConvert);
+      when((fbConvert as MockFlutterBlueConvert).toBluetoothDevice(any))
+          .thenReturn(fbDevice);
+      when(fbDevice.state).thenAnswer((_) => Stream.empty());
       bleDevice = createFakeBleDevice(fbOperations);
       characteristic = createFakeCharacteristic();
     });

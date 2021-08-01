@@ -91,6 +91,21 @@ void main() {
         service = createFakeService();
       });
 
+      test('state changes when disconnect call back is called', () async {
+        Future<void> Function() callback =
+            () => throw "Not assigned to real Invocation";
+        when((bleOperations as MockBleOperations).addDisconnectCallback(
+          device: device,
+          callback: anyNamed("callback"),
+        )).thenAnswer((realInvocation) async {
+          callback = realInvocation.namedArguments[Symbol("callback")];
+        });
+        device = createFakeBleDevice(bleOperations);
+        await Future.delayed(Duration(microseconds: 200));
+        await callback();
+        expect(device.currentState, BleDeviceState.disconnected);
+      });
+
       test('[discoverService] returns same as the discover operation.',
           () async {
         when(bleOperations.discoverService(device: device))

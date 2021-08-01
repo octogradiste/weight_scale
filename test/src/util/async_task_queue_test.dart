@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,6 +12,11 @@ void main() {
 
       setUp(() {
         queue = AsyncTaskQueue();
+      });
+
+      test('if task throws exception then add method must too', () async {
+        await expectLater(queue.add(() => throw Exception()),
+            throwsA(TypeMatcher<Exception>()));
       });
 
       test("First added tasks gets executed immediately.", () {

@@ -64,6 +64,14 @@ class MockBleOperations extends _i1.Mock implements _i2.BleOperations {
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future.value()) as _i3.Future<void>);
   @override
+  _i3.Future<void> addDisconnectCallback(
+          {_i6.BleDevice? device, _i3.Future<void> Function()? callback}) =>
+      (super.noSuchMethod(
+          Invocation.method(#addDisconnectCallback, [],
+              {#device: device, #callback: callback}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future.value()) as _i3.Future<void>);
+  @override
   _i3.Future<List<_i7.Service>> discoverService({_i6.BleDevice? device}) =>
       (super.noSuchMethod(
               Invocation.method(#discoverService, [], {#device: device}),

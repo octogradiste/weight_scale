@@ -40,6 +40,10 @@ class BleDevice {
     required BleOperations operations,
   }) {
     _operations = operations;
+    _operations.addDisconnectCallback(
+      device: this,
+      callback: () async => _state.setState(BleDeviceState.disconnected),
+    );
   }
 
   Stream<BleDeviceState> get state => _state.events;
