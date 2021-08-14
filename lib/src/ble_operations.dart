@@ -13,6 +13,7 @@ class BleOperationException implements Exception {
   const BleOperationException(this.message);
 }
 
+/// Implement this class to create your custom backend.
 abstract class BleOperations {
   abstract final Stream<List<ScanResult>> scanResults;
 

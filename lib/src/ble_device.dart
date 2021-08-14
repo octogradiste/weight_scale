@@ -46,8 +46,12 @@ class BleDevice {
     );
   }
 
+  /// Note: It's possible that the [state] skips [BleDeviceState.disconnecting]
+  /// and goes directly to [BleDeviceState.disconnected].
   Stream<BleDeviceState> get state => _state.events;
   BleDeviceState get currentState => _state.state;
+
+  /// A list of the discoverd services.
   List<Service> get services => _services;
 
   @override
