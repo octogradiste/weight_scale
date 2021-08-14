@@ -101,7 +101,6 @@ void main() {
           callback = realInvocation.namedArguments[Symbol("callback")];
         });
         device = createFakeBleDevice(bleOperations);
-        await Future.delayed(Duration(microseconds: 200));
         await callback();
         expect(device.currentState, BleDeviceState.disconnected);
       });

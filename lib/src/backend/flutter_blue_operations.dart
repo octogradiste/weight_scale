@@ -28,7 +28,6 @@ class FlutterBlueOperations implements BleOperations {
     } on TimeoutException {
       rethrow;
     } catch (e) {
-      debugPrint(e.toString());
       throw BleOperationException("Connection failed.");
     }
   }
@@ -39,7 +38,6 @@ class FlutterBlueOperations implements BleOperations {
     try {
       await bluetoothDevice.disconnect();
     } catch (e) {
-      debugPrint(e.toString());
       throw BleOperationException("Disconnection failed.");
     }
   }
@@ -65,7 +63,6 @@ class FlutterBlueOperations implements BleOperations {
           await bluetoothDevice.discoverServices();
       return services.map(fbConvert.toService).toList();
     } catch (e) {
-      debugPrint(e.toString());
       throw BleOperationException("Discovering services failed.");
     }
   }
@@ -79,12 +76,10 @@ class FlutterBlueOperations implements BleOperations {
   }) async {
     fb.BluetoothCharacteristic bluetoothCharacteristic =
         fbConvert.toBluetoothCharacteristic(characteristic);
-
     try {
       List<int> value = await bluetoothCharacteristic.read();
       return Uint8List.fromList(value);
     } catch (e) {
-      debugPrint(e.toString());
       throw BleOperationException("Reading to characteristic failed.");
     }
   }
@@ -106,7 +101,6 @@ class FlutterBlueOperations implements BleOperations {
         timeout: timeout,
       );
     } catch (e) {
-      debugPrint(e.toString());
       throw BleOperationException("Scanning failed.");
     }
   }
@@ -116,7 +110,6 @@ class FlutterBlueOperations implements BleOperations {
     try {
       await fbInstance.stopScan();
     } catch (e) {
-      debugPrint(e.toString());
       throw BleOperationException("Stopping scan failed.");
     }
   }
@@ -127,13 +120,11 @@ class FlutterBlueOperations implements BleOperations {
   }) async {
     fb.BluetoothCharacteristic bluetoothCharacteristic =
         fbConvert.toBluetoothCharacteristic(characteristic);
-
     try {
       await bluetoothCharacteristic.setNotifyValue(true);
       Stream<List<int>> value = bluetoothCharacteristic.value;
       return value.map((list) => Uint8List.fromList(list));
     } catch (e) {
-      debugPrint(e.toString());
       throw BleOperationException("Subscribing to characteristic failed.");
     }
   }
@@ -146,12 +137,10 @@ class FlutterBlueOperations implements BleOperations {
   }) async {
     fb.BluetoothCharacteristic bluetoothCharacteristic =
         fbConvert.toBluetoothCharacteristic(characteristic);
-
     try {
       await bluetoothCharacteristic.write(value.toList(),
           withoutResponse: !response);
     } catch (e) {
-      debugPrint(e.toString());
       throw BleOperationException("Writing to characteristic failed.");
     }
   }

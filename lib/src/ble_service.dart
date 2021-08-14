@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:io';
 
 import 'package:weight_scale/src/ble_operations.dart';
 import 'package:weight_scale/src/model/scan_result.dart';
@@ -13,10 +15,12 @@ enum BleServiceState {
 class BleServiceNotInitializedException implements Exception {}
 
 class BleService {
+  bool _isAndroid = false;
   bool _isInitialized = false;
   late final BleOperations _operations;
   final StateStream<BleServiceState> _state =
       StateStream(initValue: BleServiceState.idle);
+  final Queue<DateTime> _scanQueue = Queue();
 
   late final Stream<BleServiceState> state;
   late final Stream<List<ScanResult>> scanResults;
@@ -25,16 +29,21 @@ class BleService {
 
   bool get isScanning => _state.state == BleServiceState.scanning;
   bool get isInitialized => _isInitialized;
+  bool get isAndroid => _isAndroid;
 
   /// Initializes the Bluetooth.
   ///
   /// If the [BleService] is already initialized, calls to this method
   /// will return immediately.
-  Future<void> initialize({required BleOperations operations}) async {
+  Future<void> initialize({
+    required BleOperations operations,
+    required bool isAndroid,
+  }) async {
     if (_isInitialized) return;
     _operations = operations;
     try {
       await _operations.initialize();
+      _isAndroid = isAndroid;
       _isInitialized = true;
     } finally {
       if (_isInitialized) {
@@ -58,6 +67,19 @@ class BleService {
   }) async {
     if (!isInitialized) throw BleServiceNotInitializedException();
     if (isScanning) throw BleOperationException("Is already scanning.");
+
+    if (_isAndroid) {
+      DateTime now = DateTime.now();
+      if (_scanQueue.length == 0)
+        _scanQueue.add(DateTime.fromMillisecondsSinceEpoch(0));
+      if (_scanQueue.length == 5 &&
+          now.difference(_scanQueue.first) < Duration(seconds: 30)) {
+        throw BleOperationException("Too many scans.");
+      } else {
+        _scanQueue.addLast(now);
+        if (_scanQueue.length > 5) _scanQueue.removeFirst();
+      }
+    }
 
     _state.setState(BleServiceState.scanning);
     try {

@@ -26,7 +26,7 @@ void main() {
         when(bleOperations.scanResults)
             .thenAnswer((_) => Stream<List<ScanResult>>.empty());
         bleService = BleService();
-        bleService.initialize(operations: bleOperations);
+        bleService.initialize(operations: bleOperations, isAndroid: false);
       });
 
       test('Is a singleton.', () {
@@ -36,8 +36,19 @@ void main() {
 
       test('If initialized again returns immediately.', () {
         BleOperations newOperations = MockBleOperations();
-        bleService.initialize(operations: newOperations);
+        bleService.initialize(operations: newOperations, isAndroid: false);
         verifyNever(newOperations.initialize());
+      });
+
+      test('[isAndroid] is false.', () {
+        expect(bleService.isAndroid, false);
+      });
+
+      test('[isAndroid] is true if initialized with isAndroid: true.',
+          () async {
+        bleService = BleService();
+        await bleService.initialize(operations: bleOperations, isAndroid: true);
+        expect(bleService.isAndroid, true);
       });
 
       test('[scanResults] was called once on [bleOperations].', () {
@@ -92,7 +103,7 @@ void main() {
         bleOperations = MockBleOperations();
         when(bleOperations.scanResults).thenAnswer((_) => controller.stream);
         bleService = BleService(); // A new instance for every test
-        bleService.initialize(operations: bleOperations);
+        bleService.initialize(operations: bleOperations, isAndroid: false);
       });
 
       tearDown(() {
@@ -133,7 +144,10 @@ void main() {
       setUp(() async {
         bleOperations = FakeBleOperations(operationDuration);
         bleService = BleService(); // A new instance for every test
-        await bleService.initialize(operations: bleOperations);
+        await bleService.initialize(
+          operations: bleOperations,
+          isAndroid: false,
+        );
       });
 
       test(
@@ -183,7 +197,7 @@ void main() {
         when(bleOperations.scanResults)
             .thenAnswer((_) => Stream<List<ScanResult>>.empty());
         bleService = BleService(); // A new instance for every test
-        bleService.initialize(operations: bleOperations);
+        bleService.initialize(operations: bleOperations, isAndroid: false);
       });
 
       test('Start scan operation gets called once with the same parameters.',
@@ -226,7 +240,9 @@ void main() {
             throwsA(TypeMatcher<BleOperationException>()));
       });
 
-      test('On Android throws if is called 6 time in 30 seconds.', () async {
+      test('On Android throws if is called 6 times in 30 seconds.', () async {
+        bleService = BleService();
+        await bleService.initialize(operations: bleOperations, isAndroid: true);
         Duration timeout = Duration.zero;
         for (int i = 0; i < 5; i++) {
           bleService.startScan(timeout: timeout);
@@ -234,6 +250,21 @@ void main() {
         }
         expect(bleService.startScan(timeout: timeout),
             throwsA(TypeMatcher<BleOperationException>()));
+      });
+
+      test('On Android does not throw if called 6 times in more than 30 sec',
+          () {
+        fakeAsync((async) async {
+          bleService = BleService();
+          await bleService.initialize(
+              operations: bleOperations, isAndroid: true);
+          Duration timeout = Duration.zero;
+          for (int i = 0; i < 6; i++) {
+            bleService.startScan(timeout: timeout);
+            await bleService.stopScan();
+            async.elapse(Duration(seconds: 10));
+          }
+        });
       });
 
       test('Rethrows BleOperationException if start scan operation throws it.',
@@ -261,7 +292,7 @@ void main() {
         when(bleOperations.scanResults)
             .thenAnswer((_) => Stream<List<ScanResult>>.empty());
         bleService = BleService(); // A new instance for every test.
-        bleService.initialize(operations: bleOperations);
+        bleService.initialize(operations: bleOperations, isAndroid: false);
       });
 
       test('Stop scan operation gets called once.', () async {
