@@ -15,14 +15,16 @@ class FlutterBlueConvert {
     fb.ScanResult scanResult,
     BleOperations operations,
   ) {
+    Iterable<List<int>> values =
+        scanResult.advertisementData.manufacturerData.values;
     return ScanResult(
       device: toBleDevice(scanResult.device, operations),
-      manufacturerData: Uint8List.fromList(scanResult
-          .advertisementData.manufacturerData.values
-          .reduce((value, element) {
-        value.addAll(element);
-        return value;
-      })),
+      manufacturerData: Uint8List.fromList(values.isEmpty
+          ? []
+          : values.reduce((value, element) {
+              value.addAll(element);
+              return value;
+            })),
       serviceData: scanResult.advertisementData.serviceData
           .map((key, value) => MapEntry(Uuid(key), Uint8List.fromList(value))),
       serviceUuids: scanResult.advertisementData.serviceUuids

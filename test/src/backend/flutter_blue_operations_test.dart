@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_blue/flutter_blue.dart' as fb;
+import 'package:flutter_blue/gen/flutterblue.pbserver.dart' as protos;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -9,6 +10,7 @@ import 'package:weight_scale/src/backend/flutter_blue_operations.dart';
 import 'package:weight_scale/src/ble_device.dart';
 import 'package:weight_scale/src/ble_operations.dart';
 import 'package:weight_scale/src/model/characteristic.dart';
+import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/model/uuid.dart';
 
 import 'flutter_blue_operations_test.mocks.dart';
@@ -56,6 +58,39 @@ void main() {
       when(fbDevice.state).thenAnswer((_) => Stream.empty());
       bleDevice = createFakeBleDevice(fbOperations);
       characteristic = createFakeCharacteristic();
+    });
+
+    test('scanResult', () {
+      when(fbInstance.scanResults).thenAnswer((_) => Stream.empty());
+      fbOperations.scanResults;
+      verify(fbInstance.scanResults);
+    });
+
+    test('scanResult only connectable devices', () async {
+      fb.ScanResult sResult1 = fb.ScanResult.fromProto(protos.ScanResult(
+        advertisementData: protos.AdvertisementData(connectable: false),
+        device: protos.BluetoothDevice(name: "unconnectable"),
+      ));
+
+      fb.ScanResult sResult2 = fb.ScanResult.fromProto(protos.ScanResult(
+        advertisementData: protos.AdvertisementData(connectable: true),
+        device: protos.BluetoothDevice(name: "connectable"),
+      ));
+
+      when(fbInstance.scanResults).thenAnswer((_) => Stream.fromIterable([
+            [sResult1, sResult2]
+          ]));
+
+      FlutterBlueConvert converter = FlutterBlueConvert();
+      when(fbConvert.toScanResult(sResult1, fbOperations))
+          .thenReturn(converter.toScanResult(sResult1, fbOperations));
+
+      when(fbConvert.toScanResult(sResult2, fbOperations))
+          .thenReturn(converter.toScanResult(sResult2, fbOperations));
+
+      List<ScanResult> sResults = await fbOperations.scanResults.first;
+      expect(sResults.length, 1);
+      expect(sResults.first.device.name, "connectable");
     });
 
     test('start scan', () async {

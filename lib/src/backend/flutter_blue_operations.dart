@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_blue/flutter_blue.dart' as fb;
 import 'package:weight_scale/src/backend/flutter_blue_convert.dart';
 import 'package:weight_scale/src/ble_device.dart';
@@ -87,6 +86,7 @@ class FlutterBlueOperations implements BleOperations {
   @override
   Stream<List<ScanResult>> get scanResults =>
       fbInstance.scanResults.map((list) => list
+          .where((scanResult) => scanResult.advertisementData.connectable)
           .map((scanResult) => fbConvert.toScanResult(scanResult, this))
           .toList());
 

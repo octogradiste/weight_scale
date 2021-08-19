@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:io';
 
 import 'package:weight_scale/src/ble_operations.dart';
 import 'package:weight_scale/src/model/scan_result.dart';
