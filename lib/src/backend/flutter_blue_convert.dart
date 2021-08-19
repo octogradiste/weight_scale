@@ -8,7 +8,7 @@ import 'package:weight_scale/src/model/characteristic.dart';
 import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/model/service.dart';
 import 'package:weight_scale/src/model/uuid.dart';
-import 'package:weight_scale/weight_scale.dart';
+import 'package:weight_scale/src/model/descriptor.dart';
 
 class FlutterBlueConvert {
   ScanResult toScanResult(

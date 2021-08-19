@@ -1,5 +1,3 @@
-library weight_scale;
-
 export 'src/model/characteristic.dart';
 export 'src/model/descriptor.dart';
 export 'src/model/scan_result.dart';

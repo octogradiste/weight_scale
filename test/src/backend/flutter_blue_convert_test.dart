@@ -4,11 +4,12 @@ import 'package:flutter_blue/flutter_blue.dart' as fb;
 import 'package:flutter_blue/gen/flutterblue.pb.dart' as protos;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:weight_scale/src/backend/flutter_blue_convert.dart';
+import 'package:weight_scale/src/ble_device.dart';
 import 'package:weight_scale/src/model/characteristic.dart';
 import 'package:weight_scale/src/model/descriptor.dart';
+import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/model/service.dart';
 import 'package:weight_scale/src/model/uuid.dart';
-import 'package:weight_scale/weight_scale.dart';
 
 import '../ble_service_test.mocks.dart';
 
