@@ -23,7 +23,7 @@ enum BleDeviceState {
 /// A ble device you can perform operations on.
 ///
 /// All operations are guaranteed to be queued and run synchronously. This
-/// results in a more sable way to communicate with the device.
+/// results in a more stable way to communicate with the ble device.
 class BleDevice {
   final AsyncTaskQueue _queue = AsyncTaskQueue();
   final StateStream<BleDeviceState> _state =
@@ -51,7 +51,7 @@ class BleDevice {
   Stream<BleDeviceState> get state => _state.events;
   BleDeviceState get currentState => _state.state;
 
-  /// A list of the discoverd services.
+  /// A list of the discovered services.
   List<Service> get services => _services;
 
   @override
@@ -99,7 +99,7 @@ class BleDevice {
     }
   }
 
-  /// Returns a list of the discoverd services.
+  /// Returns a list of the discovered services.
   ///
   /// If the method call completes successfully, the services can
   /// also be accessed by the getter [services].
