@@ -2,15 +2,20 @@ import 'package:weight_scale/src/ble_service.dart';
 import 'package:weight_scale/src/weight_scale.dart';
 import 'package:weight_scale/src/weight_scale_recognizer.dart';
 
+/// A hub for searching and registering weight scales.
 class WeightScaleHub {
   WeightScaleHub({required BleService bleService});
 
   bool get isInitialized => false;
 
+  /// A list of all the registered [WeightScaleRecognizer].
+  List<WeightScaleRecognizer> get recognizers => List.empty();
+
   /// Initialize [WeightScaleHub] before starting a search.
   ///
   /// This will initialize the underlying [BleService] and register all known
-  /// weight scales.
+  /// weight scales. Those will be in the [recognizers] list after the
+  /// initialization completes.
   Future<void> initialize() async {}
 
   /// The available [WeightScale].
@@ -29,7 +34,7 @@ class WeightScaleHub {
   ///
   /// Note: When calling this function, it will first clear all previously found
   /// weight scales and restart from the beginning.
-  Future<void> search({required Duration timeout}) async {}
+  Future<void> search({Duration timeout = const Duration(seconds: 15)}) async {}
 
   /// Stops an ongoing [search].
   Future<void> stopSearch() async {}
