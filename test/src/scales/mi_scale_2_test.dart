@@ -46,7 +46,7 @@ void main() {
         characteristic: service.characteristics.first,
       )).thenAnswer((_) async => Stream.fromIterable([
             Uint8List.fromList(
-              [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 54, 0, 0, 0, 0, 0],
+              [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 54],
             ),
           ]));
       when(bleDevice.disconnect()).thenAnswer((_) async {});
@@ -94,7 +94,7 @@ void main() {
         characteristic: service.characteristics.first,
       )).thenAnswer((_) async => Stream.fromIterable([
             Uint8List.fromList(
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 54, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 54],
             ),
           ]));
       await miScale2.connect(timeout: timeout);

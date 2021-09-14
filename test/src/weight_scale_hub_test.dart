@@ -97,7 +97,7 @@ void main() {
       String id = "00:00:00:00:00:00";
       hub.search(timeout: timeout);
       BleDevice device =
-          BleDevice(id: id, name: "MIBCS", operations: operations);
+          BleDevice(id: id, name: "MIBFS", operations: operations);
       Future<List<WeightScale>> futureScales = hub.scales.take(1).first;
       streamController.add([
         ScanResult(

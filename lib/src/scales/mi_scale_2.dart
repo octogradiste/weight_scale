@@ -48,6 +48,7 @@ class MiScale2 implements WeightScale {
 
     values.forEach((value) {
       ByteData data = ByteData.sublistView(value);
+      if (data.lengthInBytes != 13) return;
       _unit = WeightScaleUnit.UNKNOWN;
       if (data.getUint8(0) % 2 == 1) {
         // If last bit of first byte is one then the weight is in LBS.
