@@ -8,7 +8,7 @@ import 'package:weight_scale/src/weight_scale_recognizer.dart';
 class MiScale2Recognizer implements WeightScaleRecognizer {
   @override
   WeightScale? recognize({required ScanResult scanResult}) {
-    if (scanResult.device.name == "MIBCS") {
+    if (scanResult.device.name == "MIBFS") {
       ByteData data = ByteData.sublistView(scanResult.serviceData.values.first);
       WeightScaleUnit unit = WeightScaleUnit.UNKNOWN;
       if (data.getUint8(0) % 2 == 1) {

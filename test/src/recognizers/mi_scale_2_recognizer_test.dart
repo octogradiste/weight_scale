@@ -23,7 +23,7 @@ void main() {
     test('[recognize] returns a weight scale.', () {
       BleDevice device = BleDevice(
         id: "00:00:00:00:00:00",
-        name: "MIBCS",
+        name: "MIBFS",
         operations: operations,
       );
       ScanResult scanResult = ScanResult(
