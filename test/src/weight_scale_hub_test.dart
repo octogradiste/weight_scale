@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:fake_async/fake_async.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:weight_scale/ble.dart';
-import 'package:weight_scale/src/backend/ble_operations_factory.dart';
 import 'package:weight_scale/src/ble_device.dart';
 import 'package:weight_scale/src/ble_operations.dart';
 import 'package:weight_scale/src/ble_service.dart';
@@ -24,12 +22,15 @@ import 'weight_scale_hub_test.mocks.dart';
 void main() {
   group('initialization', () {
     late WeightScaleHub hub;
+    late BleOperations operations;
     late BleService bleService;
 
     setUp(() {
       bleService = MockBleService();
+      operations = MockBleOperations();
       when((bleService as MockBleService).initialize())
           .thenAnswer((_) async {});
+      when(bleService.scanResults).thenAnswer((_) => Stream.empty());
       hub = WeightScaleHub(bleService: bleService);
     });
 
@@ -38,17 +39,18 @@ void main() {
     });
 
     test('isInitialized if true after initializing', () async {
-      await hub.initialize();
+      await hub.initialize(operations: operations);
       expect(hub.isInitialized, isTrue);
     });
 
     test('[initialize] will call [initialize] on the [bleService].', () async {
-      await hub.initialize();
-      verify((bleService as MockBleService).initialize());
+      await hub.initialize(operations: operations);
+      verify((bleService as MockBleService)
+          .initialize(operations: operations, isAndroid: false));
     });
 
     test('[initialize] adds all known recognizer to [recognizers].', () async {
-      await hub.initialize();
+      await hub.initialize(operations: operations);
       expect(hub.recognizers.first, TypeMatcher<MiScale2Recognizer>());
     });
 
@@ -76,8 +78,9 @@ void main() {
       when((bleService as MockBleService).initialize())
           .thenAnswer((_) async {});
       when((bleService as MockBleService).startScan()).thenAnswer((_) async {});
+      when(bleService.stopScan()).thenAnswer((_) async {});
       hub = WeightScaleHub(bleService: bleService);
-      await hub.initialize();
+      await hub.initialize(operations: operations);
       timeout = Duration(seconds: 1);
     });
 
@@ -139,6 +142,12 @@ void main() {
         await searching;
         expect(async.elapsed < timeout, isTrue);
       });
+    });
+
+    test('[stopSearch] calls [stopScan]', () async {
+      await hub.search();
+      await hub.stopSearch();
+      verify(bleService.stopScan());
     });
   });
 }
