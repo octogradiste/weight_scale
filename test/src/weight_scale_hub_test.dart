@@ -119,10 +119,7 @@ void main() {
       ]);
       List<WeightScale> scales = await futureScales;
       expect(scales.length, 1);
-      // Because the service data (same as ad data) is only zeros,
-      // the unit must be KG.
-      expect(scales.first,
-          equals(MiScale2(bleDevice: device, unit: WeightScaleUnit.KG)));
+      expect(scales.first, TypeMatcher<MiScale2>());
     });
 
     test('[search] completes after [timeout].', () {
