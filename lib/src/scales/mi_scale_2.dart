@@ -3,14 +3,24 @@ import 'dart:typed_data';
 import 'package:weight_scale/ble.dart';
 import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/ble_device.dart';
+import 'package:weight_scale/src/features.dart';
 import 'package:weight_scale/src/model/service.dart';
 import 'package:weight_scale/src/model/uuid.dart';
 import 'package:weight_scale/src/util/state_stream.dart';
 
 /// Mi Body Composition Scale 2
-class MiScale2 implements WeightScale {
-  final Uuid _serviceUuid = Uuid("0000181b-0000-1000-8000-00805f9b34fb");
-  final Uuid _characteristicUuid = Uuid("00002a9c-0000-1000-8000-00805f9b34fb");
+class MiScale2
+    implements
+        WeightScale,
+        SetUnitFeature,
+        ClearCacheFeature,
+        CalibrateFeature {
+  final Uuid _bodyCompositionService =
+      Uuid("0000181b-0000-1000-8000-00805f9b34fb");
+  final Uuid _bodyCompositionMeasurement =
+      Uuid("00002a9c-0000-1000-8000-00805f9b34fb");
+  final Uuid _customService = Uuid("00001530-0000-3512-2118-0009af100700");
+  final Uuid _scaleConfiguration = Uuid("00001542-0000-3512-2118-0009af100700");
 
   bool _isConnected = false;
   late WeightScaleUnit _unit;
@@ -82,7 +92,8 @@ class MiScale2 implements WeightScale {
   /// It finds the correct characteristic to subscribe to or
   /// throws an [WeightScaleConnectionException].
   Characteristic _findCharacteristic(List<Service> services) {
-    services = services.where((e) => e.uuid == _serviceUuid).toList();
+    services =
+        services.where((e) => e.uuid == _bodyCompositionService).toList();
     if (services.length < 1)
       throw WeightScaleConnectionException("No matching ble service.");
 
@@ -90,7 +101,8 @@ class MiScale2 implements WeightScale {
       throw WeightScaleConnectionException("Too many matching ble services.");
 
     List<Characteristic> characteristics = services.first.characteristics
-        .where((characteristic) => characteristic.uuid == _characteristicUuid)
+        .where((characteristic) =>
+            characteristic.uuid == _bodyCompositionMeasurement)
         .toList();
 
     if (characteristics.length < 1)
@@ -101,5 +113,58 @@ class MiScale2 implements WeightScale {
           "Too many matching ble characteristics.");
 
     return characteristics.first;
+  }
+
+  @override
+  Future<void> setUnit(WeightScaleUnit unit) async {
+    Uint8List? value;
+    switch (unit) {
+      case WeightScaleUnit.KG:
+        value = Uint8List.fromList([6, 4, 0, 0]);
+        break;
+      case WeightScaleUnit.LBS:
+        value = Uint8List.fromList([6, 4, 0, 1]);
+        break;
+      case WeightScaleUnit.UNKNOWN:
+        value = null;
+        break;
+    }
+
+    if (value != null) {
+      await _device.writeCharacteristic(
+        characteristic: Characteristic(
+          deviceId: _device.id,
+          serviceUuid: _customService,
+          uuid: _scaleConfiguration,
+        ),
+        value: value,
+        response: false,
+      );
+    }
+  }
+
+  @override
+  Future<void> clearCache() async {
+    await _device.writeCharacteristic(
+      characteristic: Characteristic(
+        deviceId: _device.id,
+        serviceUuid: _customService,
+        uuid: _scaleConfiguration,
+      ),
+      value: Uint8List.fromList(const [6, 18, 0, 0]),
+    );
+  }
+
+  @override
+  Future<void> calibrate() async {
+    await _device.writeCharacteristic(
+      characteristic: Characteristic(
+        deviceId: _device.id,
+        serviceUuid: _customService,
+        uuid: _scaleConfiguration,
+      ),
+      value: Uint8List.fromList(const [6, 5, 0, 0]),
+      response: false,
+    );
   }
 }

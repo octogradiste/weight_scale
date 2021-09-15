@@ -26,6 +26,9 @@ Service createMiScale2Service() {
   ]);
 }
 
+const Uuid customService = Uuid("00001530-0000-3512-2118-0009af100700");
+const Uuid scaleConfiguration = Uuid("00001542-0000-3512-2118-0009af100700");
+
 @GenerateMocks([BleDevice])
 void main() {
   group('MiScale2', () {
@@ -50,6 +53,7 @@ void main() {
             ),
           ]));
       when(bleDevice.disconnect()).thenAnswer((_) async {});
+      when(bleDevice.id).thenReturn("00:00:00:00:00:00");
     });
 
     test('default [isConnected] is false', () {
@@ -114,6 +118,66 @@ void main() {
       await miScale2.connect(timeout: timeout);
       await miScale2.disconnect();
       verify(bleDevice.disconnect());
+    });
+
+    test('[clearCache] sends 0x06 0x12 0x00 0x00.', () async {
+      await miScale2.clearCache();
+      Characteristic characteristic = Characteristic(
+        deviceId: bleDevice.id,
+        serviceUuid: customService,
+        uuid: scaleConfiguration,
+      );
+      verify(bleDevice.writeCharacteristic(
+        characteristic: characteristic,
+        value: Uint8List.fromList([06, 18, 0, 0]),
+      ));
+    });
+
+    test('[calibrate] sends 0x06 0x05 0x00 0x00 without response.', () async {
+      await miScale2.calibrate();
+      Characteristic characteristic = Characteristic(
+        deviceId: bleDevice.id,
+        serviceUuid: customService,
+        uuid: scaleConfiguration,
+      );
+      verify(bleDevice.writeCharacteristic(
+        characteristic: characteristic,
+        value: Uint8List.fromList([6, 5, 0, 0]),
+        response: false,
+      ));
+    });
+
+    test('[setUnit] KG sends 0x06 0x04 0x00 0x00.', () async {
+      await miScale2.setUnit(WeightScaleUnit.KG);
+      Characteristic characteristic = Characteristic(
+        deviceId: bleDevice.id,
+        serviceUuid: customService,
+        uuid: scaleConfiguration,
+      );
+      verify(bleDevice.writeCharacteristic(
+        characteristic: characteristic,
+        value: Uint8List.fromList([6, 4, 0, 0]),
+        response: false,
+      ));
+    });
+
+    test('[setUnit] LBS sends 0x06 0x04 0x00 0x01.', () async {
+      await miScale2.setUnit(WeightScaleUnit.LBS);
+      Characteristic characteristic = Characteristic(
+        deviceId: bleDevice.id,
+        serviceUuid: customService,
+        uuid: scaleConfiguration,
+      );
+      verify(bleDevice.writeCharacteristic(
+        characteristic: characteristic,
+        value: Uint8List.fromList([6, 4, 0, 1]),
+        response: false,
+      ));
+    });
+
+    test('[setUnit] to UNKNOWN makes no writes.', () async {
+      await miScale2.setUnit(WeightScaleUnit.UNKNOWN);
+      verifyNever((bleDevice as MockBleDevice).writeCharacteristic());
     });
   });
 }
