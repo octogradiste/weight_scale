@@ -31,7 +31,7 @@ void main() {
       when((bleService as MockBleService).initialize())
           .thenAnswer((_) async {});
       when(bleService.scanResults).thenAnswer((_) => Stream.empty());
-      hub = WeightScaleHub(bleService: bleService);
+      hub = WeightScaleHub(bleService: bleService, bleOperations: operations);
     });
 
     test('isInitialized is false before initializing', () {
@@ -39,18 +39,18 @@ void main() {
     });
 
     test('isInitialized if true after initializing', () async {
-      await hub.initialize(operations: operations);
+      await hub.initialize();
       expect(hub.isInitialized, isTrue);
     });
 
     test('[initialize] will call [initialize] on the [bleService].', () async {
-      await hub.initialize(operations: operations);
+      await hub.initialize();
       verify((bleService as MockBleService)
           .initialize(operations: operations, isAndroid: false));
     });
 
     test('[initialize] adds all known recognizer to [recognizers].', () async {
-      await hub.initialize(operations: operations);
+      await hub.initialize();
       expect(hub.recognizers.first, TypeMatcher<MiScale2Recognizer>());
     });
 
@@ -79,8 +79,8 @@ void main() {
           .thenAnswer((_) async {});
       when((bleService as MockBleService).startScan()).thenAnswer((_) async {});
       when(bleService.stopScan()).thenAnswer((_) async {});
-      hub = WeightScaleHub(bleService: bleService);
-      await hub.initialize(operations: operations);
+      hub = WeightScaleHub(bleService: bleService, bleOperations: operations);
+      await hub.initialize();
       timeout = Duration(seconds: 1);
     });
 

@@ -11,12 +11,24 @@ import 'package:weight_scale/src/weight_scale_recognizer.dart';
 /// A hub for searching and registering weight scales.
 class WeightScaleHub {
   late final BleService _bleService;
+  late final BleOperations _bleOperations;
   final List<WeightScaleRecognizer> _recognizers = [];
   final StreamController<List<WeightScale>> controller = StreamController();
   bool _isInitialized = false;
 
-  WeightScaleHub({required BleService bleService}) {
+  WeightScaleHub({
+    required BleService bleService,
+    required BleOperations bleOperations,
+  }) {
     _bleService = bleService;
+    _bleOperations = bleOperations;
+  }
+
+  factory WeightScaleHub.defaultBackend() {
+    return WeightScaleHub(
+      bleService: BleService.instance,
+      bleOperations: BleOperationsFactory.primary(),
+    );
   }
 
   bool get isInitialized => _isInitialized;
@@ -29,11 +41,11 @@ class WeightScaleHub {
   /// This will initialize the underlying [BleService] and register all known
   /// weight scales. Those will be in the [recognizers] list after the
   /// initialization completes.
-  Future<void> initialize({required BleOperations operations}) async {
+  Future<void> initialize() async {
     register(MiScale2Recognizer());
 
     await _bleService.initialize(
-      operations: operations,
+      operations: _bleOperations,
       isAndroid: Platform.isAndroid,
     );
 
