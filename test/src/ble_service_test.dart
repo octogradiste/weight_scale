@@ -30,8 +30,8 @@ void main() {
       });
 
       test('Is a singleton.', () {
-        BleService instance = BleService.instance;
-        expect(BleService.instance, same(instance));
+        BleService instance = BleService.instance();
+        expect(BleService.instance(), instance);
       });
 
       test('If initialized again returns immediately.', () {

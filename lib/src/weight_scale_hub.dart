@@ -26,7 +26,7 @@ class WeightScaleHub {
 
   factory WeightScaleHub.defaultBackend() {
     return WeightScaleHub(
-      bleService: BleService.instance,
+      bleService: BleService.instance(),
       bleOperations: BleOperationsFactory.primary(),
     );
   }

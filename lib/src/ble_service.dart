@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
 import 'package:weight_scale/src/ble_operations.dart';
 import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/model/uuid.dart';
@@ -24,7 +25,14 @@ class BleService {
   late final Stream<BleServiceState> state;
   late final Stream<List<ScanResult>> scanResults;
 
-  static BleService instance = BleService();
+  static BleService? _instance;
+
+  BleService();
+
+  factory BleService.instance() {
+    if (_instance == null) _instance = BleService();
+    return _instance!;
+  }
 
   bool get isScanning => _state.state == BleServiceState.scanning;
   bool get isInitialized => _isInitialized;
