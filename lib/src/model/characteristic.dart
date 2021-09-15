@@ -9,7 +9,7 @@ class Characteristic {
   final Uuid uuid;
   final List<Descriptor> descriptors;
 
-  Characteristic({
+  const Characteristic({
     required this.deviceId,
     required this.serviceUuid,
     required this.uuid,

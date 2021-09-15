@@ -8,7 +8,7 @@ class Service {
   final Uuid uuid;
   final List<Characteristic> characteristics;
 
-  Service({
+  const Service({
     required this.deviceId,
     required this.uuid,
     required this.characteristics,

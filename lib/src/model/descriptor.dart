@@ -10,7 +10,7 @@ class Descriptor {
   final Uuid uuid;
   final Uint8List value;
 
-  Descriptor({
+  const Descriptor({
     required this.deviceId,
     required this.serviceUuid,
     required this.characteristicUuid,

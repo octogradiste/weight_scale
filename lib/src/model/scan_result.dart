@@ -13,7 +13,7 @@ class ScanResult {
   final int rssi;
   final int? txPowerLevel;
 
-  ScanResult({
+  const ScanResult({
     required this.device,
     required this.manufacturerData,
     required this.serviceData,
