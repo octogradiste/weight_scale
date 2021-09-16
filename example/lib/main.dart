@@ -78,7 +78,7 @@ class WeightScaleList extends StatelessWidget {
   void open(BuildContext context, WeightScale scale) {
     hub.stopSearch();
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return MeasurementPage(scale: scale);
+      return ConnectPage(scale: scale);
     }));
   }
 
@@ -105,37 +105,117 @@ class WeightScaleList extends StatelessWidget {
   }
 }
 
-class MeasurementPage extends StatefulWidget {
-  const MeasurementPage({Key? key, required this.scale}) : super(key: key);
+class ConnectPage extends StatefulWidget {
+  ConnectPage({Key? key, required this.scale}) : super(key: key);
 
   final WeightScale scale;
+
+  @override
+  _ConnectPageState createState() => _ConnectPageState();
+}
+
+class _ConnectPageState extends State<ConnectPage> {
+  bool _isConnecting = false;
+
+  void connect() {
+    setState(() => _isConnecting = true);
+    widget.scale.connect().then((value) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) {
+        return MeasurementPage(scale: widget.scale);
+      }));
+      setState(() => _isConnecting = false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.scale.name),
+      ),
+      body: Container(
+        child: Center(
+          child: ElevatedButton(
+            child: Text("CONNECT"),
+            onPressed: _isConnecting ? null : connect,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MeasurementPage extends StatefulWidget {
+  MeasurementPage({Key? key, required this.scale}) : super(key: key) {
+    hasBatteryLevelFeature = scale is BatteryLevelFeature;
+    hasSetUnitFeature = scale is SetUnitFeature;
+    hasClearCacheFeature = scale is ClearCacheFeature;
+    hasCalibrateFeature = scale is CalibrateFeature;
+  }
+
+  final WeightScale scale;
+
+  late final bool hasBatteryLevelFeature;
+  late final bool hasSetUnitFeature;
+  late final bool hasClearCacheFeature;
+  late final bool hasCalibrateFeature;
 
   @override
   _MeasurementPageState createState() => _MeasurementPageState();
 }
 
 class _MeasurementPageState extends State<MeasurementPage> {
-  bool _disable = false;
-  bool _connected = false;
+  void getBatteryLevel() {
+    showDialog<String>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Battery Level"),
+            content: Text((widget.scale as BatteryLevelFeature)
+                .getBatteryLevel()
+                .toString()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, "OK"),
+                child: Text("OK"),
+              ),
+            ],
+          );
+        });
+  }
 
-  void onActionButtonPressed() {
-    if (_connected) {
-      setState(() => _disable = true);
-      widget.scale.disconnect().then((_) {
-        setState(() {
-          _connected = false;
-          _disable = false;
+  void setUnit() {
+    showDialog<String>(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Set Unit"),
+            children: [
+              SimpleDialogOption(
+                onPressed: () {
+                  (widget.scale as SetUnitFeature).setUnit(WeightScaleUnit.KG);
+                  Navigator.pop(context, "KG");
+                },
+                child: Text("KG"),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  (widget.scale as SetUnitFeature).setUnit(WeightScaleUnit.LBS);
+                  Navigator.pop(context, "LBS");
+                },
+                child: Text("LBS"),
+              ),
+            ],
+          );
         });
-      });
-    } else {
-      setState(() => _disable = true);
-      widget.scale.connect().then((_) {
-        setState(() {
-          _connected = true;
-          _disable = false;
-        });
-      });
-    }
+  }
+
+  void clearCache() {
+    (widget.scale as ClearCacheFeature).clearCache();
+  }
+
+  void calibrate() {
+    (widget.scale as CalibrateFeature).calibrate();
   }
 
   @override
@@ -158,8 +238,8 @@ class _MeasurementPageState extends State<MeasurementPage> {
                 builder: (context, snapshot) {
                   String weight = "-";
                   String unit = describeEnum(widget.scale.unit);
-                  if (!_disable && _connected && snapshot.data != null) {
-                    weight = snapshot.data.toString();
+                  if (snapshot.data != null) {
+                    weight = snapshot.data!.toStringAsFixed(2);
                   }
                   return Center(
                     child: Column(
@@ -173,15 +253,78 @@ class _MeasurementPageState extends State<MeasurementPage> {
                 },
               ),
             ),
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    "FEATURES",
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  Container(
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.black,
+                    ),
+                    width: 240,
+                  ),
+                  Column(
+                    children: [
+                      FeatureButton(
+                        text: "GET BATTERY %",
+                        onPressed: widget.hasBatteryLevelFeature
+                            ? getBatteryLevel
+                            : null,
+                      ),
+                      FeatureButton(
+                        text: "SET UNIT",
+                        onPressed: widget.hasSetUnitFeature ? setUnit : null,
+                      ),
+                      FeatureButton(
+                        text: "CLEAR CACHE",
+                        onPressed:
+                            widget.hasClearCacheFeature ? clearCache : null,
+                      ),
+                      FeatureButton(
+                        text: "CALIBRATE",
+                        onPressed:
+                            widget.hasCalibrateFeature ? calibrate : null,
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
             Container(
               margin: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                onPressed: _disable ? null : onActionButtonPressed,
-                child: Text(_connected ? "DISCONNECT" : "CONNECT"),
+                onPressed: () async {
+                  await widget.scale.disconnect();
+                  Navigator.pop(context);
+                },
+                child: Text("DISCONNECT"),
               ),
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class FeatureButton extends StatelessWidget {
+  const FeatureButton({Key? key, required this.text, this.onPressed})
+      : super(key: key);
+
+  final String text;
+  final void Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Container(
+        width: 140,
+        child: Text(text, textAlign: TextAlign.center),
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter/foundation.dart';
 import 'package:weight_scale/src/ble_operations.dart';
 import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/model/uuid.dart';
