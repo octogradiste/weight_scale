@@ -133,20 +133,6 @@ void main() {
       ));
     });
 
-    test('[calibrate] sends 0x06 0x05 0x00 0x00 without response.', () async {
-      await miScale2.calibrate();
-      Characteristic characteristic = Characteristic(
-        deviceId: bleDevice.id,
-        serviceUuid: customService,
-        uuid: scaleConfiguration,
-      );
-      verify(bleDevice.writeCharacteristic(
-        characteristic: characteristic,
-        value: Uint8List.fromList([6, 5, 0, 0]),
-        response: false,
-      ));
-    });
-
     test('[setUnit] KG sends 0x06 0x04 0x00 0x00.', () async {
       await miScale2.setUnit(WeightScaleUnit.KG);
       Characteristic characteristic = Characteristic(

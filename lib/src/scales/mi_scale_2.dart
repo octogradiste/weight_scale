@@ -9,12 +9,7 @@ import 'package:weight_scale/src/model/uuid.dart';
 import 'package:weight_scale/src/util/state_stream.dart';
 
 /// Mi Body Composition Scale 2
-class MiScale2
-    implements
-        WeightScale,
-        SetUnitFeature,
-        ClearCacheFeature,
-        CalibrateFeature {
+class MiScale2 implements WeightScale, SetUnitFeature, ClearCacheFeature {
   final Uuid _bodyCompositionService =
       Uuid("0000181b-0000-1000-8000-00805f9b34fb");
   final Uuid _bodyCompositionMeasurement =
@@ -152,19 +147,6 @@ class MiScale2
         uuid: _scaleConfiguration,
       ),
       value: Uint8List.fromList(const [6, 18, 0, 0]),
-    );
-  }
-
-  @override
-  Future<void> calibrate() async {
-    await _device.writeCharacteristic(
-      characteristic: Characteristic(
-        deviceId: _device.id,
-        serviceUuid: _customService,
-        uuid: _scaleConfiguration,
-      ),
-      value: Uint8List.fromList(const [6, 5, 0, 0]),
-      response: false,
     );
   }
 }
