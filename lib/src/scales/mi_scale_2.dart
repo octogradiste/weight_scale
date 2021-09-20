@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:weight_scale/ble.dart';
 import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/ble_device.dart';
+import 'package:weight_scale/src/ble_operations.dart';
 import 'package:weight_scale/src/features.dart';
 import 'package:weight_scale/src/model/service.dart';
 import 'package:weight_scale/src/model/uuid.dart';
@@ -10,10 +12,8 @@ import 'package:weight_scale/src/util/state_stream.dart';
 
 /// Mi Body Composition Scale 2
 class MiScale2 implements WeightScale, SetUnitFeature, ClearCacheFeature {
-  final Uuid _bodyCompositionService =
-      Uuid("0000181b-0000-1000-8000-00805f9b34fb");
-  final Uuid _bodyCompositionMeasurement =
-      Uuid("00002a9c-0000-1000-8000-00805f9b34fb");
+  final Uuid _bcService = Uuid("0000181b-0000-1000-8000-00805f9b34fb");
+  final Uuid _bcMeasurement = Uuid("00002a9c-0000-1000-8000-00805f9b34fb");
   final Uuid _customService = Uuid("00001530-0000-3512-2118-0009af100700");
   final Uuid _scaleConfiguration = Uuid("00001542-0000-3512-2118-0009af100700");
 
@@ -43,13 +43,18 @@ class MiScale2 implements WeightScale, SetUnitFeature, ClearCacheFeature {
 
   @override
   Future<void> connect({Duration timeout = const Duration(seconds: 15)}) async {
-    await _device.connect(timeout: timeout);
-    List<Service> services = await _device.discoverService();
-    Characteristic characteristic = _findCharacteristic(services);
-    Stream<Uint8List> values =
-        await _device.subscribeCharacteristic(characteristic: characteristic);
+    late Stream<Uint8List> values;
 
-    _isConnected = true;
+    try {
+      await _device.connect(timeout: timeout);
+      List<Service> services = await _device.discoverService();
+      Characteristic sub = _characteristicToSubscribe(services);
+      values = await _device.subscribeCharacteristic(characteristic: sub);
+    } on BleOperationException catch (e) {
+      throw WeightScaleException(e.message);
+    } on TimeoutException {
+      throw WeightScaleException("Couldn't connect in time.");
+    }
 
     values.forEach((value) {
       ByteData data = ByteData.sublistView(value);
@@ -76,38 +81,18 @@ class MiScale2 implements WeightScale, SetUnitFeature, ClearCacheFeature {
           break;
       }
     });
+
+    _isConnected = true;
   }
 
   @override
   Future<void> disconnect() async {
+    try {
+      await _device.disconnect();
+    } on BleOperationException catch (e) {
+      throw WeightScaleException(e.message);
+    }
     _isConnected = false;
-    await _device.disconnect();
-  }
-
-  /// It finds the correct characteristic to subscribe to or
-  /// throws an [WeightScaleConnectionException].
-  Characteristic _findCharacteristic(List<Service> services) {
-    services =
-        services.where((e) => e.uuid == _bodyCompositionService).toList();
-    if (services.length < 1)
-      throw WeightScaleConnectionException("No matching ble service.");
-
-    if (services.length > 1)
-      throw WeightScaleConnectionException("Too many matching ble services.");
-
-    List<Characteristic> characteristics = services.first.characteristics
-        .where((characteristic) =>
-            characteristic.uuid == _bodyCompositionMeasurement)
-        .toList();
-
-    if (characteristics.length < 1)
-      throw WeightScaleConnectionException("No matching ble characteristic.");
-
-    if (characteristics.length > 1)
-      throw WeightScaleConnectionException(
-          "Too many matching ble characteristics.");
-
-    return characteristics.first;
   }
 
   @override
@@ -126,27 +111,58 @@ class MiScale2 implements WeightScale, SetUnitFeature, ClearCacheFeature {
     }
 
     if (value != null) {
+      try {
+        await _device.writeCharacteristic(
+          characteristic: Characteristic(
+            deviceId: _device.id,
+            serviceUuid: _customService,
+            uuid: _scaleConfiguration,
+          ),
+          value: value,
+          response: false,
+        );
+      } on BleOperationException catch (e) {
+        throw WeightScaleException(e.message);
+      }
+    }
+  }
+
+  @override
+  Future<void> clearCache() async {
+    try {
       await _device.writeCharacteristic(
         characteristic: Characteristic(
           deviceId: _device.id,
           serviceUuid: _customService,
           uuid: _scaleConfiguration,
         ),
-        value: value,
-        response: false,
+        value: Uint8List.fromList(const [6, 18, 0, 0]),
       );
+    } on BleOperationException catch (e) {
+      throw WeightScaleException(e.message);
     }
   }
 
-  @override
-  Future<void> clearCache() async {
-    await _device.writeCharacteristic(
-      characteristic: Characteristic(
-        deviceId: _device.id,
-        serviceUuid: _customService,
-        uuid: _scaleConfiguration,
-      ),
-      value: Uint8List.fromList(const [6, 18, 0, 0]),
-    );
+  /// It finds the correct characteristic to subscribe to or
+  /// throws an [WeightScaleException].
+  Characteristic _characteristicToSubscribe(List<Service> services) {
+    services = services.where((e) => e.uuid == _bcService).toList();
+    if (services.length < 1)
+      throw WeightScaleException("No matching ble service.");
+
+    if (services.length > 1)
+      throw WeightScaleException("Too many matching ble services.");
+
+    List<Characteristic> characteristics = services.first.characteristics
+        .where((characteristic) => characteristic.uuid == _bcMeasurement)
+        .toList();
+
+    if (characteristics.length < 1)
+      throw WeightScaleException("No matching ble characteristic.");
+
+    if (characteristics.length > 1)
+      throw WeightScaleException("Too many matching ble characteristics.");
+
+    return characteristics.first;
   }
 }

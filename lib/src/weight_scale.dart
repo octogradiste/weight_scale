@@ -1,8 +1,14 @@
-/// An exception thrown when a the connection to a weight scale fails.
-class WeightScaleConnectionException implements Exception {
+/// A weight scale exception.
+///
+/// This exception is thrown by classes implementing [WeightScale] when an ble
+/// operation fails.
+class WeightScaleException implements Exception {
+  const WeightScaleException(this.message);
+
+  /// The exception message.
+  ///
   /// This [message] is guaranteed to be user readable.
   final String message;
-  const WeightScaleConnectionException(this.message);
 }
 
 /// Unit in which the weight is measured.
@@ -13,12 +19,25 @@ abstract class WeightScale {
   /// The name of the weight scale given by the manufacturer.
   abstract final String name;
 
-  /// [connect] to the scale to get the measurements.
+  /// A stream of the weight measurements.
+  ///
+  /// You need to [connect] to the scale, to get the measurements.
   abstract final Stream<double> weight;
+
+  /// The unit in which the [weight] is given.
   WeightScaleUnit get unit;
+
+  /// The last emitted measurement by [weight].
   double get currentWeight;
+
   bool get isConnected;
 
+  /// Connects to this weight scale.
+  ///
+  /// Note: if you try to connect to an already connected [WeightScale],
+  /// an [WeightScaleException] will be thrown.
   Future<void> connect({Duration timeout = const Duration(seconds: 15)});
+
+  /// Disconnects from this weight scale.
   Future<void> disconnect();
 }

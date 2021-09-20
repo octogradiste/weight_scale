@@ -9,6 +9,11 @@ import 'package:weight_scale/src/model/service.dart';
 import 'package:weight_scale/src/util/async_task_queue.dart';
 import 'package:weight_scale/src/util/state_stream.dart';
 
+/// The different states of the [BleDevice].
+///
+/// The states [discoveringServices], [readingCharacteristic],
+/// [writingCharacteristic] and [subscribingCharacteristic] also mean that the
+/// device is connected.
 enum BleDeviceState {
   connected,
   disconnected,
@@ -46,12 +51,16 @@ class BleDevice {
     );
   }
 
+  /// This stream emits the state of this device.
+  ///
   /// Note: It's possible that the [state] skips [BleDeviceState.disconnecting]
   /// and goes directly to [BleDeviceState.disconnected].
   Stream<BleDeviceState> get state => _state.events;
   BleDeviceState get currentState => _state.state;
 
   /// A list of the discovered services.
+  ///
+  /// Unless you [discoverService] this list will be empty.
   List<Service> get services => _services;
 
   @override

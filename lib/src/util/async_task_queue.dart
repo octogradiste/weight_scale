@@ -10,7 +10,9 @@ class AsyncTaskQueue {
   final Queue<Work> _queue = Queue();
 
   /// Adds a [task] and returns a [Future] with the result [T] of the [task].
-  /// If [taks] throws an error
+  ///
+  /// If [task] throws an error, the returned [Future] will complete with the
+  /// same error.
   Future<T> add<T>(Task<T> task) {
     Completer<T> completer = Completer();
     _queue.add(() async {
@@ -21,13 +23,13 @@ class AsyncTaskQueue {
         completer.completeError(e);
       }
     });
-    //_queue.add(() async => completer.complete(await task()));
     if (!_isWorking) _work();
     return completer.future;
   }
 
   /// Executes (recursively) all tasks in [_queue] one by one.
   void _work() async {
+    /// If is already working on some others task, something is wrong.
     if (_isWorking) throw Exception("Private work method invoke while working");
 
     _isWorking = true;

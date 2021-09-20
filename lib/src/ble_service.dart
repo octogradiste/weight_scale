@@ -6,23 +6,30 @@ import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/model/uuid.dart';
 import 'package:weight_scale/src/util/state_stream.dart';
 
+/// The different states of the [BleService].
 enum BleServiceState {
   idle,
   scanning,
 }
 
+/// Exception thrown when the [BleService] is not yet initialized.
 class BleServiceNotInitializedException implements Exception {}
 
+/// A service for scanning ble devices.
+///
+/// It's heavily recommended to use the factory constructor
+/// [BleService.instance] to always get the same instance. This avoids starting
+/// multiple scans from different instances.
+///
+/// Before starting a scan you must [initialize] this service. Otherwise you
+/// will get an [BleServiceNotInitializedException].
 class BleService {
   bool _isAndroid = false;
   bool _isInitialized = false;
   late final BleOperations _operations;
+  final Queue<DateTime> _scanQueue = Queue();
   final StateStream<BleServiceState> _state =
       StateStream(initValue: BleServiceState.idle);
-  final Queue<DateTime> _scanQueue = Queue();
-
-  late final Stream<BleServiceState> state;
-  late final Stream<List<ScanResult>> scanResults;
 
   static BleService? _instance;
 
@@ -33,6 +40,17 @@ class BleService {
     return _instance!;
   }
 
+  /// A stream of the current state.
+  ///
+  /// The state is either in [BleServiceState.idle] or in
+  /// [BleServiceState.scanning] during an ongoing scan.
+  late final Stream<BleServiceState> state;
+
+  /// A stream with the results of a scan.
+  ///
+  /// During a scan this stream emits lists of scan results.
+  late final Stream<List<ScanResult>> scanResults;
+
   bool get isScanning => _state.state == BleServiceState.scanning;
   bool get isInitialized => _isInitialized;
   bool get isAndroid => _isAndroid;
@@ -41,6 +59,8 @@ class BleService {
   ///
   /// If the [BleService] is already initialized, calls to this method
   /// will return immediately.
+  /// This means it's not possible to change the [operations] as well as
+  /// the [isAndroid] after the first initialization.
   Future<void> initialize({
     required BleOperations operations,
     required bool isAndroid,

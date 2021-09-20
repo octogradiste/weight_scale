@@ -9,6 +9,11 @@ import 'package:weight_scale/src/weight_scale.dart';
 import 'package:weight_scale/src/weight_scale_recognizer.dart';
 
 /// A hub for searching and registering weight scales.
+///
+/// You must first [initialize] the hub before starting a [search].
+///
+/// If [initialize], [search] or [stopSearch] goes wrong it will
+/// throw an [WeightScaleException].
 class WeightScaleHub {
   late final BleService _bleService;
   late final BleOperations _bleOperations;
@@ -36,18 +41,27 @@ class WeightScaleHub {
   /// A list of all the registered [WeightScaleRecognizer].
   List<WeightScaleRecognizer> get recognizers => _recognizers;
 
-  /// Initialize [WeightScaleHub] before starting a search.
+  /// Initializes the [WeightScaleHub].
   ///
   /// This will initialize the underlying [BleService] and register all known
-  /// weight scales. Those will be in the [recognizers] list after the
+  /// recognizers. Those will be in the [recognizers] list after the
   /// initialization completes.
+  ///
+  /// If the [WeightScaleHub] is already initialized, call to this method won't
+  /// do anything.
   Future<void> initialize() async {
+    if (_isInitialized) return;
+
     register(MiScale2Recognizer());
 
-    await _bleService.initialize(
-      operations: _bleOperations,
-      isAndroid: Platform.isAndroid,
-    );
+    try {
+      await _bleService.initialize(
+        operations: _bleOperations,
+        isAndroid: Platform.isAndroid,
+      );
+    } on BleOperationException catch (e) {
+      throw WeightScaleException(e.message);
+    }
 
     _bleService.scanResults.forEach((scanResults) {
       controller.add(scanResults
@@ -77,16 +91,25 @@ class WeightScaleHub {
   ///
   /// While searching, the recognized [WeightScale] are emitted by the [scales]
   /// stream.
-  ///
-  /// Note: When calling this function, it will first clear all previously found
-  /// weight scales and restart from the beginning.
   Future<void> search({Duration timeout = const Duration(seconds: 15)}) async {
-    await _bleService.startScan(timeout: timeout);
+    try {
+      await _bleService.startScan(timeout: timeout);
+    } on BleServiceNotInitializedException {
+      throw WeightScaleException("Not initialized.");
+    } on BleOperationException catch (e) {
+      throw WeightScaleException(e.message);
+    }
   }
 
   /// Stops an ongoing [search].
   Future<void> stopSearch() async {
-    await _bleService.stopScan();
+    try {
+      await _bleService.stopScan();
+    } on BleServiceNotInitializedException {
+      throw WeightScaleException("Not initialized.");
+    } on BleOperationException catch (e) {
+      throw WeightScaleException(e.message);
+    }
   }
 
   /// Register a [WeightScaleRecognizer].
