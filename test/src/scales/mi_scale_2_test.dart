@@ -45,6 +45,7 @@ void main() {
       timeout = Duration(seconds: 10);
       when(bleDevice.connect(timeout: timeout)).thenAnswer((_) async {});
       when(bleDevice.discoverService()).thenAnswer((_) async => [service]);
+      when(bleDevice.state).thenAnswer((_) => Stream.empty());
       when(bleDevice.subscribeCharacteristic(
         characteristic: service.characteristics.first,
       )).thenAnswer((_) async => Stream.fromIterable([
@@ -62,6 +63,11 @@ void main() {
 
     test('default [unit] same as in constructor', () {
       expect(miScale2.unit, WeightScaleUnit.UNKNOWN);
+    });
+
+    test('[state] calls the ble device', () {
+      miScale2.state;
+      verify(bleDevice.state);
     });
 
     test('[connect] makes the correct calls to [bleDevice]', () async {

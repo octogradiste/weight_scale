@@ -3,11 +3,6 @@ import 'dart:typed_data';
 
 import 'package:weight_scale/ble.dart';
 import 'package:weight_scale/scale.dart';
-import 'package:weight_scale/src/ble_device.dart';
-import 'package:weight_scale/src/ble_operations.dart';
-import 'package:weight_scale/src/features.dart';
-import 'package:weight_scale/src/model/service.dart';
-import 'package:weight_scale/src/model/uuid.dart';
 import 'package:weight_scale/src/util/state_stream.dart';
 
 /// Mi Body Composition Scale 2
@@ -40,6 +35,9 @@ class MiScale2 implements WeightScale, SetUnitFeature, ClearCacheFeature {
 
   @override
   bool get isConnected => _isConnected;
+
+  @override
+  Stream<BleDeviceState> get state => _device.state;
 
   @override
   Future<void> connect({Duration timeout = const Duration(seconds: 15)}) async {

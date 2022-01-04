@@ -68,6 +68,9 @@ class Climbro implements WeightScale {
   @override
   Stream<double> get weight => _weight.events;
 
+  @override
+  Stream<BleDeviceState> get state => _device.state;
+
   /// It finds the correct characteristic to subscribe to or
   /// throws an [WeightScaleException].
   Characteristic _characteristicToSubscribe(List<Service> services) {

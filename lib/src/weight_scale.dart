@@ -1,3 +1,5 @@
+import 'package:weight_scale/ble.dart';
+
 /// A weight scale exception.
 ///
 /// This exception is thrown by classes implementing [WeightScale] when an ble
@@ -31,6 +33,12 @@ abstract class WeightScale {
   double get currentWeight;
 
   bool get isConnected;
+
+  /// This stream emits the state of this device.
+  ///
+  /// Note: It's possible that the [state] skips [BleDeviceState.disconnecting]
+  /// and goes directly to [BleDeviceState.disconnected].
+  Stream<BleDeviceState> get state;
 
   /// Connects to this weight scale.
   ///

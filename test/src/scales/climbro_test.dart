@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -15,8 +14,8 @@ void main() {
   late Climbro climbro;
 
   final String deviceId = "id";
-  final Uuid _service = Uuid("49535343-FE7D-4AE5-8FA9-9FAFD205E455");
-  final Uuid _characteristic = Uuid("49535343-1E4D-4BD9-BA61-23C647249616");
+  final Uuid _service = Uuid("49535343-fe7d-4ae5-8fa9-9fafd205e455");
+  final Uuid _characteristic = Uuid("49535343-1e4d-4bd9-ba61-23c647249616");
 
   final Characteristic characteristic = Characteristic(
     deviceId: deviceId,
@@ -35,6 +34,7 @@ void main() {
         )
       ],
     );
+    when(bleDevice.state).thenAnswer((_) => Stream.empty());
     when((bleDevice as MockBleDevice).subscribeCharacteristic(
       characteristic: anyNamed("characteristic"),
     )).thenAnswer(
@@ -53,6 +53,12 @@ void main() {
 
   test('unit is KG', () {
     expect(climbro.unit, WeightScaleUnit.KG);
+  });
+
+  test('[state] calls the ble device', () {
+    mockCorrectDevice();
+    climbro.state;
+    verify(bleDevice.state);
   });
 
   test('[connect] calls [connect] on the ble device', () async {
