@@ -36,6 +36,8 @@ class BleDevice {
   late final BleOperations _operations;
   List<Service> _services = List.empty();
 
+  bool _addedCallback = false;
+
   final String id;
   final String name;
 
@@ -43,13 +45,7 @@ class BleDevice {
     required this.id,
     required this.name,
     required BleOperations operations,
-  }) {
-    _operations = operations;
-    _operations.addDisconnectCallback(
-      device: this,
-      callback: () async => _state.setState(BleDeviceState.disconnected),
-    );
-  }
+  }) : _operations = operations;
 
   /// This stream emits the state of this device.
   ///
@@ -79,6 +75,15 @@ class BleDevice {
     Duration timeout = const Duration(seconds: 15),
   }) async {
     _state.setState(BleDeviceState.connecting);
+
+    if (!_addedCallback) {
+      _operations.addDisconnectCallback(
+        device: this,
+        callback: () async => _state.setState(BleDeviceState.disconnected),
+      );
+      _addedCallback = true;
+    }
+
     bool connected = false;
     try {
       await _queue.add(() async {
