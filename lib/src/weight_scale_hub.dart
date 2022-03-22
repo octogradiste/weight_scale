@@ -5,6 +5,7 @@ import 'package:weight_scale/ble.dart';
 import 'package:weight_scale/src/ble_operations.dart';
 import 'package:weight_scale/src/ble_service.dart';
 import 'package:weight_scale/src/recognizers/climbro_recognizer.dart';
+import 'package:weight_scale/src/recognizers/eufy_smart_scale_p1_recognizer.dart';
 import 'package:weight_scale/src/recognizers/mi_scale_2_recognizer.dart';
 import 'package:weight_scale/src/weight_scale.dart';
 import 'package:weight_scale/src/weight_scale_recognizer.dart';
@@ -55,6 +56,7 @@ class WeightScaleHub {
 
     register(MiScale2Recognizer());
     register(ClimbroRecognizer());
+    register(EufySmartScaleP1Recognizer());
 
     try {
       await _bleService.initialize(
