@@ -22,5 +22,6 @@ class MiScale2Recognizer implements WeightScaleRecognizer {
 
       return MiScale2(bleDevice: scanResult.device, unit: unit);
     }
+    return null;
   }
 }

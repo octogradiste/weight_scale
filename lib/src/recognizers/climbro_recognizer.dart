@@ -8,5 +8,6 @@ class ClimbroRecognizer implements WeightScaleRecognizer {
     if (scanResult.device.name.startsWith("Climbro_")) {
       return Climbro(bleDevice: scanResult.device);
     }
+    return null;
   }
 }

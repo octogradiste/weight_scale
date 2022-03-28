@@ -11,8 +11,9 @@ class EufySmartScaleP1 extends SimpleWeightScale {
   }) : super(
           bleDevice: bleDevice,
           unit: WeightScaleUnit.KG,
-          serviceUuid: Uuid("0000fff0-0000-1000-8000-00805f9b34fb"),
-          characteristicUuid: Uuid("0000fff4-0000-1000-8000-00805f9b34fb"),
+          serviceUuid: const Uuid("0000fff0-0000-1000-8000-00805f9b34fb"),
+          characteristicUuid:
+              const Uuid("0000fff4-0000-1000-8000-00805f9b34fb"),
         );
 
   @override

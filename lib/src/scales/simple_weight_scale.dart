@@ -60,7 +60,7 @@ abstract class SimpleWeightScale implements WeightScale {
     } on BleOperationException catch (e) {
       throw WeightScaleException(e.message);
     } on TimeoutException {
-      throw WeightScaleException("Couldn't connect in time.");
+      throw const WeightScaleException("Couldn't connect in time.");
     }
 
     _sub = values.listen((data) {
@@ -90,21 +90,26 @@ abstract class SimpleWeightScale implements WeightScale {
   /// throws an [WeightScaleException].
   Characteristic _characteristicToSubscribe(List<Service> services) {
     services = services.where((e) => e.uuid == serviceUuid).toList();
-    if (services.length < 1)
-      throw WeightScaleException("No matching ble service.");
+    if (services.isEmpty) {
+      throw const WeightScaleException("No matching ble service.");
+    }
 
-    if (services.length > 1)
-      throw WeightScaleException("Too many matching ble services.");
+    if (services.length > 1) {
+      throw const WeightScaleException("Too many matching ble services.");
+    }
 
     List<Characteristic> characteristics = services.first.characteristics
         .where((characteristic) => characteristic.uuid == characteristicUuid)
         .toList();
 
-    if (characteristics.length < 1)
-      throw WeightScaleException("No matching ble characteristic.");
+    if (characteristics.isEmpty) {
+      throw const WeightScaleException("No matching ble characteristic.");
+    }
 
-    if (characteristics.length > 1)
-      throw WeightScaleException("Too many matching ble characteristics.");
+    if (characteristics.length > 1) {
+      throw const WeightScaleException(
+          "Too many matching ble characteristics.");
+    }
 
     return characteristics.first;
   }

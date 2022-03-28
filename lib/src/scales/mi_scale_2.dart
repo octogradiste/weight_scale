@@ -8,8 +8,10 @@ import 'package:weight_scale/src/scales/simple_weight_scale.dart';
 /// Mi Body Composition Scale 2
 class MiScale2 extends SimpleWeightScale
     implements SetUnitFeature, ClearCacheFeature {
-  final Uuid _customService = Uuid("00001530-0000-3512-2118-0009af100700");
-  final Uuid _scaleConfiguration = Uuid("00001542-0000-3512-2118-0009af100700");
+  final Uuid _customService =
+      const Uuid("00001530-0000-3512-2118-0009af100700");
+  final Uuid _scaleConfiguration =
+      const Uuid("00001542-0000-3512-2118-0009af100700");
   final BleDevice _device;
 
   MiScale2({required BleDevice bleDevice, required WeightScaleUnit unit})
@@ -17,15 +19,18 @@ class MiScale2 extends SimpleWeightScale
         super(
           bleDevice: bleDevice,
           unit: unit,
-          characteristicUuid: Uuid("00002a9c-0000-1000-8000-00805f9b34fb"),
-          serviceUuid: Uuid("0000181b-0000-1000-8000-00805f9b34fb"),
+          characteristicUuid:
+              const Uuid("00002a9c-0000-1000-8000-00805f9b34fb"),
+          serviceUuid: const Uuid("0000181b-0000-1000-8000-00805f9b34fb"),
         );
 
   @override
   final String name = "Mi Body Composition Scale 2";
 
   @override
-  final Weight? Function(Uint8List) onData = (value) {
+  Weight? Function(Uint8List) get onData => _onData;
+
+  Weight? _onData(Uint8List value) {
     late WeightScaleUnit unit;
     ByteData data = ByteData.sublistView(value);
     if (data.lengthInBytes != 13) return null;
@@ -47,7 +52,7 @@ class MiScale2 extends SimpleWeightScale
       case WeightScaleUnit.UNKNOWN:
         return Weight(0, unit);
     }
-  };
+  }
 
   @override
   Future<void> setUnit(WeightScaleUnit unit) async {

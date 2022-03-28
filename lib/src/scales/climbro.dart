@@ -9,17 +9,21 @@ class Climbro extends SimpleWeightScale {
       : super(
           bleDevice: bleDevice,
           unit: WeightScaleUnit.KG,
-          serviceUuid: Uuid("49535343-fe7d-4ae5-8fa9-9fafd205e455"),
-          characteristicUuid: Uuid("49535343-1e4d-4bd9-ba61-23c647249616"),
+          serviceUuid: const Uuid("49535343-fe7d-4ae5-8fa9-9fafd205e455"),
+          characteristicUuid:
+              const Uuid("49535343-1e4d-4bd9-ba61-23c647249616"),
         );
 
   @override
   String get name => "Climbro";
 
   @override
-  Weight? Function(Uint8List) onData = (data) {
+  Weight? Function(Uint8List) get onData => _onData;
+
+  Weight? _onData(Uint8List data) {
     if (data.length == 1) {
       return Weight(data.first.toDouble(), WeightScaleUnit.KG);
     }
-  };
+    return null;
+  }
 }
