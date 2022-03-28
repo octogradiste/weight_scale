@@ -1,9 +1,8 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:equatable/equatable.dart';
 import 'package:weight_scale/src/model/characteristic.dart';
 import 'package:weight_scale/src/model/uuid.dart';
 
-class Service {
+class Service extends Equatable {
   final String deviceId;
   final Uuid uuid;
   final List<Characteristic> characteristics;
@@ -15,13 +14,5 @@ class Service {
   });
 
   @override
-  bool operator ==(Object other) {
-    return other is Service &&
-        other.deviceId == deviceId &&
-        other.uuid == uuid &&
-        listEquals(other.characteristics, characteristics);
-  }
-
-  @override
-  int get hashCode => hashValues(deviceId, uuid, characteristics);
+  List<Object?> get props => [deviceId, uuid, characteristics];
 }

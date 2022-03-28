@@ -1,11 +1,10 @@
-class Uuid {
+import 'package:equatable/equatable.dart';
+
+class Uuid extends Equatable {
   final String uuid;
 
   const Uuid(this.uuid);
 
   @override
-  bool operator ==(Object other) => other is Uuid && other.uuid == uuid;
-
-  @override
-  int get hashCode => uuid.hashCode;
+  List<Object?> get props => [uuid];
 }

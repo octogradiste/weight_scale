@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:flutter/widgets.dart';
+import 'package:equatable/equatable.dart';
 import 'package:weight_scale/src/model/uuid.dart';
 
-class Descriptor {
+class Descriptor extends Equatable {
   final String deviceId;
   final Uuid serviceUuid;
   final Uuid characteristicUuid;
@@ -19,21 +19,11 @@ class Descriptor {
   });
 
   @override
-  bool operator ==(Object other) {
-    return other is Descriptor &&
-        other.deviceId == deviceId &&
-        other.serviceUuid == serviceUuid &&
-        other.characteristicUuid == characteristicUuid &&
-        other.uuid == uuid &&
-        other.value == value;
-  }
-
-  @override
-  int get hashCode => hashValues(
+  List<Object?> get props => [
         deviceId,
         serviceUuid,
         characteristicUuid,
         uuid,
         value,
-      );
+      ];
 }

@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:equatable/equatable.dart';
 import 'package:weight_scale/src/ble_device.dart';
 import 'package:weight_scale/src/model/uuid.dart';
 
-class ScanResult {
+class ScanResult extends Equatable {
   final BleDevice device;
   final Uint8List manufacturerData;
   final Map<Uuid, Uint8List> serviceData;
@@ -23,23 +22,12 @@ class ScanResult {
   });
 
   @override
-  bool operator ==(Object other) {
-    return other is ScanResult &&
-        other.device == device &&
-        other.manufacturerData == manufacturerData &&
-        mapEquals(other.serviceData, serviceData) &&
-        listEquals(other.serviceUuids, serviceUuids) &&
-        other.rssi == rssi &&
-        other.txPowerLevel == txPowerLevel;
-  }
-
-  @override
-  int get hashCode => hashValues(
+  List<Object?> get props => [
         device,
         manufacturerData,
         serviceData,
         serviceUuids,
         rssi,
         txPowerLevel,
-      );
+      ];
 }
