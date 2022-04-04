@@ -46,8 +46,17 @@ void main() {
         serviceUuid: Uuid('f495aa84-e42e-4ddd-868e-565b5b737fe0'),
         uuid: Uuid('10b76e70-8504-4e9d-819e-06483fd68b04'),
       ),
-      characteristic,
     ],
+    includedServices: [
+      Service(
+        deviceId: 'id',
+        uuid: Uuid('f71ee578-dfe9-4962-9385-5b305b444f6a'),
+        characteristics: [characteristic],
+        includedServices: [],
+        isPrimary: false,
+      ),
+    ],
+    isPrimary: false,
   );
 
   late FbConversion conversion;

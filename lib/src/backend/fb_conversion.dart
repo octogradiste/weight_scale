@@ -87,6 +87,10 @@ class FbConversion {
       characteristics: service.characteristics
           .map((characteristic) => toCharacteristic(characteristic))
           .toList(),
+      includedServices: service.includedServices
+          .map((includedService) => toService(includedService))
+          .toList(),
+      isPrimary: service.isPrimary,
     );
   }
 
@@ -98,9 +102,11 @@ class FbConversion {
     return protos.BluetoothService(
       uuid: service.uuid.uuid,
       remoteId: service.deviceId,
-      isPrimary: true,
       characteristics: service.characteristics
           .map((characteristic) => _protoFromCharacteristic(characteristic)),
+      includedServices: service.includedServices
+          .map((includedService) => _protoFromService(includedService)),
+      isPrimary: service.isPrimary,
     );
   }
 

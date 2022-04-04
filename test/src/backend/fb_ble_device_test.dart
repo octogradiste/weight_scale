@@ -28,6 +28,14 @@ void main() {
     ],
   );
 
+  const service = Service(
+    deviceId: 'id',
+    uuid: Uuid('83b504fc-374c-4868-945a-4cc58474d46e'),
+    characteristics: [characteristic],
+    includedServices: [],
+    isPrimary: false,
+  );
+
   const services = [
     Service(
       deviceId: 'id',
@@ -44,12 +52,10 @@ void main() {
           uuid: Uuid('10b76e70-8504-4e9d-819e-06483fd68b04'),
         ),
       ],
+      includedServices: [service],
+      isPrimary: true,
     ),
-    Service(
-      deviceId: 'id',
-      uuid: Uuid('83b504fc-374c-4868-945a-4cc58474d46e'),
-      characteristics: [characteristic],
-    ),
+    service,
   ];
 
   late FbConversion conversion;

@@ -31,6 +31,8 @@ void main() {
           deviceId: deviceId,
           uuid: _service,
           characteristics: [characteristic],
+          includedServices: [],
+          isPrimary: true,
         )
       ],
     );
@@ -118,6 +120,8 @@ void main() {
               uuid: _characteristic,
             ),
           ],
+          includedServices: [],
+          isPrimary: true,
         ),
       ],
     );
@@ -140,6 +144,8 @@ void main() {
               uuid: Uuid("00000000-0000-0000-0000-000000000000"),
             ),
           ],
+          includedServices: [],
+          isPrimary: true,
         ),
       ],
     );

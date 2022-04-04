@@ -16,14 +16,20 @@ Service createMiScale2Service() {
   String deviceId = "00:00:00:00:00:00";
   Uuid serviceUuid = const Uuid("0000181b-0000-1000-8000-00805f9b34fb");
   Uuid characteristicUuid = const Uuid("00002a9c-0000-1000-8000-00805f9b34fb");
-  return Service(deviceId: deviceId, uuid: serviceUuid, characteristics: [
-    Characteristic(
-      deviceId: deviceId,
-      serviceUuid: serviceUuid,
-      uuid: characteristicUuid,
-      descriptors: const [],
-    )
-  ]);
+  return Service(
+    deviceId: deviceId,
+    uuid: serviceUuid,
+    characteristics: [
+      Characteristic(
+        deviceId: deviceId,
+        serviceUuid: serviceUuid,
+        uuid: characteristicUuid,
+        descriptors: const [],
+      )
+    ],
+    includedServices: const [],
+    isPrimary: true,
+  );
 }
 
 const Uuid customService = Uuid("00001530-0000-3512-2118-0009af100700");
