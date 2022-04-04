@@ -1,6 +1,5 @@
+import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/ble/ble.dart';
-import 'package:weight_scale/src/weight_scale.dart';
-import 'package:weight_scale/src/weight_scale_hub.dart';
 
 /// A [WeightScale] recognizer.
 ///
