@@ -1,9 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// A weight scale exception.
-///
-/// This exception is thrown by classes implementing [WeightScale] when an ble
-/// operation fails.
+/// An exception throw when an operation on a weight scale fails.
 class WeightScaleException extends Equatable implements Exception {
   const WeightScaleException(this.message);
 
