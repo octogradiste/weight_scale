@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:weight_scale/ble.dart';
-import 'package:weight_scale/src/ble_operations.dart';
-import 'package:weight_scale/src/ble_service.dart';
+import 'package:weight_scale/src/backend/fb_ble_manager.dart';
+import 'package:weight_scale/src/backend/fb_conversion.dart';
 import 'package:weight_scale/src/recognizers/climbro_recognizer.dart';
 import 'package:weight_scale/src/recognizers/eufy_smart_scale_p1_recognizer.dart';
 import 'package:weight_scale/src/recognizers/mi_scale_2_recognizer.dart';
@@ -17,24 +18,16 @@ import 'package:weight_scale/src/weight_scale_recognizer.dart';
 /// If [initialize], [search] or [stopSearch] goes wrong it will
 /// throw an [WeightScaleException].
 class WeightScaleHub {
-  late final BleService _bleService;
-  late final BleOperations _bleOperations;
+  final BleManager _manager;
   final List<WeightScaleRecognizer> _recognizers = [];
   final StreamController<List<WeightScale>> controller = StreamController();
   bool _isInitialized = false;
 
-  WeightScaleHub({
-    required BleService bleService,
-    required BleOperations bleOperations,
-  }) {
-    _bleService = bleService;
-    _bleOperations = bleOperations;
-  }
+  WeightScaleHub({required BleManager manager}) : _manager = manager;
 
   factory WeightScaleHub.defaultBackend() {
     return WeightScaleHub(
-      bleService: BleService.instance(),
-      bleOperations: BleOperationsFactory.primary(),
+      manager: FbBleManager(FlutterBlue.instance, FbConversion()),
     );
   }
 
@@ -59,15 +52,12 @@ class WeightScaleHub {
     register(EufySmartScaleP1Recognizer());
 
     try {
-      await _bleService.initialize(
-        operations: _bleOperations,
-        isAndroid: Platform.isAndroid,
-      );
-    } on BleOperationException catch (e) {
+      await _manager.initialize();
+    } on BleException catch (e) {
       throw WeightScaleException(e.message);
     }
 
-    _bleService.scanResults.forEach((scanResults) {
+    _manager.scanResults.forEach((scanResults) {
       controller.add(scanResults
           .map((scanResult) {
             for (WeightScaleRecognizer recognizer in _recognizers) {
@@ -97,10 +87,8 @@ class WeightScaleHub {
   /// stream.
   Future<void> search({Duration timeout = const Duration(seconds: 15)}) async {
     try {
-      await _bleService.startScan(timeout: timeout);
-    } on BleServiceNotInitializedException {
-      throw WeightScaleException("Not initialized.");
-    } on BleOperationException catch (e) {
+      await _manager.startScan(timeout: timeout);
+    } on BleException catch (e) {
       throw WeightScaleException(e.message);
     }
   }
@@ -108,10 +96,8 @@ class WeightScaleHub {
   /// Stops an ongoing [search].
   Future<void> stopSearch() async {
     try {
-      await _bleService.stopScan();
-    } on BleServiceNotInitializedException {
-      throw WeightScaleException("Not initialized.");
-    } on BleOperationException catch (e) {
+      await _manager.stopScan();
+    } on BleException catch (e) {
       throw WeightScaleException(e.message);
     }
   }

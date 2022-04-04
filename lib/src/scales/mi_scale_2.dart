@@ -72,7 +72,7 @@ class MiScale2 extends SimpleWeightScale
     if (value != null) {
       try {
         await _device.writeCharacteristic(
-          characteristic: Characteristic(
+          Characteristic(
             deviceId: _device.id,
             serviceUuid: _customService,
             uuid: _scaleConfiguration,
@@ -80,7 +80,7 @@ class MiScale2 extends SimpleWeightScale
           value: value,
           response: false,
         );
-      } on BleOperationException catch (e) {
+      } on BleException catch (e) {
         throw WeightScaleException(e.message);
       }
     }
@@ -90,14 +90,14 @@ class MiScale2 extends SimpleWeightScale
   Future<void> clearCache() async {
     try {
       await _device.writeCharacteristic(
-        characteristic: Characteristic(
+        Characteristic(
           deviceId: _device.id,
           serviceUuid: _customService,
           uuid: _scaleConfiguration,
         ),
         value: Uint8List.fromList(const [6, 18, 0, 0]),
       );
-    } on BleOperationException catch (e) {
+    } on BleException catch (e) {
       throw WeightScaleException(e.message);
     }
   }

@@ -54,13 +54,11 @@ abstract class SimpleWeightScale implements WeightScale {
 
     try {
       await _device.connect(timeout: timeout);
-      List<Service> services = await _device.discoverService();
+      List<Service> services = await _device.discoverServices();
       Characteristic sub = _characteristicToSubscribe(services);
-      values = await _device.subscribeCharacteristic(characteristic: sub);
-    } on BleOperationException catch (e) {
+      values = await _device.subscribeCharacteristic(sub);
+    } on BleException catch (e) {
       throw WeightScaleException(e.message);
-    } on TimeoutException {
-      throw const WeightScaleException("Couldn't connect in time.");
     }
 
     _sub = values.listen((data) {
@@ -79,7 +77,7 @@ abstract class SimpleWeightScale implements WeightScale {
     try {
       await _sub?.cancel();
       await _device.disconnect();
-    } on BleOperationException catch (e) {
+    } on BleException catch (e) {
       throw WeightScaleException(e.message);
     } finally {
       _isConnected = false;

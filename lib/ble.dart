@@ -4,6 +4,5 @@ export 'src/model/scan_result.dart';
 export 'src/model/service.dart';
 export 'src/model/uuid.dart';
 export 'src/ble_device.dart';
-export 'src/ble_operations.dart';
-export 'src/ble_service.dart';
-export 'src/backend/ble_operations_factory.dart';
+export 'src/ble_manager.dart';
+export 'src/ble_exception.dart';

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,15 +14,15 @@ void main() {
 
       test('if task throws exception then add method must too', () async {
         await expectLater(queue.add(() => throw Exception()),
-            throwsA(TypeMatcher<Exception>()));
+            throwsA(const TypeMatcher<Exception>()));
       });
 
       test("First added tasks gets executed immediately.", () {
         const int time = 1;
         fakeAsync((async) async {
-          async.elapse(Duration(seconds: time));
+          async.elapse(const Duration(seconds: time));
           final result = await queue.add<int>(() {
-            Future.delayed(Duration(seconds: time));
+            Future.delayed(const Duration(seconds: time));
             return Future.value(1);
           });
           expect(result, 1);
@@ -45,27 +43,27 @@ void main() {
         fakeAsync((async) async {
           List<int> results = List.empty(growable: true);
 
-          final time1 = 1;
-          final time2 = 2;
-          final time3 = 3;
+          const time1 = 1;
+          const time2 = 2;
+          const time3 = 3;
 
           queue
-              .add<void>(() => Future.delayed(Duration(seconds: time1)))
+              .add<void>(() => Future.delayed(const Duration(seconds: time1)))
               .then((_) => results.add(1));
           queue
-              .add<void>(() => Future.delayed(Duration(seconds: time2)))
+              .add<void>(() => Future.delayed(const Duration(seconds: time2)))
               .then((_) => results.add(2));
           queue
-              .add<void>(() => Future.delayed(Duration(seconds: time3)))
+              .add<void>(() => Future.delayed(const Duration(seconds: time3)))
               .then((_) => results.add(3));
 
-          async.elapse(Duration(seconds: time1));
+          async.elapse(const Duration(seconds: time1));
           expect(results, containsAllInOrder([1]));
 
-          async.elapse(Duration(seconds: time2));
+          async.elapse(const Duration(seconds: time2));
           expect(results, containsAllInOrder([1, 2]));
 
-          async.elapse(Duration(seconds: time3));
+          async.elapse(const Duration(seconds: time3));
           expect(results, containsAllInOrder([1, 2, 3]));
         });
       });

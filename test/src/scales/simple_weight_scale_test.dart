@@ -26,6 +26,7 @@ class FakeSimpleWeightScale extends SimpleWeightScale {
     if (value.length == 1) {
       return Weight(value.first.toDouble(), WeightScaleUnit.KG);
     }
+    return null;
   };
 
   @override
@@ -39,11 +40,11 @@ void main() {
   late BleDevice bleDevice;
   late SimpleWeightScale scale;
 
-  final String deviceId = "id";
-  final Uuid _service = Uuid("49535343-fe7d-4ae5-8fa9-9fafd205e455");
-  final Uuid _characteristic = Uuid("49535343-1e4d-4bd9-ba61-23c647249616");
+  const String deviceId = "id";
+  const Uuid _service = Uuid("49535343-fe7d-4ae5-8fa9-9fafd205e455");
+  const Uuid _characteristic = Uuid("49535343-1e4d-4bd9-ba61-23c647249616");
 
-  final Characteristic characteristic = Characteristic(
+  const Characteristic characteristic = Characteristic(
     deviceId: deviceId,
     serviceUuid: _service,
     uuid: _characteristic,
@@ -51,19 +52,17 @@ void main() {
 
   void mockCorrectDevice() {
     when(bleDevice.connect()).thenAnswer((_) async {});
-    when(bleDevice.discoverService()).thenAnswer(
+    when(bleDevice.discoverServices()).thenAnswer(
       (_) async => [
-        Service(
+        const Service(
           deviceId: deviceId,
           uuid: _service,
           characteristics: [characteristic],
         )
       ],
     );
-    when(bleDevice.state).thenAnswer((_) => Stream.empty());
-    when((bleDevice as MockBleDevice).subscribeCharacteristic(
-      characteristic: anyNamed("characteristic"),
-    )).thenAnswer(
+    when(bleDevice.state).thenAnswer((_) => const Stream.empty());
+    when((bleDevice as MockBleDevice).subscribeCharacteristic(any)).thenAnswer(
       (_) async => Stream.fromIterable([
         Uint8List.fromList([75]),
         Uint8List.fromList([0, 0, 0]),
@@ -98,7 +97,7 @@ void main() {
 
   test('[connect] calls [connect] on the ble device', () async {
     mockCorrectDevice();
-    Duration timeout = Duration(seconds: 15);
+    Duration timeout = const Duration(seconds: 15);
     await scale.connect(timeout: timeout);
     verify(bleDevice.connect(timeout: timeout));
   });
@@ -106,18 +105,19 @@ void main() {
   test('[connect] calls [discoverDevices] on the ble device', () async {
     mockCorrectDevice();
     await scale.connect();
-    verify(bleDevice.discoverService());
+    verify(bleDevice.discoverServices());
   });
 
   test(
       'if [connect] on ble device throws a [BleOperationException], it gets re-thrown as WeightScaleException.',
       () {
     String msg = "test";
-    when(bleDevice.connect()).thenThrow(BleOperationException(msg));
+    mockCorrectDevice();
+    when(bleDevice.connect()).thenThrow(BleException(msg));
     expect(
-        scale.connect(),
+        () => scale.connect(),
         throwsA(allOf(
-          TypeMatcher<WeightScaleException>(),
+          const TypeMatcher<WeightScaleException>(),
           predicate((WeightScaleException e) => e.message == msg),
         )));
   });
@@ -125,23 +125,27 @@ void main() {
   test(
       'if [connect] on ble device throws a [TimeoutException], it gets re-thrown as WeightScaleException.',
       () {
+    mockCorrectDevice();
     when(bleDevice.connect()).thenThrow(TimeoutException("test"));
-    expect(scale.connect(), throwsA(TypeMatcher<WeightScaleException>()));
+    expect(
+      () => scale.connect(),
+      throwsA(const TypeMatcher<WeightScaleException>()),
+    );
   });
 
   test('if no services is not discoverd throws a [WeightScaleException]', () {
     when(bleDevice.connect()).thenAnswer((_) async {});
-    when(bleDevice.discoverService()).thenAnswer((_) async => List.empty());
-    expect(scale.connect(), throwsA(TypeMatcher<WeightScaleException>()));
+    when(bleDevice.discoverServices()).thenAnswer((_) async => List.empty());
+    expect(scale.connect(), throwsA(const TypeMatcher<WeightScaleException>()));
   });
 
   test(
       'if no matching services is not discoverd throws a [WeightScaleException]',
       () async {
     when(bleDevice.connect()).thenAnswer((_) async {});
-    when(bleDevice.discoverService()).thenAnswer(
+    when(bleDevice.discoverServices()).thenAnswer(
       (_) async => [
-        Service(
+        const Service(
           deviceId: deviceId,
           uuid: Uuid("00000000-0000-0000-0000-000000000000"),
           characteristics: [
@@ -154,15 +158,15 @@ void main() {
         ),
       ],
     );
-    expect(scale.connect(), throwsA(TypeMatcher<WeightScaleException>()));
+    expect(scale.connect(), throwsA(const TypeMatcher<WeightScaleException>()));
   });
 
   test('if the characteristic is not discoverd throws a [WeightScaleException]',
       () {
     when(bleDevice.connect()).thenAnswer((_) async {});
-    when(bleDevice.discoverService()).thenAnswer(
+    when(bleDevice.discoverServices()).thenAnswer(
       (_) async => [
-        Service(
+        const Service(
           deviceId: deviceId,
           uuid: _service,
           characteristics: [
@@ -175,13 +179,13 @@ void main() {
         ),
       ],
     );
-    expect(scale.connect(), throwsA(TypeMatcher<WeightScaleException>()));
+    expect(scale.connect(), throwsA(const TypeMatcher<WeightScaleException>()));
   });
 
   test('[connect] sets notification on characteristic', () async {
     mockCorrectDevice();
     await scale.connect();
-    verify(bleDevice.subscribeCharacteristic(characteristic: characteristic));
+    verify(bleDevice.subscribeCharacteristic(characteristic));
   });
 
   test('before connecting [isConnected] is false', () {
@@ -224,15 +228,16 @@ void main() {
 
   test('when ble device throws on [disconnect] it gets re-thrown', () async {
     mockCorrectDevice();
-    when(bleDevice.disconnect()).thenThrow(BleOperationException("test"));
+    when(bleDevice.disconnect()).thenThrow(const BleException("test"));
     await scale.connect();
-    expect(scale.disconnect(), throwsA(TypeMatcher<WeightScaleException>()));
+    expect(
+        scale.disconnect(), throwsA(const TypeMatcher<WeightScaleException>()));
   });
 
   test('when ble device throws on [disconnect] then [isConnected] is false',
       () async {
     mockCorrectDevice();
-    when(bleDevice.disconnect()).thenThrow(BleOperationException("test"));
+    when(bleDevice.disconnect()).thenThrow(const BleException("test"));
     await scale.connect();
     try {
       await scale.disconnect();
@@ -246,9 +251,8 @@ void main() {
 
     StreamController<Uint8List> controller = StreamController.broadcast();
 
-    when((bleDevice as MockBleDevice).subscribeCharacteristic(
-      characteristic: anyNamed("characteristic"),
-    )).thenAnswer((_) async => controller.stream);
+    when((bleDevice as MockBleDevice).subscribeCharacteristic(any))
+        .thenAnswer((_) async => controller.stream);
 
     var weights = scale.weight.takeWhile((element) => element != 1).toList();
     await scale.connect();

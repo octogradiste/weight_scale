@@ -14,14 +14,14 @@ import 'mi_scale_2_test.mocks.dart';
 
 Service createMiScale2Service() {
   String deviceId = "00:00:00:00:00:00";
-  Uuid serviceUuid = Uuid("0000181b-0000-1000-8000-00805f9b34fb");
-  Uuid characteristicUuid = Uuid("00002a9c-0000-1000-8000-00805f9b34fb");
+  Uuid serviceUuid = const Uuid("0000181b-0000-1000-8000-00805f9b34fb");
+  Uuid characteristicUuid = const Uuid("00002a9c-0000-1000-8000-00805f9b34fb");
   return Service(deviceId: deviceId, uuid: serviceUuid, characteristics: [
     Characteristic(
       deviceId: deviceId,
       serviceUuid: serviceUuid,
       uuid: characteristicUuid,
-      descriptors: [],
+      descriptors: const [],
     )
   ]);
 }
@@ -42,17 +42,16 @@ void main() {
       miScale2 = MiScale2(bleDevice: bleDevice, unit: WeightScaleUnit.UNKNOWN);
 
       service = createMiScale2Service();
-      timeout = Duration(seconds: 10);
+      timeout = const Duration(seconds: 10);
       when(bleDevice.connect(timeout: timeout)).thenAnswer((_) async {});
-      when(bleDevice.discoverService()).thenAnswer((_) async => [service]);
-      when(bleDevice.state).thenAnswer((_) => Stream.empty());
-      when(bleDevice.subscribeCharacteristic(
-        characteristic: service.characteristics.first,
-      )).thenAnswer((_) async => Stream.fromIterable([
-            Uint8List.fromList(
-              [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 54],
-            ),
-          ]));
+      when(bleDevice.discoverServices()).thenAnswer((_) async => [service]);
+      when(bleDevice.state).thenAnswer((_) => const Stream.empty());
+      when(bleDevice.subscribeCharacteristic(service.characteristics.first))
+          .thenAnswer((_) async => Stream.fromIterable([
+                Uint8List.fromList(
+                  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 54],
+                ),
+              ]));
       when(bleDevice.disconnect()).thenAnswer((_) async {});
       when(bleDevice.id).thenReturn("00:00:00:00:00:00");
     });
@@ -73,10 +72,8 @@ void main() {
     test('[connect] makes the correct calls to [bleDevice]', () async {
       await miScale2.connect(timeout: timeout);
       verify(bleDevice.connect(timeout: timeout));
-      verify(bleDevice.discoverService());
-      verify(bleDevice.subscribeCharacteristic(
-        characteristic: service.characteristics.first,
-      ));
+      verify(bleDevice.discoverServices());
+      verify(bleDevice.subscribeCharacteristic(service.characteristics.first));
     });
 
     test('after connecting [isConnected] is true', () async {
@@ -100,13 +97,12 @@ void main() {
 
     test('after connecting [unit] is set by data send from the scale, KG',
         () async {
-      when(bleDevice.subscribeCharacteristic(
-        characteristic: service.characteristics.first,
-      )).thenAnswer((_) async => Stream.fromIterable([
-            Uint8List.fromList(
-              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 54],
-            ),
-          ]));
+      when(bleDevice.subscribeCharacteristic(service.characteristics.first))
+          .thenAnswer((_) async => Stream.fromIterable([
+                Uint8List.fromList(
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 54],
+                ),
+              ]));
       await miScale2.connect(timeout: timeout);
       double weight = await miScale2.weight.take(1).first;
       // Because bit number seven and nine are set 0, the unit is KG.
@@ -134,7 +130,7 @@ void main() {
         uuid: scaleConfiguration,
       );
       verify(bleDevice.writeCharacteristic(
-        characteristic: characteristic,
+        characteristic,
         value: Uint8List.fromList([06, 18, 0, 0]),
       ));
     });
@@ -147,7 +143,7 @@ void main() {
         uuid: scaleConfiguration,
       );
       verify(bleDevice.writeCharacteristic(
-        characteristic: characteristic,
+        characteristic,
         value: Uint8List.fromList([6, 4, 0, 0]),
         response: false,
       ));
@@ -161,7 +157,7 @@ void main() {
         uuid: scaleConfiguration,
       );
       verify(bleDevice.writeCharacteristic(
-        characteristic: characteristic,
+        characteristic,
         value: Uint8List.fromList([6, 4, 0, 1]),
         response: false,
       ));
@@ -169,7 +165,7 @@ void main() {
 
     test('[setUnit] to UNKNOWN makes no writes.', () async {
       await miScale2.setUnit(WeightScaleUnit.UNKNOWN);
-      verifyNever((bleDevice as MockBleDevice).writeCharacteristic());
+      verifyNever((bleDevice as MockBleDevice).writeCharacteristic(any));
     });
   });
 }
