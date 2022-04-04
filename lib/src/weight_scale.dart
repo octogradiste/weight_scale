@@ -1,18 +1,5 @@
 import 'package:weight_scale/src/ble/ble.dart';
 
-/// A weight scale exception.
-///
-/// This exception is thrown by classes implementing [WeightScale] when an ble
-/// operation fails.
-class WeightScaleException implements Exception {
-  const WeightScaleException(this.message);
-
-  /// The exception message.
-  ///
-  /// This [message] is guaranteed to be user readable.
-  final String message;
-}
-
 /// Unit in which the weight is measured.
 enum WeightScaleUnit { KG, LBS, UNKNOWN }
 
