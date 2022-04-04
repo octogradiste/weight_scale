@@ -15,7 +15,18 @@ enum BleDeviceState {
   disconnecting,
 }
 
-/// An abstract class which represent a ble device.
+/// A bluetooth low energy device to which you can [connect] to and then
+/// perform some read/write operations on its characteristics.
+///
+/// Typically you would start by connecting to the [BleDevice].
+/// Then you probably need to discover the services on this device by calling
+/// the [discoverServices] method. This will return the discoverd services
+/// as a future. Once discoverd the services are also available via the
+/// [services] getter and don't need to be rediscovered.
+/// From those discoverd services, you might find a [Service] containing the
+/// [Characteristic] you're after and write to it with [writeCharacteristic].
+/// You can also [readCharacteristic] or subscribe to changes by calling
+/// [subscribeCharacteristic].
 abstract class BleDevice {
   /// The name of the ble device.
   abstract final String name;
@@ -55,7 +66,7 @@ abstract class BleDevice {
   /// Returns the value of the [characteristic].
   Future<Uint8List> readCharacteristic(Characteristic characteristic);
 
-  /// Writes to [characteristic] the [value] with or without a [response].
+  /// Writes to the [characteristic] the [value] with or without a [response].
   Future<void> writeCharacteristic(
     Characteristic characteristic, {
     required Uint8List value,
@@ -65,13 +76,14 @@ abstract class BleDevice {
   /// Subscribes to [characteristic].
   ///
   /// Listen to the returned stream to get notified
-  /// when the value of [characteristic] changes.
+  /// when the value of the [characteristic] changes.
   ///
   /// When stopping listening to the stream the subscription to the
   /// [characteristic] ends.
   Future<Stream<Uint8List>> subscribeCharacteristic(
     Characteristic characteristic,
   );
+
   @override
   bool operator ==(other) {
     return identical(this, other) ||
