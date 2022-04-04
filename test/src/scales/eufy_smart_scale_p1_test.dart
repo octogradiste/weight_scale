@@ -19,7 +19,7 @@ void main() {
   });
 
   test('the [weight] is kg', () {
-    expect(scale.unit, WeightScaleUnit.KG);
+    expect(scale.unit, WeightUnit.kg);
   });
 
   test('[onData] returns null if has not 11 bytes', () {
@@ -32,6 +32,6 @@ void main() {
       List.of([0, 0, 0, 0x5C, 0x1C, 0, 0, 0, 0, 0, 0]),
     ));
     expect(weight!.weight, 72.6);
-    expect(weight.unit, WeightScaleUnit.KG);
+    expect(weight.unit, WeightUnit.kg);
   });
 }

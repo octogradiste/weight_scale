@@ -1,7 +1,5 @@
+import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/ble/ble.dart';
-
-/// Unit in which the weight is measured.
-enum WeightScaleUnit { KG, LBS, UNKNOWN }
 
 /// A connectable weight scale.
 abstract class WeightScale {
@@ -14,7 +12,7 @@ abstract class WeightScale {
   abstract final Stream<double> weight;
 
   /// The unit in which the [weight] is given.
-  WeightScaleUnit get unit;
+  WeightUnit get unit;
 
   /// The last emitted measurement by [weight].
   double get currentWeight;

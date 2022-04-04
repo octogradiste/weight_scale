@@ -29,7 +29,7 @@ void main() {
       expect(scale, isNotNull);
       // The Unit is KG because the service data (same format as the
       // advertisement data) is only zeros.
-      expect(scale?.unit, WeightScaleUnit.KG);
+      expect(scale?.unit, WeightUnit.kg);
     });
 
     test('does not [recognize] returns null', () {

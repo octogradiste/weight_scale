@@ -5,13 +5,6 @@ import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/util/state_stream.dart';
 
-class Weight {
-  final double weight;
-  final WeightScaleUnit unit;
-
-  Weight(this.weight, this.unit);
-}
-
 abstract class SimpleWeightScale implements WeightScale {
   final Uuid serviceUuid;
   final Uuid characteristicUuid;
@@ -20,7 +13,7 @@ abstract class SimpleWeightScale implements WeightScale {
   final StateStream<double> _weight = StateStream(initValue: 0.0);
 
   bool _isConnected = false;
-  WeightScaleUnit _unit;
+  WeightUnit _unit;
   StreamSubscription<Uint8List>? _sub;
 
   abstract final Weight? Function(Uint8List) onData;
@@ -30,14 +23,14 @@ abstract class SimpleWeightScale implements WeightScale {
 
   SimpleWeightScale({
     required BleDevice bleDevice,
-    required WeightScaleUnit unit,
+    required WeightUnit unit,
     required this.serviceUuid,
     required this.characteristicUuid,
   })  : _device = bleDevice,
         _unit = unit;
 
   @override
-  WeightScaleUnit get unit => _unit;
+  WeightUnit get unit => _unit;
 
   @override
   double get currentWeight => _weight.state;

@@ -1,3 +1,4 @@
+export 'src/weight.dart';
 export 'src/weight_scale.dart';
 export 'src/weight_scale_exception.dart';
 export 'src/weight_scale_hub.dart';

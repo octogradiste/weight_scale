@@ -52,7 +52,7 @@ void main() {
   });
 
   test('unit is KG', () {
-    expect(climbro.unit, WeightScaleUnit.KG);
+    expect(climbro.unit, WeightUnit.kg);
   });
 
   test('[state] calls the ble device', () {

@@ -193,14 +193,14 @@ class _MeasurementPageState extends State<MeasurementPage> {
             children: [
               SimpleDialogOption(
                 onPressed: () {
-                  (widget.scale as SetUnitFeature).setUnit(WeightScaleUnit.KG);
+                  (widget.scale as SetUnitFeature).setUnit(WeightUnit.kg);
                   Navigator.pop(context, "KG");
                 },
                 child: Text("KG"),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  (widget.scale as SetUnitFeature).setUnit(WeightScaleUnit.LBS);
+                  (widget.scale as SetUnitFeature).setUnit(WeightUnit.lbs);
                   Navigator.pop(context, "LBS");
                 },
                 child: Text("LBS"),

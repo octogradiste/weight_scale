@@ -14,7 +14,7 @@ class MiScale2 extends SimpleWeightScale
       const Uuid("00001542-0000-3512-2118-0009af100700");
   final BleDevice _device;
 
-  MiScale2({required BleDevice bleDevice, required WeightScaleUnit unit})
+  MiScale2({required BleDevice bleDevice, required WeightUnit unit})
       : _device = bleDevice,
         super(
           bleDevice: bleDevice,
@@ -31,40 +31,40 @@ class MiScale2 extends SimpleWeightScale
   Weight? Function(Uint8List) get onData => _onData;
 
   Weight? _onData(Uint8List value) {
-    late WeightScaleUnit unit;
+    late WeightUnit unit;
     ByteData data = ByteData.sublistView(value);
     if (data.lengthInBytes != 13) return null;
-    unit = WeightScaleUnit.UNKNOWN;
+    unit = WeightUnit.unknown;
     if (data.getUint8(0) % 2 == 1) {
       // If last bit of first byte is one then the weight is in LBS.
-      unit = WeightScaleUnit.LBS;
+      unit = WeightUnit.lbs;
     } else if ((data.getUint8(1) >> 6) % 2 == 0) {
       // If second bit of second byte is one then the
       // weight is in Catty (aka UNKNOWN) else in KG.
-      unit = WeightScaleUnit.KG;
+      unit = WeightUnit.kg;
     }
 
     switch (unit) {
-      case WeightScaleUnit.KG:
+      case WeightUnit.kg:
         return Weight(data.getUint16(11, Endian.little) / 200, unit);
-      case WeightScaleUnit.LBS:
+      case WeightUnit.lbs:
         return Weight(data.getUint16(11, Endian.little) / 100, unit);
-      case WeightScaleUnit.UNKNOWN:
+      case WeightUnit.unknown:
         return Weight(0, unit);
     }
   }
 
   @override
-  Future<void> setUnit(WeightScaleUnit unit) async {
+  Future<void> setUnit(WeightUnit unit) async {
     Uint8List? value;
     switch (unit) {
-      case WeightScaleUnit.KG:
+      case WeightUnit.kg:
         value = Uint8List.fromList([6, 4, 0, 0]);
         break;
-      case WeightScaleUnit.LBS:
+      case WeightUnit.lbs:
         value = Uint8List.fromList([6, 4, 0, 1]);
         break;
-      case WeightScaleUnit.UNKNOWN:
+      case WeightUnit.unknown:
         value = null;
         break;
     }

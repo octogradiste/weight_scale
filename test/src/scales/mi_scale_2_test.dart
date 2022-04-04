@@ -42,7 +42,7 @@ void main() {
 
     setUp(() {
       bleDevice = MockBleDevice();
-      miScale2 = MiScale2(bleDevice: bleDevice, unit: WeightScaleUnit.UNKNOWN);
+      miScale2 = MiScale2(bleDevice: bleDevice, unit: WeightUnit.unknown);
 
       service = createMiScale2Service();
       timeout = const Duration(seconds: 10);
@@ -64,7 +64,7 @@ void main() {
     });
 
     test('default [unit] same as in constructor', () {
-      expect(miScale2.unit, WeightScaleUnit.UNKNOWN);
+      expect(miScale2.unit, WeightUnit.unknown);
     });
 
     test('[state] calls the ble device', () {
@@ -95,7 +95,7 @@ void main() {
       await miScale2.connect(timeout: timeout);
       await miScale2.weight.take(1).first;
       // Because bit number seven is set to 1, the unit is LBS.
-      expect(miScale2.unit, WeightScaleUnit.LBS);
+      expect(miScale2.unit, WeightUnit.lbs);
     });
 
     test('after connecting [unit] is set by data send from the scale, KG',
@@ -109,7 +109,7 @@ void main() {
       await miScale2.connect(timeout: timeout);
       double weight = await miScale2.weight.take(1).first;
       // Because bit number seven and nine are set 0, the unit is KG.
-      expect(miScale2.unit, WeightScaleUnit.KG);
+      expect(miScale2.unit, WeightUnit.kg);
       expect(weight, 70.2);
     });
 
@@ -139,7 +139,7 @@ void main() {
     });
 
     test('[setUnit] KG sends 0x06 0x04 0x00 0x00.', () async {
-      await miScale2.setUnit(WeightScaleUnit.KG);
+      await miScale2.setUnit(WeightUnit.kg);
       Characteristic characteristic = Characteristic(
         deviceId: bleDevice.id,
         serviceUuid: customService,
@@ -153,7 +153,7 @@ void main() {
     });
 
     test('[setUnit] LBS sends 0x06 0x04 0x00 0x01.', () async {
-      await miScale2.setUnit(WeightScaleUnit.LBS);
+      await miScale2.setUnit(WeightUnit.lbs);
       Characteristic characteristic = Characteristic(
         deviceId: bleDevice.id,
         serviceUuid: customService,
@@ -167,7 +167,7 @@ void main() {
     });
 
     test('[setUnit] to UNKNOWN makes no writes.', () async {
-      await miScale2.setUnit(WeightScaleUnit.UNKNOWN);
+      await miScale2.setUnit(WeightUnit.unknown);
       verifyNever((bleDevice as MockBleDevice).writeCharacteristic(any));
     });
   });

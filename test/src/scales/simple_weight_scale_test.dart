@@ -12,7 +12,7 @@ import 'mi_scale_2_test.mocks.dart';
 class FakeSimpleWeightScale extends SimpleWeightScale {
   FakeSimpleWeightScale({
     required BleDevice bleDevice,
-    required WeightScaleUnit unit,
+    required WeightUnit unit,
     required Uuid serviceUuid,
     required Uuid characteristicUuid,
   }) : super(
@@ -24,7 +24,7 @@ class FakeSimpleWeightScale extends SimpleWeightScale {
 
   Weight? Function(Uint8List) current = (value) {
     if (value.length == 1) {
-      return Weight(value.first.toDouble(), WeightScaleUnit.KG);
+      return Weight(value.first.toDouble(), WeightUnit.kg);
     }
     return null;
   };
@@ -77,7 +77,7 @@ void main() {
     bleDevice = MockBleDevice();
     scale = FakeSimpleWeightScale(
       bleDevice: bleDevice,
-      unit: WeightScaleUnit.KG,
+      unit: WeightUnit.kg,
       serviceUuid: _service,
       characteristicUuid: _characteristic,
     );
@@ -88,7 +88,7 @@ void main() {
   });
 
   test('unit is KG', () {
-    expect(scale.unit, WeightScaleUnit.KG);
+    expect(scale.unit, WeightUnit.kg);
   });
 
   test('[state] calls the ble device', () {
