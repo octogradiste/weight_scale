@@ -4,14 +4,16 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_blue/flutter_blue.dart' as fb;
 import 'package:flutter_blue/gen/flutterblue.pbserver.dart' as protos;
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:weight_scale/ble.dart';
 import 'package:weight_scale/src/backend/fb_ble_manager.dart';
 import 'package:weight_scale/src/backend/fb_conversion.dart';
 
-import '../ble_manager_test.mocks.dart';
 import 'fb_ble_device_test.dart';
+import 'fb_ble_manager_test.mocks.dart';
 
+@GenerateMocks([fb.FlutterBlue])
 void main() {
   late MockFlutterBlue flutterBlue;
   late FbConversion conversion;

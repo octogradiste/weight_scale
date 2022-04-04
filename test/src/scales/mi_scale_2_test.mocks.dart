@@ -47,10 +47,6 @@ class MockBleDevice extends _i1.Mock implements _i2.BleDevice {
       (super.noSuchMethod(Invocation.getter(#currentState),
           returnValue: _i2.BleDeviceState.connected) as _i2.BleDeviceState);
   @override
-  List<Object?> get props =>
-      (super.noSuchMethod(Invocation.getter(#props), returnValue: <Object?>[])
-          as List<Object?>);
-  @override
   _i3.Future<void> connect({Duration? timeout = const Duration(seconds: 20)}) =>
       (super.noSuchMethod(Invocation.method(#connect, [], {#timeout: timeout}),
           returnValue: Future<void>.value(),
