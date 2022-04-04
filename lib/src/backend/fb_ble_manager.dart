@@ -6,6 +6,10 @@ import 'package:weight_scale/src/backend/fb_ble_device.dart';
 import 'fb_conversion.dart';
 
 /// The implementation of a [BleManager] using flutter blue.
+///
+/// You need to [initialize] this [BleManager] before usage. Otherwise
+/// [startScan] and [stopScan] will throw a [BleException] and the [scanResults]
+/// stream won't emit the scan results of the flutter blue instance.
 class FbBleManager implements BleManager {
   final fb.FlutterBlue _fb;
   final FbConversion _conversion;
