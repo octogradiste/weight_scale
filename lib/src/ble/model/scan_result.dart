@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
-import 'package:weight_scale/src/ble_device.dart';
-import 'package:weight_scale/src/model/uuid.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 
 class ScanResult extends Equatable {
   final BleDevice device;

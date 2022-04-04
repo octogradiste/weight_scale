@@ -1,6 +1,6 @@
+import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/scales/eufy_smart_scale_p1.dart';
 import 'package:weight_scale/src/weight_scale.dart';
-import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/weight_scale_recognizer.dart';
 
 class EufySmartScaleP1Recognizer implements WeightScaleRecognizer {

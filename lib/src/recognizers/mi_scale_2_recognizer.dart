@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/scales/mi_scale_2.dart';
 import 'package:weight_scale/src/weight_scale.dart';
-import 'package:weight_scale/src/model/scan_result.dart';
 import 'package:weight_scale/src/weight_scale_recognizer.dart';
 
 class MiScale2Recognizer implements WeightScaleRecognizer {

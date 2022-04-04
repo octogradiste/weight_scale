@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:weight_scale/ble.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/scales/simple_weight_scale.dart';
 

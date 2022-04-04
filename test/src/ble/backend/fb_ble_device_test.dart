@@ -6,9 +6,8 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:weight_scale/ble.dart';
-import 'package:weight_scale/src/backend/fb_ble_device.dart';
-import 'package:weight_scale/src/backend/fb_conversion.dart';
+import 'package:weight_scale/src/ble/backend/fb_backend.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 
 import 'fb_ble_device_test.mocks.dart';
 

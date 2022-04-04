@@ -1,5 +1,5 @@
 import 'package:weight_scale/scale.dart';
-import 'package:weight_scale/src/model/scan_result.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/scales/climbro.dart';
 
 class ClimbroRecognizer implements WeightScaleRecognizer {

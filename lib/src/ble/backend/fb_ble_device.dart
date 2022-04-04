@@ -3,8 +3,9 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:weight_scale/ble.dart';
-import 'package:weight_scale/src/backend/fb_conversion.dart';
+import 'package:weight_scale/src/ble/ble.dart';
+
+import 'fb_backend.dart';
 
 /// An implementation of a [BleDevice] using flutter blue.
 ///

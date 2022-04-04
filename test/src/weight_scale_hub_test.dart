@@ -5,7 +5,7 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:weight_scale/ble.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/recognizers/mi_scale_2_recognizer.dart';
 import 'package:weight_scale/src/scales/mi_scale_2.dart';
 import 'package:weight_scale/src/weight_scale.dart';

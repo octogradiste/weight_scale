@@ -2,8 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter_blue/flutter_blue.dart' as fb;
 import 'package:flutter_blue/gen/flutterblue.pbserver.dart' as protos;
-import 'package:weight_scale/ble.dart';
-import 'package:weight_scale/src/backend/fb_ble_device.dart';
+import 'package:weight_scale/src/ble/ble.dart';
+
+import 'fb_backend.dart';
 
 /// A helper class for converting from and to flutter blue objects.
 class FbConversion {

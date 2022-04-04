@@ -4,10 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:weight_scale/scale.dart';
-import 'package:weight_scale/src/ble_device.dart';
-import 'package:weight_scale/src/model/characteristic.dart';
-import 'package:weight_scale/src/model/service.dart';
-import 'package:weight_scale/src/model/uuid.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/scales/mi_scale_2.dart';
 
 import 'mi_scale_2_test.mocks.dart';

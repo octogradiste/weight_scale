@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:weight_scale/ble.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 
 /// The different states in which a [BleDevice] can be in.
 ///

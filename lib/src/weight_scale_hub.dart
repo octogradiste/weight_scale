@@ -1,15 +1,14 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:weight_scale/ble.dart';
-import 'package:weight_scale/src/backend/fb_ble_manager.dart';
-import 'package:weight_scale/src/backend/fb_conversion.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/recognizers/climbro_recognizer.dart';
 import 'package:weight_scale/src/recognizers/eufy_smart_scale_p1_recognizer.dart';
 import 'package:weight_scale/src/recognizers/mi_scale_2_recognizer.dart';
 import 'package:weight_scale/src/weight_scale.dart';
 import 'package:weight_scale/src/weight_scale_recognizer.dart';
+
+import 'ble/backend/fb_backend.dart';
 
 /// A hub for searching and registering weight scales.
 ///

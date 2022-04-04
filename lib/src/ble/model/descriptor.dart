@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:weight_scale/src/model/uuid.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 
 class Descriptor extends Equatable {
   final String deviceId;

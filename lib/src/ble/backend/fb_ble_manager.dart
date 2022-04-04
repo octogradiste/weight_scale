@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_blue/flutter_blue.dart' as fb;
-import 'package:weight_scale/ble.dart';
-import 'package:weight_scale/src/backend/fb_ble_device.dart';
-import 'fb_conversion.dart';
+import 'package:weight_scale/src/ble/ble.dart';
+
+import 'fb_backend.dart';
 
 /// The implementation of a [BleManager] using flutter blue.
 ///

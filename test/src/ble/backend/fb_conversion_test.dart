@@ -3,9 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_blue/flutter_blue.dart' as fb;
 import 'package:flutter_blue/gen/flutterblue.pbserver.dart' as protos;
-import 'package:weight_scale/ble.dart';
-import 'package:weight_scale/src/backend/fb_ble_device.dart';
-import 'package:weight_scale/src/backend/fb_conversion.dart';
+import 'package:weight_scale/src/ble/backend/fb_backend.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 
 /// Using the conversion methods to convert to flutter blue objects and then
 /// back to compare with the original objects.

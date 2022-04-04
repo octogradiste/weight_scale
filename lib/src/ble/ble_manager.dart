@@ -1,4 +1,4 @@
-import 'package:weight_scale/ble.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 
 /// A class for managing ble operations.
 ///
