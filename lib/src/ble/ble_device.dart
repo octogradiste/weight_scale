@@ -5,7 +5,7 @@ import 'package:weight_scale/src/ble/ble.dart';
 
 /// The different states in which a [BleDevice] can be in.
 ///
-/// Note: The state of an [BleDevice] is not guaranteed to transition via the
+/// Note: The state of a [BleDevice] is not guaranteed to transition via the
 /// states [disconnecting] and [connecting].
 enum BleDeviceState {
   connected,
