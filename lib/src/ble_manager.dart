@@ -1,5 +1,15 @@
 import 'package:weight_scale/ble.dart';
 
+/// A class for managing ble operations.
+///
+/// To start using this [BleManager] you have to [initialize] it.
+/// After successful initialization you're ready to start scanning for
+/// ble devices. To do so you call [startScan] and listen to the [scanResults]
+/// steam to get notified when new devices are found. The [scanResults] stream
+/// emits lists of [ScanResult] objects. Each list represent a group of
+/// available device.
+/// The scan results will stop after the given timeout passed to [startScan] or
+/// when calling [stopScan].
 abstract class BleManager {
   /// Returns a set of the currently connected devices.
   Future<Set<BleDevice>> get connectedDevices;
@@ -17,8 +27,8 @@ abstract class BleManager {
   /// Initializes this [BleManager].
   ///
   /// Note: This method must be called and complete successfully before you
-  /// start a scan. Once initialized any call to this method won't have any
-  /// effect and will return immediately.
+  /// start or stop a scan. Once initialized any call to this method won't have
+  /// any effect and will return immediately.
   Future<void> initialize();
 
   /// Starts a ble scan and completes when the scan ends.
