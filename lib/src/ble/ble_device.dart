@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:weight_scale/src/ble/ble.dart';
 
@@ -71,10 +72,12 @@ abstract class BleDevice {
   Future<Stream<Uint8List>> subscribeCharacteristic(
     Characteristic characteristic,
   );
+  @override
+  bool operator ==(other) {
+    return identical(this, other) ||
+        (other is BleDevice && other.id == id && other.name == name);
+  }
 
   @override
-  bool operator ==(other);
-
-  @override
-  int get hashCode;
+  int get hashCode => hashValues(id, name);
 }

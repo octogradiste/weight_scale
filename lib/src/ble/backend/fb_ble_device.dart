@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:weight_scale/src/ble/ble.dart';
@@ -16,7 +15,7 @@ import 'fb_backend.dart';
 /// [currentState] is always [BleDeviceState.disconnected] no matter what states
 /// the [BluetoothDevice] emits. Of course the [BluetoothDevice] is not expected
 /// to emit any stats while it's not connected.
-class FbBleDevice implements BleDevice {
+class FbBleDevice extends BleDevice {
   final BluetoothDevice _device;
   final FbConversion _conversion;
 
@@ -194,14 +193,6 @@ class FbBleDevice implements BleDevice {
 
     return controller.stream;
   }
-
-  @override
-  bool operator ==(other) {
-    return other is BleDevice && other.id == id && other.name == name;
-  }
-
-  @override
-  int get hashCode => hashValues(id, name);
 
   /// Sets the notification on the [characteristic] to [notify].
   ///
