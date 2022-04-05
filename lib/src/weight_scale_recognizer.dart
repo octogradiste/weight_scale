@@ -4,7 +4,7 @@ import 'package:weight_scale/src/ble/ble.dart';
 /// A [WeightScale] recognizer.
 ///
 /// Every weight scale must have implement its own [WeightScaleRecognizer].
-/// The recognizer is then used by the [WeightScaleHub] to distinguish the
+/// The recognizer is then used by the [WeightScaleManager] to distinguish the
 /// weight scales from other ble devices.
 ///
 /// Registering a weight scale recognizer:

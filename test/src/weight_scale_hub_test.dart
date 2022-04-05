@@ -17,14 +17,14 @@ import 'weight_scale_hub_test.mocks.dart';
 @GenerateMocks([BleManager])
 void main() {
   group('initialization', () {
-    late WeightScaleHub hub;
+    late WeightScaleManager hub;
     late MockBleManager bleManager;
 
     setUp(() {
       bleManager = MockBleManager();
       when(bleManager.initialize()).thenAnswer((_) async {});
       when(bleManager.scanResults).thenAnswer((_) => const Stream.empty());
-      hub = WeightScaleHub(manager: bleManager);
+      hub = WeightScaleManager(manager: bleManager);
     });
 
     test('isInitialized is false before initializing', () {
@@ -56,7 +56,7 @@ void main() {
   });
 
   group('search', () {
-    late WeightScaleHub hub;
+    late WeightScaleManager hub;
     late MockBleManager bleManager;
     late Duration timeout;
     late StreamController<List<ScanResult>> streamController;
@@ -68,7 +68,7 @@ void main() {
       when(bleManager.initialize()).thenAnswer((_) async {});
       when(bleManager.startScan()).thenAnswer((_) async {});
       when(bleManager.stopScan()).thenAnswer((_) async {});
-      hub = WeightScaleHub(manager: bleManager);
+      hub = WeightScaleManager(manager: bleManager);
       await hub.initialize();
       timeout = const Duration(seconds: 1);
     });

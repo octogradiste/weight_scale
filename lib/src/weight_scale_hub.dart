@@ -14,16 +14,16 @@ import 'ble/backend/fb_backend.dart';
 ///
 /// If [initialize], [search] or [stopSearch] goes wrong it will
 /// throw an [WeightScaleException].
-class WeightScaleHub {
+class WeightScaleManager {
   final BleManager _manager;
   final List<WeightScaleRecognizer> _recognizers = [];
   final StreamController<List<WeightScale>> controller = StreamController();
   bool _isInitialized = false;
 
-  WeightScaleHub({required BleManager manager}) : _manager = manager;
+  WeightScaleManager({required BleManager manager}) : _manager = manager;
 
-  factory WeightScaleHub.defaultBackend() {
-    return WeightScaleHub(
+  factory WeightScaleManager.defaultBackend() {
+    return WeightScaleManager(
       manager: FbBleManager(FlutterBlue.instance, FbConversion()),
     );
   }
@@ -33,13 +33,13 @@ class WeightScaleHub {
   /// A list of all the registered [WeightScaleRecognizer].
   List<WeightScaleRecognizer> get recognizers => _recognizers;
 
-  /// Initializes the [WeightScaleHub].
+  /// Initializes the [WeightScaleManager].
   ///
   /// This will initialize the underlying [BleService] and register all known
   /// recognizers. Those will be in the [recognizers] list after the
   /// initialization completes.
   ///
-  /// If the [WeightScaleHub] is already initialized, call to this method won't
+  /// If the [WeightScaleManager] is already initialized, call to this method won't
   /// do anything.
   Future<void> initialize() async {
     if (_isInitialized) return;

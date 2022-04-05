@@ -9,11 +9,11 @@ void main() {
 
 class ExampleApp extends StatelessWidget {
   ExampleApp({Key? key}) : super(key: key) {
-    hub = WeightScaleHub.defaultBackend();
+    hub = WeightScaleManager.defaultBackend();
     hub.initialize();
   }
 
-  late final WeightScaleHub hub;
+  late final WeightScaleManager hub;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class ExampleApp extends StatelessWidget {
 class HomePage extends StatefulWidget {
   HomePage({Key? key, required this.hub}) : super(key: key);
 
-  final WeightScaleHub hub;
+  final WeightScaleManager hub;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
 class WeightScaleList extends StatelessWidget {
   const WeightScaleList({Key? key, required this.hub}) : super(key: key);
 
-  final WeightScaleHub hub;
+  final WeightScaleManager hub;
 
   void open(BuildContext context, WeightScale scale) {
     hub.stopSearch();
