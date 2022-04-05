@@ -55,11 +55,11 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           if (_searching) {
-            await widget.hub.stopSearch();
+            await widget.hub.stopScan();
             setSearching(false);
           } else {
             setSearching(true);
-            await widget.hub.search();
+            await widget.hub.startScan();
             setSearching(false);
           }
         },
@@ -76,7 +76,7 @@ class WeightScaleList extends StatelessWidget {
   final WeightScaleManager hub;
 
   void open(BuildContext context, WeightScale scale) {
-    hub.stopSearch();
+    hub.stopScan();
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ConnectPage(scale: scale);
     }));

@@ -8,26 +8,38 @@ import 'package:weight_scale/src/recognizers/eufy_smart_scale_p1_recognizer.dart
 import 'package:weight_scale/src/recognizers/mi_scale_2_recognizer.dart';
 import 'ble/backend/fb_backend.dart';
 
-/// A hub for searching and registering weight scales.
+/// A manager for weigh scales.
 ///
-/// You must first [initialize] the hub before starting a [search].
+/// Before staring or stopping a scan you have to [initialize] this manager.
 ///
-/// If [initialize], [search] or [stopSearch] goes wrong it will
-/// throw an [WeightScaleException].
+/// During a scan, the ble devices recognized as weight scales using the
+/// [recognizers] are emitted to the [scales] stream. The scanning process
+/// can be stopped via [stopScan].
+///
+/// If any operation goes wrong, it will throw an [WeightScaleException].
+/// Because many things might go wrong when communicating over bluetooth
+/// low energy, you should check for those exception during initialization and
+/// scanning.
 class WeightScaleManager {
   final BleManager _manager;
-  final List<WeightScaleRecognizer> _recognizers = [];
-  final StreamController<List<WeightScale>> controller = StreamController();
-  bool _isInitialized = false;
+  final _recognizers = <WeightScaleRecognizer>[];
+  final _scalesController = StreamController<List<WeightScale>>();
+
+  var _isInitialized = false;
 
   WeightScaleManager({required BleManager manager}) : _manager = manager;
 
+  /// Returns a [WeightScaleManager] using as [BleManager] the default
+  /// implementation, namely the
+  /// [flutter_blue](https://pub.dev/packages/flutter_blue) implementation.
   factory WeightScaleManager.defaultBackend() {
     return WeightScaleManager(
       manager: FbBleManager(FlutterBlue.instance, FbConversion()),
     );
   }
 
+  /// True once [initialize] has been called and has completed without
+  /// exception.
   bool get isInitialized => _isInitialized;
 
   /// A list of all the registered [WeightScaleRecognizer].
@@ -35,15 +47,16 @@ class WeightScaleManager {
 
   /// Initializes the [WeightScaleManager].
   ///
-  /// This will initialize the underlying [BleService] and register all known
+  /// This will initialize the underlying [BleManager] and register all default
   /// recognizers. Those will be in the [recognizers] list after the
   /// initialization completes.
   ///
-  /// If the [WeightScaleManager] is already initialized, call to this method won't
-  /// do anything.
+  /// If the [WeightScaleManager] is already initialized, call to this method
+  /// won't do anything.
   Future<void> initialize() async {
     if (_isInitialized) return;
 
+    // Registering all default recognizers.
     register(MiScale2Recognizer());
     register(ClimbroRecognizer());
     register(EufySmartScaleP1Recognizer());
@@ -55,7 +68,7 @@ class WeightScaleManager {
     }
 
     _manager.scanResults.forEach((scanResults) {
-      controller.add(scanResults
+      _scalesController.add(scanResults
           .map((scanResult) {
             for (WeightScaleRecognizer recognizer in _recognizers) {
               WeightScale? scale = recognizer.recognize(scanResult: scanResult);
@@ -69,20 +82,21 @@ class WeightScaleManager {
     _isInitialized = true;
   }
 
-  /// The available [WeightScale].
+  /// The weight scales found during a scan.
   ///
-  /// A [Stream] which emits a list of the weight scales
-  /// found during the [search].
-  Stream<List<WeightScale>> get scales => controller.stream;
+  /// Emits lists of weight scales found during the scan.
+  Stream<List<WeightScale>> get scales => _scalesController.stream;
 
-  /// Searches available [WeightScale].
+  /// Performs a ble scan and searches for weight scales.
   ///
-  /// The [Future] completes when the search ends (either by calling
-  /// [stopSearch] or when the timeout is reached).
+  /// While searching, the recognized weight scales are emitted
+  /// by the [scales] stream.
   ///
-  /// While searching, the recognized [WeightScale] are emitted by the [scales]
-  /// stream.
-  Future<void> search({Duration timeout = const Duration(seconds: 15)}) async {
+  /// The [Future] completes when the scan ends (either by calling
+  /// [stopScan] or when the [timeout] is reached).
+  Future<void> startScan({
+    Duration timeout = const Duration(seconds: 15),
+  }) async {
     try {
       await _manager.startScan(timeout: timeout);
     } on BleException catch (e) {
@@ -90,8 +104,11 @@ class WeightScaleManager {
     }
   }
 
-  /// Stops an ongoing [search].
-  Future<void> stopSearch() async {
+  /// Stops an ongoing scan.
+  ///
+  /// If you don't need to scan any more, it's a good idea to stop the scan
+  /// because scanning for ble devices consumes lots of resources and power.
+  Future<void> stopScan() async {
     try {
       await _manager.stopScan();
     } on BleException catch (e) {
@@ -99,10 +116,11 @@ class WeightScaleManager {
     }
   }
 
-  /// Register a [WeightScaleRecognizer].
+  /// Registers a [WeightScaleRecognizer].
   ///
-  /// Register your custom [WeightScaleRecognizer] here. If you do so,
-  /// your custom [WeightScale] will be recognized and returned by the [search].
+  /// You can use this to register you're custom recognizer. Once registered,
+  /// It will be used during the [startScan] to determine if a found ble device
+  /// is or isn't your custom weight scale.
   void register(WeightScaleRecognizer recognizer) {
     _recognizers.add(recognizer);
   }
