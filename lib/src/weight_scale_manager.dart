@@ -8,18 +8,18 @@ import 'package:weight_scale/src/recognizers/eufy_smart_scale_p1_recognizer.dart
 import 'package:weight_scale/src/recognizers/mi_scale_2_recognizer.dart';
 import 'ble/backend/fb_backend.dart';
 
-/// A manager for weigh scales.
+/// A manager for weight scales.
 ///
-/// Before staring or stopping a scan you have to [initialize] this manager.
+/// Before starting or stopping a scan you have to [initialize] this manager.
 ///
 /// During a scan, the ble devices recognized as weight scales using the
-/// [recognizers] are emitted to the [scales] stream. The scanning process
+/// [recognizers], are emitted to the [scales] stream. The scanning process
 /// can be stopped via [stopScan].
 ///
-/// If any operation goes wrong, it will throw an [WeightScaleException].
+/// If any operation goes wrong, it will throw a [WeightScaleException].
 /// Because many things might go wrong when communicating over bluetooth
-/// low energy, you should check for those exception during initialization and
-/// scanning.
+/// low energy, you should check for those exception during the initialization
+/// and the scanning process.
 class WeightScaleManager {
   final BleManager _manager;
   final _recognizers = <WeightScaleRecognizer>[];
