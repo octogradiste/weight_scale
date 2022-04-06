@@ -26,6 +26,7 @@ class WeightScaleManager {
   final _scalesController = StreamController<List<WeightScale>>();
 
   var _isInitialized = false;
+  var _isScanning = false;
 
   WeightScaleManager({required BleManager manager}) : _manager = manager;
 
@@ -41,6 +42,9 @@ class WeightScaleManager {
   /// True once [initialize] has been called and has completed without
   /// exception.
   bool get isInitialized => _isInitialized;
+
+  /// True if is currently scanning for weight scales.
+  bool get isScanning => _isScanning;
 
   /// A list of all the registered [WeightScaleRecognizer].
   List<WeightScaleRecognizer> get recognizers => _recognizers;
@@ -63,21 +67,22 @@ class WeightScaleManager {
 
     try {
       await _manager.initialize();
+
+      _manager.scanResults.forEach((scanResults) {
+        _scalesController.add(scanResults
+            .map((scanResult) {
+              for (WeightScaleRecognizer recognizer in _recognizers) {
+                WeightScale? scale =
+                    recognizer.recognize(scanResult: scanResult);
+                if (scale != null) return scale;
+              }
+            })
+            .whereType<WeightScale>()
+            .toList());
+      });
     } on BleException catch (e) {
       throw WeightScaleException(e.message);
     }
-
-    _manager.scanResults.forEach((scanResults) {
-      _scalesController.add(scanResults
-          .map((scanResult) {
-            for (WeightScaleRecognizer recognizer in _recognizers) {
-              WeightScale? scale = recognizer.recognize(scanResult: scanResult);
-              if (scale != null) return scale;
-            }
-          })
-          .whereType<WeightScale>()
-          .toList());
-    });
 
     _isInitialized = true;
   }
@@ -94,12 +99,23 @@ class WeightScaleManager {
   ///
   /// The [Future] completes when the scan ends (either by calling
   /// [stopScan] or when the [timeout] is reached).
+  ///
+  /// If is currently scanning, will first stop the ongoing scan and then
+  /// start a new one.
   Future<void> startScan({
     Duration timeout = const Duration(seconds: 15),
   }) async {
+    if (!_isInitialized) {
+      throw const WeightScaleException('Is not yet initialized.');
+    }
+
+    if (_isScanning) stopScan();
+    _isScanning = true;
+
     try {
       await _manager.startScan(timeout: timeout);
     } on BleException catch (e) {
+      _isScanning = false;
       throw WeightScaleException(e.message);
     }
   }
@@ -108,9 +124,18 @@ class WeightScaleManager {
   ///
   /// If you don't need to scan any more, it's a good idea to stop the scan
   /// because scanning for ble devices consumes lots of resources and power.
+  ///
+  /// Won't do anything with you're not currently scanning.
   Future<void> stopScan() async {
+    if (!_isInitialized) {
+      throw const WeightScaleException('Is not yet initialized.');
+    }
+
+    if (!_isScanning) return;
+
     try {
       await _manager.stopScan();
+      _isScanning = false;
     } on BleException catch (e) {
       throw WeightScaleException(e.message);
     }
