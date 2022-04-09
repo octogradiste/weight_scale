@@ -100,12 +100,12 @@ void main() {
   group('constructor', () {
     test('Should have the same name as the bluetooth device When constructed',
         () {
-      expect(device.name, "test");
+      expect(device.information.name, "test");
     });
 
     test('Should have the same id as the bluetooth device When constructed',
         () {
-      expect(device.id, "id");
+      expect(device.information.id, "id");
     });
   });
 

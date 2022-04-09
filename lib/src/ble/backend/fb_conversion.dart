@@ -31,8 +31,8 @@ class FbConversion {
 
   protos.BluetoothDevice _protoFromBleDevice(BleDevice device) {
     return protos.BluetoothDevice(
-      remoteId: device.id,
-      name: device.name,
+      remoteId: device.information.id,
+      name: device.information.name,
       type: protos.BluetoothDevice_Type.LE,
     );
   }

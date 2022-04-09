@@ -25,13 +25,10 @@ class FbBleDevice extends BleDevice {
   BleDeviceState _currentState = BleDeviceState.disconnected;
 
   @override
-  final String name;
-  @override
-  final String id;
+  final BleDeviceInformation information;
 
   FbBleDevice(BluetoothDevice device, FbConversion conversion)
-      : name = device.name,
-        id = device.id.id,
+      : information = BleDeviceInformation(name: device.name, id: device.id.id),
         _device = device,
         _conversion = conversion;
 

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:weight_scale/src/ble/ble.dart';
 
@@ -28,14 +27,8 @@ enum BleDeviceState {
 /// You can also [readCharacteristic] or subscribe to changes by calling
 /// [subscribeCharacteristic].
 abstract class BleDevice {
-  /// The name of the ble device.
-  abstract final String name;
-
-  /// The identifier for the ble device.
-  ///
-  /// On Android it's a MAC address such as '00:11:22:33:AA:BB' and on ios
-  /// it's an 128 bit UUID such as '68753A44-4D6F-1226-9C60-0050E4C00067'.
-  abstract final String id;
+  /// Information about this ble device.
+  abstract final BleDeviceInformation information;
 
   /// Returns the services discoverd during service discovery.
   Future<List<Service>> get services;
@@ -86,10 +79,9 @@ abstract class BleDevice {
 
   @override
   bool operator ==(other) {
-    return identical(this, other) ||
-        (other is BleDevice && other.id == id && other.name == name);
+    return (other is BleDevice && other.information == information);
   }
 
   @override
-  int get hashCode => hashValues(id, name);
+  int get hashCode => information.hashCode;
 }

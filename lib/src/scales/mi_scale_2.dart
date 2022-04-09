@@ -73,7 +73,7 @@ class MiScale2 extends SimpleWeightScale
       try {
         await _device.writeCharacteristic(
           Characteristic(
-            deviceId: _device.id,
+            deviceId: _device.information.id,
             serviceUuid: _customService,
             uuid: _scaleConfiguration,
           ),
@@ -91,7 +91,7 @@ class MiScale2 extends SimpleWeightScale
     try {
       await _device.writeCharacteristic(
         Characteristic(
-          deviceId: _device.id,
+          deviceId: _device.information.id,
           serviceUuid: _customService,
           uuid: _scaleConfiguration,
         ),

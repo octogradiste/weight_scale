@@ -5,7 +5,7 @@ import 'package:weight_scale/src/scales/climbro.dart';
 class ClimbroRecognizer implements WeightScaleRecognizer {
   @override
   WeightScale? recognize({required ScanResult scanResult}) {
-    if (scanResult.device.name.startsWith("Climbro_")) {
+    if (scanResult.device.information.name.startsWith("Climbro_")) {
       return Climbro(bleDevice: scanResult.device);
     }
     return null;

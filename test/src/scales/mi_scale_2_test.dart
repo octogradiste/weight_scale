@@ -56,7 +56,9 @@ void main() {
                 ),
               ]));
       when(bleDevice.disconnect()).thenAnswer((_) async {});
-      when(bleDevice.id).thenReturn("00:00:00:00:00:00");
+      when(bleDevice.information).thenReturn(
+        const BleDeviceInformation(name: "MIBFS", id: "00:00:00:00:00:00"),
+      );
     });
 
     test('default [isConnected] is false', () {
@@ -128,7 +130,7 @@ void main() {
     test('[clearCache] sends 0x06 0x12 0x00 0x00.', () async {
       await miScale2.clearCache();
       Characteristic characteristic = Characteristic(
-        deviceId: bleDevice.id,
+        deviceId: bleDevice.information.id,
         serviceUuid: customService,
         uuid: scaleConfiguration,
       );
@@ -141,7 +143,7 @@ void main() {
     test('[setUnit] KG sends 0x06 0x04 0x00 0x00.', () async {
       await miScale2.setUnit(WeightUnit.kg);
       Characteristic characteristic = Characteristic(
-        deviceId: bleDevice.id,
+        deviceId: bleDevice.information.id,
         serviceUuid: customService,
         uuid: scaleConfiguration,
       );
@@ -155,7 +157,7 @@ void main() {
     test('[setUnit] LBS sends 0x06 0x04 0x00 0x01.', () async {
       await miScale2.setUnit(WeightUnit.lbs);
       Characteristic characteristic = Characteristic(
-        deviceId: bleDevice.id,
+        deviceId: bleDevice.information.id,
         serviceUuid: customService,
         uuid: scaleConfiguration,
       );
