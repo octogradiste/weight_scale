@@ -34,6 +34,9 @@ class FakeSimpleWeightScale extends SimpleWeightScale {
 
   @override
   Weight? Function(Uint8List p1) get onData => current;
+
+  @override
+  String get manufacturer => "The fake scale manufacturer.";
 }
 
 void main() {
@@ -75,6 +78,9 @@ void main() {
 
   setUp(() {
     bleDevice = MockBleDevice();
+    when(bleDevice.information).thenReturn(
+      const BleDeviceInformation(name: "fake", id: deviceId),
+    );
     scale = FakeSimpleWeightScale(
       bleDevice: bleDevice,
       unit: WeightUnit.kg,

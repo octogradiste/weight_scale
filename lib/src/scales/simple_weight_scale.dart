@@ -21,12 +21,16 @@ abstract class SimpleWeightScale implements WeightScale {
   @override
   late final weight = _weight.events;
 
+  @override
+  final BleDeviceInformation information;
+
   SimpleWeightScale({
     required BleDevice bleDevice,
     required WeightUnit unit,
     required this.serviceUuid,
     required this.characteristicUuid,
-  })  : _device = bleDevice,
+  })  : information = bleDevice.information,
+        _device = bleDevice,
         _unit = unit;
 
   @override

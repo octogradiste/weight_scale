@@ -15,7 +15,10 @@ class Climbro extends SimpleWeightScale {
         );
 
   @override
-  String get name => "Climbro";
+  final String name = "Climbro Smart Hangboard";
+
+  @override
+  final String manufacturer = "Climbro";
 
   @override
   Weight? Function(Uint8List) get onData => _onData;

@@ -42,6 +42,9 @@ void main() {
 
     setUp(() {
       bleDevice = MockBleDevice();
+      when(bleDevice.information).thenReturn(
+        const BleDeviceInformation(name: "MIBFS", id: "00:00:00:00:00:00"),
+      );
       miScale2 = MiScale2(bleDevice: bleDevice, unit: WeightUnit.unknown);
 
       service = createMiScale2Service();
@@ -56,9 +59,6 @@ void main() {
                 ),
               ]));
       when(bleDevice.disconnect()).thenAnswer((_) async {});
-      when(bleDevice.information).thenReturn(
-        const BleDeviceInformation(name: "MIBFS", id: "00:00:00:00:00:00"),
-      );
     });
 
     test('default [isConnected] is false', () {

@@ -28,6 +28,9 @@ class MiScale2 extends SimpleWeightScale
   final String name = "Mi Body Composition Scale 2";
 
   @override
+  final String manufacturer = "Xiaomi";
+
+  @override
   Weight? Function(Uint8List) get onData => _onData;
 
   Weight? _onData(Uint8List value) {

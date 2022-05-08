@@ -48,6 +48,8 @@ void main() {
 
   setUp(() {
     bleDevice = MockBleDevice();
+    when(bleDevice.information)
+        .thenReturn(const BleDeviceInformation(name: "Climbro", id: deviceId));
     climbro = Climbro(bleDevice: bleDevice);
   });
 

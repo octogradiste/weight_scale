@@ -16,7 +16,10 @@ class EufySmartScaleP1 extends SimpleWeightScale {
         );
 
   @override
-  String get name => "Eufy Smart Scale P1";
+  final String name = "Eufy Smart Scale P1";
+
+  @override
+  final String manufacturer = "Eufy by Anker";
 
   @override
   Weight? Function(Uint8List data) get onData => (value) {

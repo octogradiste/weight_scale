@@ -3,12 +3,18 @@ import 'package:weight_scale/src/ble/ble.dart';
 
 /// A connectable weight scale.
 abstract class WeightScale {
-  /// The name of the weight scale given by the manufacturer.
+  /// The product name of this weight scale given by the manufacturer.
   abstract final String name;
 
-  /// A stream of the weight measurements.
+  /// The name of the manufacturer of this weight scale.
+  abstract final String manufacturer;
+
+  /// Information about the underlying ble device like its name or its id.
+  abstract final BleDeviceInformation information;
+
+  /// A stream of weight measurements.
   ///
-  /// You need to [connect] to the scale, to get the measurements.
+  /// You need to [connect] to this scale, to get the measurements.
   abstract final Stream<double> weight;
 
   /// The unit in which the [weight] is given.
@@ -17,6 +23,7 @@ abstract class WeightScale {
   /// The last emitted measurement by [weight].
   double get currentWeight;
 
+  /// True if is currently connected to this weight scale.
   bool get isConnected;
 
   /// This stream emits the state of this device.

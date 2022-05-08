@@ -1,17 +1,21 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:weight_scale/scale.dart';
+import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/scales/eufy_smart_scale_p1.dart';
 import 'package:weight_scale/src/scales/simple_weight_scale.dart';
 
-import 'mi_scale_2_test.mocks.dart';
+import '../fake_ble_device.dart';
 
 void main() {
+  late BleDevice bleDevice;
   late SimpleWeightScale scale;
 
   setUp(() {
-    scale = EufySmartScaleP1(bleDevice: MockBleDevice());
+    bleDevice = FakeBleDevice(id: "id", name: "name");
+    scale = EufySmartScaleP1(bleDevice: bleDevice);
   });
 
   test('the [name] is Eufy Smart Scale P1', () {
