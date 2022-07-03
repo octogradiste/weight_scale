@@ -15,13 +15,17 @@ abstract class WeightScale {
   /// A stream of weight measurements.
   ///
   /// You need to [connect] to this scale, to get the measurements.
-  abstract final Stream<double> weight;
-
-  /// The unit in which the [weight] is given.
-  WeightUnit get unit;
+  abstract final Stream<Weight> weight;
 
   /// The last emitted measurement by [weight].
-  double get currentWeight;
+  Weight get currentWeight;
+
+  /// Takes a weight measurement.
+  ///
+  /// The future will return the measured weight when the weight has stabilized.
+  /// Note: Depending on the implementation, this might be implemented
+  /// in hardware or software.
+  Future<Weight> takeWeightMeasurement();
 
   /// True if is currently connected to this weight scale.
   bool get isConnected;
