@@ -6,7 +6,7 @@ class ClimbroRecognizer implements WeightScaleRecognizer {
   @override
   WeightScale? recognize({required ScanResult scanResult}) {
     if (scanResult.device.information.name.startsWith("Climbro_")) {
-      return Climbro(bleDevice: scanResult.device);
+      return Climbro(device: scanResult.device);
     }
     return null;
   }
