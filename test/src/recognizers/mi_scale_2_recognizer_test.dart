@@ -15,7 +15,7 @@ void main() {
       recognizer = MiScale2Recognizer();
     });
 
-    test('[recognize] returns a weight scale.', () {
+    test('Should recognize and return the weight scale', () {
       BleDevice device = FakeBleDevice(id: "id", name: "MIBFS");
       ScanResult scanResult = ScanResult(
         device: device,
@@ -29,10 +29,10 @@ void main() {
       expect(scale, isNotNull);
       // The Unit is KG because the service data (same format as the
       // advertisement data) is only zeros.
-      expect(scale?.unit, WeightUnit.kg);
+      // expect(scale?.unit, WeightUnit.kg);
     });
 
-    test('does not [recognize] returns null', () {
+    test('Should not recognize the scale and return null', () {
       BleDevice device = FakeBleDevice(id: "id", name: "not MIBFS");
       ScanResult scanResult = ScanResult(
         device: device,

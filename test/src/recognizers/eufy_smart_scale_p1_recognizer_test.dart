@@ -9,32 +9,34 @@ import '../fake_ble_device.dart';
 void main() {
   late WeightScaleRecognizer recognizer;
 
-  setUp(() {
-    recognizer = EufySmartScaleP1Recognizer();
-  });
+  group('recognize', () {
+    setUp(() {
+      recognizer = EufySmartScaleP1Recognizer();
+    });
 
-  test('[recognize] returns the scale for eufy T9147', () {
-    BleDevice device = FakeBleDevice(id: "id", name: "eufy T9147");
-    ScanResult scanResult = ScanResult(
-      device: device,
-      serviceData: const {},
-      serviceUuids: const [],
-      rssi: 0,
-    );
-    expect(
-      recognizer.recognize(scanResult: scanResult),
-      const TypeMatcher<EufySmartScaleP1>(),
-    );
-  });
+    test('Should recognize scale When the name is eufy T9147', () {
+      BleDevice device = FakeBleDevice(id: "id", name: "eufy T9147");
+      ScanResult scanResult = ScanResult(
+        device: device,
+        serviceData: const {},
+        serviceUuids: const [],
+        rssi: 0,
+      );
+      expect(
+        recognizer.recognize(scanResult: scanResult),
+        const TypeMatcher<EufySmartScaleP1>(),
+      );
+    });
 
-  test('[recognize] returns null for eufy fake', () {
-    BleDevice device = FakeBleDevice(id: "id", name: "eufy fake");
-    ScanResult scanResult = ScanResult(
-      device: device,
-      serviceData: const {},
-      serviceUuids: const [],
-      rssi: 0,
-    );
-    expect(recognizer.recognize(scanResult: scanResult), isNull);
+    test('Should not recognize scale When the name is eufy fake', () {
+      BleDevice device = FakeBleDevice(id: "id", name: "eufy fake");
+      ScanResult scanResult = ScanResult(
+        device: device,
+        serviceData: const {},
+        serviceUuids: const [],
+        rssi: 0,
+      );
+      expect(recognizer.recognize(scanResult: scanResult), isNull);
+    });
   });
 }
