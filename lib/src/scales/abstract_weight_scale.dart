@@ -30,17 +30,15 @@ abstract class AbstractWeightScale implements WeightScale {
   Weight _currentWeight = const Weight(0, WeightUnit.unknown);
 
   /// The uuid of the service holding the characteristic.
-  final Uuid serviceUuid;
+  abstract final Uuid serviceUuid;
 
   /// The uuid of the characteristic holding the weight data.
-  final Uuid characteristicUuid;
+  abstract final Uuid characteristicUuid;
 
   /// Needs the underlying ble [device] as well as the uuid of the service and
   /// characteristic holding the weight data.
   AbstractWeightScale({
     required BleDevice device,
-    required this.serviceUuid,
-    required this.characteristicUuid,
   }) : _device = device;
 
   /// This should transform the data received by the scale to a

@@ -14,15 +14,17 @@ class TestAbstractWeightScale extends AbstractWeightScale {
   bool stabilized = false;
   Weight? Function(Uint8List) onDataHandler = ((data) => null);
 
+  @override
+  final Uuid characteristicUuid;
+
+  @override
+  final Uuid serviceUuid;
+
   TestAbstractWeightScale({
-    required BleDevice device,
-    required Uuid serviceUuid,
-    required Uuid characteristicUuid,
-  }) : super(
-          device: device,
-          serviceUuid: serviceUuid,
-          characteristicUuid: characteristicUuid,
-        );
+    required super.device,
+    required this.serviceUuid,
+    required this.characteristicUuid,
+  });
 
   @override
   String get name => "name";
