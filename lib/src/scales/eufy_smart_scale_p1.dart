@@ -11,9 +11,7 @@ class EufySmartScaleP1 extends AbstractWeightScale {
   @override
   final characteristicUuid = const Uuid("0000fff4-0000-1000-8000-00805f9b34fb");
 
-  EufySmartScaleP1({
-    required super.device,
-  });
+  EufySmartScaleP1({required super.device});
 
   @override
   final String name = "Eufy Smart Scale P1";
