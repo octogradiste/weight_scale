@@ -19,12 +19,12 @@ void main() {
 
   group('onData', () {
     test('Should return null When has not 11 bytes', () {
-      var weight = scale.onData(Uint8List.fromList(List.of([1, 2, 3, 4])));
+      final weight = scale.onData(Uint8List.fromList(List.of([1, 2, 3, 4])));
       expect(weight, isNull);
     });
 
     test('Should return 72.6 kg When the data is 5C1C', () {
-      var weight = scale.onData(Uint8List.fromList(
+      final weight = scale.onData(Uint8List.fromList(
         List.of([0, 0, 0, 0x5C, 0x1C, 0, 0, 0, 0, 0, 0]),
       ));
       expect(weight, isNotNull);
