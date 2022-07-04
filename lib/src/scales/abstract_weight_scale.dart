@@ -6,21 +6,25 @@ import 'package:weight_scale/src/ble/ble.dart';
 
 /// A class implementing most of the [WeightScale] interface.
 ///
-/// To achieve this it needs to know the uuid of the service and characteristic
-/// holding the weight data.
-/// After setting up the notification on this characteristic, on every value
-/// change the [onData] method will be called to transform the data to an
-/// actual weight value. The same data will be send to the [hasStabilized]
-/// method to determine if [takeWeightMeasurement] has terminated.
+/// To achieve this, it needs to know the uuid of the service and the uuid of
+/// the characteristic which contains the weight data.
+/// When you connect to the scale, it will automatically set up the notification
+/// on this characteristic. The received data is then passed to the [onData]
+/// method which must transform the raw data to a [Weight] object. If [onData]
+/// returns null the measurement is ignored.
+/// The [hasStabilized] method is used to determine if the received weight
+/// can be counted as a valid measurement which is then returned by the
+/// [takeWeightMeasurement] method.
 abstract class AbstractWeightScale implements WeightScale {
   final BleDevice _device;
   final _controller = StreamController<Weight>.broadcast();
 
-  // If not null, this is the subscription to the characteristic emitting
+  // If not null, this is the subscription to the characteristic emitting the
   // weight data.
   StreamSubscription? _subscription;
 
   // If not null, this should complete when the weight has stabilized.
+  // This will be reset to null once the weight has stabilized.
   Completer<Weight>? measuring;
 
   Weight _currentWeight = const Weight(0, WeightUnit.unknown);
@@ -31,7 +35,7 @@ abstract class AbstractWeightScale implements WeightScale {
   /// The uuid of the characteristic holding the weight data.
   final Uuid characteristicUuid;
 
-  /// Needs the underlying ble device as well as the uuid of the service and
+  /// Needs the underlying ble [device] as well as the uuid of the service and
   /// characteristic holding the weight data.
   AbstractWeightScale({
     required BleDevice device,
@@ -41,13 +45,15 @@ abstract class AbstractWeightScale implements WeightScale {
 
   /// This should transform the data received by the scale to a
   /// weight measurement. If the data isn't a valid weight measurement, this
-  /// should return null. In this case this null measurement won't be emitted
+  /// should return null. In this case, the null measurement won't be emitted
   /// by the [weight] stream and won't be the [currentWeight].
   Weight? onData(Uint8List data);
 
   /// This should return true if the weight measured by the scale has
-  /// stabilized. Often the data send by the weight scale has a flag which is
-  /// on when this is the case.
+  /// stabilized.
+  ///
+  /// Often this is indicated by a flag in the received data. If this is not
+  /// the case you can also implement this feature in software.
   bool hasStabilized(Uint8List data);
 
   @override
@@ -63,10 +69,15 @@ abstract class AbstractWeightScale implements WeightScale {
   bool get isConnected => _device.currentState == BleDeviceState.connected;
 
   @override
+  BleDeviceState get currentState => _device.currentState;
+
+  @override
   Stream<BleDeviceState> get state => _device.state;
 
   @override
   Future<Weight> takeWeightMeasurement() async {
+    // If no measurement is currently being done, create a new completer.
+    // Else we can just return the future of the ongoing measurement.
     measuring ??= Completer();
     return measuring!.future;
   }
@@ -88,6 +99,7 @@ abstract class AbstractWeightScale implements WeightScale {
 
     final Service service;
     try {
+      // Finds the correct service.
       service = services.where((s) => s.uuid == serviceUuid).first;
     } on StateError {
       throw const WeightScaleException('The service was not discovered.');
@@ -95,6 +107,7 @@ abstract class AbstractWeightScale implements WeightScale {
 
     final Characteristic characteristic;
     try {
+      // Finds the correct characteristic.
       characteristic = service.characteristics
           .where((c) => c.uuid == characteristicUuid)
           .first;
@@ -111,7 +124,7 @@ abstract class AbstractWeightScale implements WeightScale {
         if (weight != null) {
           _currentWeight = weight;
           _controller.add(weight);
-          if (hasStabilized(data) && measuring != null) {
+          if (measuring != null && hasStabilized(data)) {
             measuring!.complete(weight);
             measuring = null;
           }
