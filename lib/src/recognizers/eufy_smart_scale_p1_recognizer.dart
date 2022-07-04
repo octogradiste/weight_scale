@@ -7,7 +7,7 @@ class EufySmartScaleP1Recognizer implements WeightScaleRecognizer {
   @override
   WeightScale? recognize({required ScanResult scanResult}) {
     if (scanResult.device.information.name.startsWith("eufy T")) {
-      return EufySmartScaleP1(bleDevice: scanResult.device);
+      return EufySmartScaleP1(device: scanResult.device);
     }
     return null;
   }
