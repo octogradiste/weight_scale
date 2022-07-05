@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:weight_scale/scale.dart';
-import 'package:weight_scale/src/ble/ble.dart';
 
 /// A class implementing most of the [WeightScale] interface.
 ///

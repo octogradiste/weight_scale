@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:weight_scale/scale.dart';
-import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/scales/abstract_weight_scale.dart';
 
 import 'abstract_weight_scale_test.mocks.dart';

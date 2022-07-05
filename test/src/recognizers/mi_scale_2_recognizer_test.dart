@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:weight_scale/scale.dart';
-import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/recognizers/mi_scale_2_recognizer.dart';
 
 import '../fake_ble_device.dart';

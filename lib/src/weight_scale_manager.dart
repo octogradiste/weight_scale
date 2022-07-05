@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:weight_scale/scale.dart';
-import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/recognizers/recognizer.dart';
 import 'ble/backend/fb_backend.dart';
 

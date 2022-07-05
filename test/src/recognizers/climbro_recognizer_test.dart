@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/recognizers/climbro_recognizer.dart';
 
