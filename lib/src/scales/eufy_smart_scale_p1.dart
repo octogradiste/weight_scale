@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:weight_scale/scale.dart';
-import 'package:weight_scale/src/ble/ble.dart';
 import 'package:weight_scale/src/scales/abstract_weight_scale.dart';
 
 class EufySmartScaleP1 extends AbstractWeightScale {

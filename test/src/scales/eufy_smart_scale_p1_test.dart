@@ -27,7 +27,7 @@ void main() {
         List.of([0, 0, 0, 0x5C, 0x1C, 0, 0, 0, 0, 0, 0]),
       ));
       expect(weight, isNotNull);
-      expect(weight!.weight, 72.6);
+      expect(weight!.value, 72.6);
       expect(weight.unit, WeightUnit.kg);
     });
   });

@@ -25,7 +25,7 @@ void main() {
     test('Should return 38 kg When the data is 38', () {
       final weight = scale.onData(Uint8List.fromList(List.of([38])));
       expect(weight, isNotNull);
-      expect(weight!.weight, 38);
+      expect(weight!.value, 38);
       expect(weight.unit, WeightUnit.kg);
     });
   });
