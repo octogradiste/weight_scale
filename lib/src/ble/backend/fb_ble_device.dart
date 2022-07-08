@@ -198,21 +198,24 @@ class FbBleDevice extends BleDevice {
     BluetoothCharacteristic characteristic,
     bool notify,
   ) async {
+    if (!_isConnectingOrConnected) return; // No need to (un)subscribe.
+    final action = notify ? 'enable' : 'disable';
+
     bool successful;
     try {
       successful = await characteristic.setNotifyValue(notify);
     } catch (e) {
       throw BleException(
-        'Failed to ${notify ? 'enable' : 'disable'} notification.',
-        detail: 'Tried to enable notification on $characteristic.',
+        'Failed to $action notification.',
+        detail: 'Tried to $action notification on $characteristic.',
         exception: e,
       );
     }
 
     if (!successful) {
       throw BleException(
-        "Couldn't ${notify ? 'enable' : 'disable'} the notifications!",
-        detail: "Couldn't enable the notifications for $characteristic",
+        "Couldn't $action the notification!",
+        detail: "Couldn't $action the notification for $characteristic",
       );
     }
   }

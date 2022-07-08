@@ -553,6 +553,17 @@ void main() {
         final subscription = stream.listen(null);
         expect(subscription.cancel(), throwsBleException(exception: exception));
       });
+
+      test('Should not do anything When already disconnected', () async {
+        await device.connect();
+        when(mockCharacteristic.setNotifyValue(true))
+            .thenAnswer((_) async => true);
+        final stream = await device.subscribeCharacteristic(characteristic);
+        final subscription = stream.listen(null);
+        await device.disconnect();
+        await subscription.cancel(); // Canceling subscription after disconnect.
+        verifyNever(mockCharacteristic.setNotifyValue(false));
+      });
     });
   });
 }
