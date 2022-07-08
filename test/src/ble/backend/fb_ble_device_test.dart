@@ -134,7 +134,7 @@ void main() {
     test('Should only start to emit states When connecting', () async {
       const timeout = Duration(seconds: 10);
       final connectionCompleter = Completer();
-      when(mockDevice.connect(timeout: timeout)).thenAnswer(
+      when(mockDevice.connect(timeout: null)).thenAnswer(
         (_) => connectionCompleter.future,
       );
 
@@ -257,23 +257,22 @@ void main() {
 
   group('connect', () {
     test(
-        'Should call connect with same timeout on bluetooth device When called',
+        'Should call connect with null timeout on bluetooth device When called',
         () async {
       const Duration timeout = Duration(seconds: 10);
       await device.connect(timeout: timeout);
-      verify(mockDevice.connect(timeout: timeout));
+      verify(mockDevice.connect(timeout: null));
     });
 
     test('Should throw a ble exception When timeout is reached', () {
       fakeAsync((async) {
         const timeout = Duration(seconds: 15);
-        final exception = TimeoutException('test');
-        when(mockDevice.connect(timeout: timeout)).thenAnswer(
-          (_) => Future.delayed(timeout).then((_) => throw exception),
+        when(mockDevice.connect(timeout: null)).thenAnswer(
+          (_) => Future.delayed(timeout * 2),
         );
         expect(
           device.connect(timeout: timeout),
-          throwsBleException(exception: exception),
+          throwsBleException(),
         );
         async.elapse(timeout);
       });
@@ -282,7 +281,7 @@ void main() {
     test('Should throw a ble exception When connection fails', () {
       const timeout = Duration(seconds: 15);
       final exception = Exception('exception');
-      when(mockDevice.connect(timeout: timeout)).thenThrow(exception);
+      when(mockDevice.connect(timeout: null)).thenThrow(exception);
       expect(
         device.connect(timeout: timeout),
         throwsBleException(exception: exception),
@@ -292,7 +291,7 @@ void main() {
     test('Should be disconnected When connection fails', () {
       const timeout = Duration(seconds: 15);
       final exception = Exception('exception');
-      when(mockDevice.connect(timeout: timeout)).thenThrow(exception);
+      when(mockDevice.connect(timeout: null)).thenThrow(exception);
       expect(
         device.connect(timeout: timeout),
         throwsBleException(exception: exception),

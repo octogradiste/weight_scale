@@ -74,13 +74,15 @@ class FbBleDevice extends BleDevice {
         }
       });
 
-      await _device.connect(timeout: timeout);
+      await _device
+          .connect(timeout: null)
+          .timeout(timeout, onTimeout: () async => throw TimeoutException(''));
+
       await connected; // Ensures that the connected state was emitted.
-    } on TimeoutException catch (e) {
+    } on TimeoutException {
       throw BleException(
         "Couldn't connect in time.",
         detail: "Couldn't establish connection during  the $timeout.",
-        exception: e,
       );
     } catch (e) {
       _updateState(BleDeviceState.disconnected);
