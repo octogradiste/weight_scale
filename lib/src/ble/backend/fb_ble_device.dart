@@ -74,6 +74,9 @@ class FbBleDevice extends BleDevice {
         }
       });
 
+      // We have to emit the connecting state manually, because the flutter
+      // blue plugin won't emit it.
+      _updateState(BleDeviceState.connecting);
       await _device
           .connect(timeout: null)
           .timeout(timeout, onTimeout: () async => throw TimeoutException(''));
@@ -94,6 +97,10 @@ class FbBleDevice extends BleDevice {
   @override
   Future<void> disconnect() async {
     if (!_isConnectingOrConnected) return;
+
+    // We have to emit the disconnecting state manually, because the flutter
+    // blue plugin won't emit it.
+    _updateState(BleDeviceState.disconnecting);
     try {
       final disconnected = state.firstWhere(
         (state) => state == BleDeviceState.disconnected,

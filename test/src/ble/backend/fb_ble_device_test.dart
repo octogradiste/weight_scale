@@ -76,12 +76,12 @@ void main() {
       // The first state emitted, will get skipped. This is because of the
       // flutter blue implementation of the state getter which will return as
       // the first state the current state, i.e. disconnected.
+      // Also note that flutter blue doesn't emit the connecting state.
       stateController.add(BluetoothDeviceState.disconnected);
-      stateController.add(BluetoothDeviceState.connecting);
       stateController.add(BluetoothDeviceState.connected);
     });
     when(mockDevice.disconnect()).thenAnswer((_) async {
-      stateController.add(BluetoothDeviceState.disconnecting);
+      // Note that the flutter blue doesn't emit the disconnecting state.
       stateController.add(BluetoothDeviceState.disconnected);
     });
     when(mockDevice.discoverServices()).thenAnswer(
@@ -153,7 +153,7 @@ void main() {
       // the first state the current state, i.e. disconnected.
       stateController.add(BluetoothDeviceState.disconnected);
 
-      stateController.add(BluetoothDeviceState.connecting);
+      // Note that the connecting state is not emitted by flutter blue.
       stateController.add(BluetoothDeviceState.connected);
       connectionCompleter.complete(); // Complete connection procedure.
       stateController.add(BluetoothDeviceState.disconnecting);
@@ -282,8 +282,9 @@ void main() {
       fakeAsync((async) {
         const timeout = Duration(seconds: 15);
         when(mockDevice.connect(timeout: null)).thenAnswer((_) {
+          // Note that flutter blue starts by emitting the current state, i.e.
+          // disconnected.
           stateController.add(BluetoothDeviceState.disconnected);
-          stateController.add(BluetoothDeviceState.connecting);
           return Future.delayed(timeout * 2);
         });
         device.state.take(2).toList().then((states) {
