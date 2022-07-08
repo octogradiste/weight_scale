@@ -4,7 +4,7 @@ import 'package:weight_scale/scale.dart';
 class ScalePage extends StatefulWidget {
   final WeightScale scale;
 
-  ScalePage(this.scale, {Key? key}) : super(key: key);
+  const ScalePage(this.scale, {Key? key}) : super(key: key);
 
   @override
   State<ScalePage> createState() => _ScalePageState();
@@ -13,7 +13,13 @@ class ScalePage extends StatefulWidget {
 class _ScalePageState extends State<ScalePage> {
   @override
   void initState() {
-    widget.scale.connect();
+    widget.scale.connect().catchError((e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Exception: ${(e as WeightScaleException).message}'),
+        ),
+      );
+    }, test: (e) => e is WeightScaleException);
     super.initState();
   }
 
@@ -25,22 +31,25 @@ class _ScalePageState extends State<ScalePage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<BleDeviceState>(
-      initialData: BleDeviceState.connecting,
-      stream: widget.scale.state,
-      builder: (context, snapshot) {
-        final state = snapshot.requireData;
-        switch (state) {
-          case BleDeviceState.connecting:
-            return Center(child: Text('Connecting...'));
-          case BleDeviceState.connected:
-            return ConnectScreen(widget.scale);
-          case BleDeviceState.disconnecting:
-            return Center(child: Text('Disconnecting...'));
-          case BleDeviceState.disconnected:
-            return DisconnectScreen(widget.scale);
-        }
-      },
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.scale.name)),
+      body: StreamBuilder<BleDeviceState>(
+        initialData: BleDeviceState.connecting,
+        stream: widget.scale.state,
+        builder: (context, snapshot) {
+          final state = snapshot.requireData;
+          switch (state) {
+            case BleDeviceState.connecting:
+              return const Center(child: Text('Connecting...'));
+            case BleDeviceState.connected:
+              return ConnectScreen(widget.scale);
+            case BleDeviceState.disconnecting:
+              return const Center(child: Text('Disconnecting...'));
+            case BleDeviceState.disconnected:
+              return DisconnectScreen(widget.scale);
+          }
+        },
+      ),
     );
   }
 }
@@ -50,31 +59,41 @@ class ConnectScreen extends StatelessWidget {
 
   const ConnectScreen(this.scale, {Key? key}) : super(key: key);
 
+  String _weightToString(Weight weight) {
+    String value = weight.value.toStringAsFixed(2);
+    switch (weight.unit) {
+      case WeightUnit.kg:
+        return '$value kg';
+      case WeightUnit.lbs:
+        return '$value lbs';
+      case WeightUnit.unknown:
+        return value;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         StreamBuilder<Weight>(
           stream: scale.weight,
           builder: (context, snapshot) {
             final data = snapshot.data;
             if (data == null) {
-              return Text('No data available !');
+              return Center(
+                child: Text(
+                  'No data available yet.',
+                  style: Theme.of(context).textTheme.headline5,
+                ),
+              );
             } else {
-              String unit;
-              switch (data.unit) {
-                case WeightUnit.kg:
-                  unit = ' kg';
-                  break;
-                case WeightUnit.lbs:
-                  unit = ' lbs';
-                  break;
-                case WeightUnit.unknown:
-                  unit = '';
-                  break;
-              }
-              String weight = data.value.round().toString();
-              return Text(weight + unit);
+              return Center(
+                child: Text(
+                  _weightToString(data),
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+              );
             }
           },
         ),
@@ -91,9 +110,17 @@ class DisconnectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ElevatedButton(
-        child: Text('RECONNECT'),
-        onPressed: () => scale.connect(),
+      child: TextButton(
+        child: const Text('RECONNECT'),
+        onPressed: () async {
+          try {
+            await scale.connect();
+          } on WeightScaleException catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Exception: ${e.message}')),
+            );
+          }
+        },
       ),
     );
   }
