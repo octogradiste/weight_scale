@@ -70,7 +70,7 @@ void main() {
     when(mockDevice.id).thenReturn(const DeviceIdentifier("id"));
     when(mockDevice.state).thenAnswer((_) => stateController.stream);
     when(mockDevice.connect(
-      timeout: anyNamed("timeout"),
+      timeout: null,
       autoConnect: anyNamed("autoConnect"),
     )).thenAnswer((_) async {
       // The first state emitted, will get skipped. This is because of the
@@ -275,6 +275,31 @@ void main() {
           throwsBleException(),
         );
         async.elapse(timeout);
+      });
+    });
+
+    test('Should be in disconnect state When timeout is reached', () async {
+      fakeAsync((async) {
+        const timeout = Duration(seconds: 15);
+        when(mockDevice.connect(timeout: null)).thenAnswer((_) {
+          stateController.add(BluetoothDeviceState.disconnected);
+          stateController.add(BluetoothDeviceState.connecting);
+          return Future.delayed(timeout * 2);
+        });
+        device.state.take(2).toList().then((states) {
+          expect(states, const [
+            BleDeviceState.connecting,
+            BleDeviceState.disconnected,
+          ]);
+        });
+        expect(
+          device.connect(timeout: timeout),
+          throwsBleException(),
+        );
+        async.flushMicrotasks();
+        expect(device.currentState, BleDeviceState.connecting);
+        async.elapse(timeout);
+        expect(device.currentState, BleDeviceState.disconnected);
       });
     });
 
