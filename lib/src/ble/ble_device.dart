@@ -37,7 +37,7 @@ abstract class BleDevice {
   Stream<BleDeviceState> get state;
 
   /// Returns the current state of this ble device.
-  BleDeviceState get currentState;
+  Future<BleDeviceState> get currentState;
 
   /// Connects to this ble device.
   ///
