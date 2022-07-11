@@ -16,6 +16,7 @@ class _ScalePageState extends State<ScalePage> {
 
   Future<void> _connect() async {
     try {
+      setState(() => _connecting = true);
       await widget.scale.connect();
     } on WeightScaleException catch (e) {
       ScaffoldMessenger.of(context)
@@ -68,22 +69,7 @@ class _ScalePageState extends State<ScalePage> {
                   case BleDeviceState.disconnecting:
                     return const Center(child: Text('Disconnecting...'));
                   case BleDeviceState.disconnected:
-                    return Center(
-                      child: TextButton(
-                        child: const Text('RECONNECT'),
-                        onPressed: () async {
-                          try {
-                            setState(() => _connecting = true);
-                            await widget.scale.connect();
-                          } on WeightScaleException catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Exception: ${e.message}')),
-                            );
-                          }
-                        },
-                      ),
-                    );
+                    return const Center(child: Text('Disconnected.'));
                 }
               },
             )
