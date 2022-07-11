@@ -48,8 +48,8 @@ abstract class WeightScale {
 
   /// Connects to this weight scale.
   ///
-  /// If you try to connect to an already connected [WeightScale] or if you're
-  /// currently connecting to it, an [WeightScaleException] will be thrown.
+  /// If you try to connect to an already connected [WeightScale] it will
+  /// try to reenable the characteristic notification on the ble device.
   Future<void> connect({Duration timeout = const Duration(seconds: 15)});
 
   /// Disconnects from this weight scale.

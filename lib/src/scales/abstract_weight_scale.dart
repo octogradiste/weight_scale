@@ -82,14 +82,11 @@ abstract class AbstractWeightScale implements WeightScale {
 
   @override
   Future<void> connect({Duration timeout = const Duration(seconds: 15)}) async {
-    // if (_device.currentState == BleDeviceState.connecting ||
-    //     _device.currentState == BleDeviceState.connected) {
-    //   throw const WeightScaleException('Is already connected to the device!');
-    // }
-
     final List<Service> services;
     try {
-      await _device.connect(timeout: timeout);
+      if (await _device.currentState != BleDeviceState.connected) {
+        await _device.connect(timeout: timeout);
+      }
       services = await _device.discoverServices();
     } on BleException catch (e) {
       throw WeightScaleException(e.message);

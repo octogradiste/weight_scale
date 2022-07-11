@@ -335,17 +335,24 @@ void main() {
       expect(scale.connect(timeout: timeout), throwsA(scaleException));
     });
 
-    // test('Should throw a weight scale exception When is connecting', () async {
-    //   when(device.currentState)
-    //       .thenAnswer((_) async => BleDeviceState.connecting);
-    //   expect(scale.connect(), throwsWeightScaleException);
-    // });
+    test('Should not call connect on ble device When is already connected',
+        () async {
+      when(device.currentState)
+          .thenAnswer((_) async => BleDeviceState.connected);
+      await scale.connect(timeout: timeout);
 
-    // test('Should throw a weight scale exception When is connected', () async {
-    //   when(device.currentState)
-    //       .thenAnswer((_) async => BleDeviceState.connected);
-    //   expect(scale.connect(), throwsWeightScaleException);
-    // });
+      verifyNever(device.connect(timeout: timeout));
+    });
+
+    test('Should try to reenable the notification When is already connected',
+        () async {
+      when(device.currentState)
+          .thenAnswer((_) async => BleDeviceState.connected);
+      await scale.connect(timeout: timeout);
+
+      verify(device.discoverServices());
+      verify(device.subscribeCharacteristic(characteristic));
+    });
 
     test(
         'Should throw a weight scale exception When the service is not present',
