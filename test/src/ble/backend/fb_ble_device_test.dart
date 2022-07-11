@@ -11,89 +11,90 @@ import 'package:weight_scale/src/ble/ble.dart';
 
 import 'fb_ble_device_test.mocks.dart';
 
-@GenerateMocks([BluetoothDevice, BluetoothCharacteristic, FbConversion])
-void main() {
-  const characteristic = Characteristic(
+const characteristic = Characteristic(
+  deviceId: 'id',
+  serviceUuid: Uuid('83b504fc-374c-4868-945a-4cc58474d46e'),
+  uuid: Uuid('62e25928-c9c3-4fb0-abef-f9e110473c3d'),
+  descriptors: [
+    Descriptor(
+      deviceId: 'id',
+      serviceUuid: Uuid('83b504fc-374c-4868-945a-4cc58474d46e'),
+      characteristicUuid: Uuid('62e25928-c9c3-4fb0-abef-f9e110473c3d'),
+      uuid: Uuid('68f96847-c42a-416d-bcc6-6fb808723ead'),
+    ),
+  ],
+);
+
+const service = Service(
+  deviceId: 'id',
+  uuid: Uuid('83b504fc-374c-4868-945a-4cc58474d46e'),
+  characteristics: [characteristic],
+  includedServices: [],
+  isPrimary: false,
+);
+
+const services = [
+  Service(
     deviceId: 'id',
-    serviceUuid: Uuid('83b504fc-374c-4868-945a-4cc58474d46e'),
-    uuid: Uuid('62e25928-c9c3-4fb0-abef-f9e110473c3d'),
-    descriptors: [
-      Descriptor(
+    uuid: Uuid('f495aa84-e42e-4ddd-868e-565b5b737fe0'),
+    characteristics: [
+      Characteristic(
         deviceId: 'id',
-        serviceUuid: Uuid('83b504fc-374c-4868-945a-4cc58474d46e'),
-        characteristicUuid: Uuid('62e25928-c9c3-4fb0-abef-f9e110473c3d'),
-        uuid: Uuid('68f96847-c42a-416d-bcc6-6fb808723ead'),
+        serviceUuid: Uuid('f495aa84-e42e-4ddd-868e-565b5b737fe0'),
+        uuid: Uuid('3dac59ed-ad28-4d1b-8658-c121545f01cc'),
+      ),
+      Characteristic(
+        deviceId: 'id',
+        serviceUuid: Uuid('f495aa84-e42e-4ddd-868e-565b5b737fe0'),
+        uuid: Uuid('10b76e70-8504-4e9d-819e-06483fd68b04'),
       ),
     ],
-  );
+    includedServices: [service],
+    isPrimary: true,
+  ),
+  service,
+];
 
-  const service = Service(
-    deviceId: 'id',
-    uuid: Uuid('83b504fc-374c-4868-945a-4cc58474d46e'),
-    characteristics: [characteristic],
-    includedServices: [],
-    isPrimary: false,
-  );
-
-  const services = [
-    Service(
-      deviceId: 'id',
-      uuid: Uuid('f495aa84-e42e-4ddd-868e-565b5b737fe0'),
-      characteristics: [
-        Characteristic(
-          deviceId: 'id',
-          serviceUuid: Uuid('f495aa84-e42e-4ddd-868e-565b5b737fe0'),
-          uuid: Uuid('3dac59ed-ad28-4d1b-8658-c121545f01cc'),
-        ),
-        Characteristic(
-          deviceId: 'id',
-          serviceUuid: Uuid('f495aa84-e42e-4ddd-868e-565b5b737fe0'),
-          uuid: Uuid('10b76e70-8504-4e9d-819e-06483fd68b04'),
-        ),
-      ],
-      includedServices: [service],
-      isPrimary: true,
-    ),
-    service,
-  ];
-
+@GenerateMocks([BluetoothDevice, BluetoothCharacteristic, FbConversion])
+void main() {
   late FbConversion conversion;
   late MockBluetoothDevice mockDevice;
   late StreamController<BluetoothDeviceState> stateController;
+  late BluetoothDeviceState currentState;
   late BleDevice device;
+
+  void updateMockDeviceState(BluetoothDeviceState state) {
+    currentState = state;
+    stateController.add(state);
+  }
 
   setUp((() {
     conversion = FbConversion();
     mockDevice = MockBluetoothDevice();
-    stateController = StreamController();
-    when(mockDevice.name).thenReturn("test");
-    when(mockDevice.id).thenReturn(const DeviceIdentifier("id"));
-    when(mockDevice.state).thenAnswer((_) => stateController.stream);
-    when(mockDevice.connect(
-      timeout: null,
-      autoConnect: anyNamed("autoConnect"),
-    )).thenAnswer((_) async {
-      // The first state emitted, will get skipped. This is because of the
-      // flutter blue implementation of the state getter which will return as
-      // the first state the current state, i.e. disconnected.
-      // Also note that flutter blue doesn't emit the connecting state.
-      stateController.add(BluetoothDeviceState.disconnected);
-      stateController.add(BluetoothDeviceState.connected);
+
+    stateController = StreamController.broadcast();
+    currentState = BluetoothDeviceState.disconnected;
+
+    when(mockDevice.id).thenReturn(const DeviceIdentifier('id'));
+    when(mockDevice.name).thenReturn('test');
+    when(mockDevice.state).thenAnswer((_) async* {
+      yield currentState;
+      yield* stateController.stream;
     });
-    when(mockDevice.disconnect()).thenAnswer((_) async {
-      // Note that the flutter blue doesn't emit the disconnecting state.
-      stateController.add(BluetoothDeviceState.disconnected);
+    when(mockDevice.connect(timeout: anyNamed('timeout'))).thenAnswer(
+        (_) async => updateMockDeviceState(BluetoothDeviceState.connected));
+    when(mockDevice.disconnect()).thenAnswer(
+        (_) async => updateMockDeviceState(BluetoothDeviceState.disconnected));
+    when(mockDevice.discoverServices()).thenAnswer((_) async {
+      return services
+          .map((service) => conversion.fromService(service))
+          .toList();
     });
-    when(mockDevice.discoverServices()).thenAnswer(
-      (_) async =>
-          services.map((service) => conversion.fromService(service)).toList(),
-    );
 
     device = FbBleDevice(mockDevice, conversion);
   }));
 
   tearDown((() async {
-    await device.disconnect();
     stateController.close();
   }));
 
@@ -122,136 +123,60 @@ void main() {
   });
 
   group('state', () {
-    setUp(() {
-      stateController = StreamController.broadcast();
-      when(mockDevice.state).thenAnswer((_) => stateController.stream);
-    });
-
     test('Should be a broadcast stream', () {
       expect(device.state.isBroadcast, isTrue);
     });
 
-    test('Should only start to emit states When connecting', () async {
-      const timeout = Duration(seconds: 10);
-      final connectionCompleter = Completer();
-      when(mockDevice.connect(timeout: null)).thenAnswer(
-        (_) => connectionCompleter.future,
-      );
-
-      final states = device.state.take(3).toList();
-
-      // Emitting states before connecting.
-      stateController.add(BluetoothDeviceState.connected);
-      stateController.add(BluetoothDeviceState.disconnecting);
-      stateController.add(BluetoothDeviceState.disconnected);
+    test('Should emit the same state as the device stream', () async {
+      final states = device.state.take(7).toList();
       await flushMicroTasks();
 
-      device.connect(timeout: timeout);
+      // Random states before connecting.
+      updateMockDeviceState(BluetoothDeviceState.connecting);
+      updateMockDeviceState(BluetoothDeviceState.disconnecting);
       await flushMicroTasks();
-      // The first state emitted, should get skipped. This is because of the
-      // flutter blue implementation of the state getter which will return as
-      // the first state the current state, i.e. disconnected.
-      stateController.add(BluetoothDeviceState.disconnected);
 
-      // Note that the connecting state is not emitted by flutter blue.
-      stateController.add(BluetoothDeviceState.connected);
-      connectionCompleter.complete(); // Complete connection procedure.
-      stateController.add(BluetoothDeviceState.disconnecting);
-      expect(await states, [
-        BleDeviceState.connecting,
-        BleDeviceState.connected,
-        BleDeviceState.disconnecting,
-      ]);
-    });
-
-    test('Should emit same states as the bluetooth device When connected',
-        () async {
+      // Emits  connected state.
       await device.connect();
-      final states = device.state.take(3).toList();
-      stateController.add(BluetoothDeviceState.disconnecting);
-      stateController.add(BluetoothDeviceState.connecting);
-      stateController.add(BluetoothDeviceState.connected);
-      expect(await states, [
-        BleDeviceState.disconnecting,
-        BleDeviceState.connecting,
-        BleDeviceState.connected,
-      ]);
-    });
-
-    test('Should stop emitting states When disconnected', () async {
-      final states = device.state.take(8).toList();
-
-      await device.connect();
-      stateController.add(BluetoothDeviceState.connecting);
       await flushMicroTasks();
 
+      // Random state when connected.
+      updateMockDeviceState(BluetoothDeviceState.disconnected);
+      updateMockDeviceState(BluetoothDeviceState.connected);
+      await flushMicroTasks();
+
+      // Emits disconnected state.
       await device.disconnect();
-      // Should not get emitted.
-      stateController.add(BluetoothDeviceState.disconnected);
-      stateController.add(BluetoothDeviceState.disconnecting);
-      stateController.add(BluetoothDeviceState.connecting);
-      stateController.add(BluetoothDeviceState.connected);
       await flushMicroTasks();
 
-      await device.connect();
-      stateController.add(BluetoothDeviceState.connected);
-      await flushMicroTasks();
-
-      expect(await states, [
-        BleDeviceState.connecting,
-        BleDeviceState.connected,
+      expect(await states, const [
+        BleDeviceState.disconnected,
         BleDeviceState.connecting,
         BleDeviceState.disconnecting,
-        BleDeviceState.disconnected,
-        BleDeviceState.connecting,
-        BleDeviceState.connected,
-        BleDeviceState.connected,
-      ]);
-    });
-
-    test('Should stop emitting states When state change to disconnected',
-        () async {
-      final states = device.state.take(6).toList();
-
-      await device.connect();
-
-      stateController.add(BluetoothDeviceState.disconnected); // Stops emitting.
-      stateController.add(BluetoothDeviceState.disconnecting);
-      stateController.add(BluetoothDeviceState.connecting);
-      stateController.add(BluetoothDeviceState.connected);
-      await flushMicroTasks();
-
-      await device.connect();
-      stateController.add(BluetoothDeviceState.connected);
-      await flushMicroTasks();
-
-      expect(await states, [
-        BleDeviceState.connecting,
         BleDeviceState.connected,
         BleDeviceState.disconnected,
-        BleDeviceState.connecting,
         BleDeviceState.connected,
-        BleDeviceState.connected,
+        BleDeviceState.disconnected,
       ]);
     });
   });
 
   group('currentState', () {
-    test('Should be set to disconnected When created', () {
-      expect(device.currentState, BleDeviceState.disconnected);
+    test('Should be set to disconnected When created', () async {
+      expect(await device.currentState, BleDeviceState.disconnected);
     });
 
     test('Should equal the emitted states from the bluetooth device', () async {
       await device.connect();
-      stateController.add(BluetoothDeviceState.connecting);
+      updateMockDeviceState(BluetoothDeviceState.connecting);
       await flushMicroTasks();
-      expect(device.currentState, BleDeviceState.connecting);
-      stateController.add(BluetoothDeviceState.disconnecting);
+      expect(await device.currentState, BleDeviceState.connecting);
+      updateMockDeviceState(BluetoothDeviceState.disconnecting);
       await flushMicroTasks();
-      expect(device.currentState, BleDeviceState.disconnecting);
-      stateController.add(BluetoothDeviceState.connected);
+      expect(await device.currentState, BleDeviceState.disconnecting);
+      updateMockDeviceState(BluetoothDeviceState.connected);
       await flushMicroTasks();
-      expect(device.currentState, BleDeviceState.connected);
+      expect(await device.currentState, BleDeviceState.connected);
     });
   });
 
@@ -259,6 +184,8 @@ void main() {
     test(
         'Should call connect with null timeout on bluetooth device When called',
         () async {
+      // when(mockDevice.connect()).thenAnswer((_) async =>
+      //     mockDevice.updateState(BluetoothDeviceState.connected));
       const Duration timeout = Duration(seconds: 10);
       await device.connect(timeout: timeout);
       verify(mockDevice.connect(timeout: null));
@@ -282,14 +209,11 @@ void main() {
       fakeAsync((async) {
         const timeout = Duration(seconds: 15);
         when(mockDevice.connect(timeout: null)).thenAnswer((_) {
-          // Note that flutter blue starts by emitting the current state, i.e.
-          // disconnected.
-          stateController.add(BluetoothDeviceState.disconnected);
           return Future.delayed(timeout * 2);
         });
         device.state.take(2).toList().then((states) {
           expect(states, const [
-            BleDeviceState.connecting,
+            BleDeviceState.disconnected,
             BleDeviceState.disconnected,
           ]);
         });
@@ -297,11 +221,12 @@ void main() {
           device.connect(timeout: timeout),
           throwsBleException(),
         );
+        // updateMockDeviceState(BluetoothDeviceState.connecting);
         async.flushMicrotasks();
-        expect(device.currentState, BleDeviceState.connecting);
+        // expect(device.currentState, BleDeviceState.connecting);
         async.elapse(timeout);
-        expect(device.currentState, BleDeviceState.disconnected);
       });
+      expect(await device.currentState, BleDeviceState.disconnected);
     });
 
     test('Should throw a ble exception When connection fails', () {
@@ -314,7 +239,7 @@ void main() {
       );
     });
 
-    test('Should be disconnected When connection fails', () {
+    test('Should be disconnected When connection fails', () async {
       const timeout = Duration(seconds: 15);
       final exception = Exception('exception');
       when(mockDevice.connect(timeout: null)).thenThrow(exception);
@@ -322,7 +247,7 @@ void main() {
         device.connect(timeout: timeout),
         throwsBleException(exception: exception),
       );
-      expect(device.currentState, BleDeviceState.disconnected);
+      expect(await device.currentState, BleDeviceState.disconnected);
     });
 
     test('Should throw a ble exception When is already connected', () async {
@@ -349,10 +274,14 @@ void main() {
 
     test('Should throw a ble exception When disconnection fails', () async {
       final exception = Exception('exception');
-      when(mockDevice.disconnect()).thenThrow(exception);
+      when(mockDevice.disconnect()).thenAnswer((_) {
+        updateMockDeviceState(BluetoothDeviceState.disconnected);
+        throw exception;
+      });
       await device.connect();
       expect(device.disconnect(), throwsBleException(exception: exception));
-      expect(device.currentState, BleDeviceState.disconnected);
+      await flushMicroTasks();
+      expect(await device.currentState, BleDeviceState.disconnected);
       // Disconnect is called in the tear down, so we need to prevent it from throwing.
       when(mockDevice.disconnect()).thenAnswer((_) async {
         stateController.add(BluetoothDeviceState.disconnected);
@@ -398,8 +327,6 @@ void main() {
       when(mockConversion.toBleDeviceState(any)).thenAnswer((invocation) =>
           conversion.toBleDeviceState(invocation.positionalArguments[0]));
 
-      stateController = StreamController();
-      when(mockDevice.state).thenAnswer((_) => stateController.stream);
       device = FbBleDevice(mockDevice, mockConversion);
     });
 

@@ -15,14 +15,14 @@ import 'fb_backend.dart';
 /// [currentState] is always [BleDeviceState.disconnected] no matter what states
 /// the [BluetoothDevice] emits. Of course the [BluetoothDevice] is not expected
 /// to emit any stats while it's not connected.
+/// On android the dis- and connecting states are not emitted.
 class FbBleDevice extends BleDevice {
   final BluetoothDevice _device;
   final FbConversion _conversion;
 
-  final _stateController = StreamController<BleDeviceState>.broadcast();
+  // final _stateController = StreamController<BleDeviceState>.broadcast();
 
   List<Service> _services = [];
-  BleDeviceState _currentState = BleDeviceState.disconnected;
 
   @override
   final BleDeviceInformation information;
@@ -30,77 +30,62 @@ class FbBleDevice extends BleDevice {
   FbBleDevice(BluetoothDevice device, FbConversion conversion)
       : information = BleDeviceInformation(name: device.name, id: device.id.id),
         _device = device,
-        _conversion = conversion;
+        _conversion = conversion {
+    // StreamSubscription? sub;
+    // _stateController.onListen = () {
+    //   sub = _device.state.listen((state) {
+    //     _stateController.add(_conversion.toBleDeviceState(state));
+    //   });
+    // };
+    // _stateController.onCancel = () => sub?.cancel();
+  }
 
   @override
   Future<List<Service>> get services async => _services;
 
   @override
-  Stream<BleDeviceState> get state => _stateController.stream;
+  // Stream<BleDeviceState> get state => _stateController.stream.distinct();
+  Stream<BleDeviceState> get state => _device.state
+      .map((state) => _conversion.toBleDeviceState(state))
+      .asBroadcastStream();
 
   @override
-  BleDeviceState get currentState => _currentState;
+  Future<BleDeviceState> get currentState =>
+      _device.state.first.then((state) => _conversion.toBleDeviceState(state));
 
-  bool get _isConnectingOrConnected =>
-      currentState == BleDeviceState.connecting ||
-      currentState == BleDeviceState.connected;
-
-  /// Updates the [_currentState] and adds the [state] to the [_stateController].
-  void _updateState(BleDeviceState state) {
-    _currentState = state;
-    _stateController.add(_currentState);
-  }
+  Future<bool> get _isConnected async =>
+      await currentState == BleDeviceState.connected;
 
   @override
   Future<void> connect({Duration timeout = const Duration(seconds: 20)}) async {
-    if (_isConnectingOrConnected) {
-      throw BleException(
-        'You are already connected!',
-        detail: 'Currently in the ${currentState.name} state.',
-      );
+    if (await _isConnected) {
+      throw const BleException('You are already connected!');
     }
 
     try {
-      final connected = state.firstWhere((s) => s == BleDeviceState.connected);
-
-      // We need to skip the first one, because it will just be the
-      // current state, i.e. disconnected. This is due to the flutter blue
-      // implementation of the state getter.
-      final subscription = _device.state.skip(1).listen(null);
-      subscription.onData((state) {
-        _updateState(_conversion.toBleDeviceState(state));
-        if (_currentState == BleDeviceState.disconnected) {
-          subscription.cancel();
-        }
-      });
-
-      // We have to emit the connecting state manually, because the flutter
-      // blue plugin won't emit it.
-      _updateState(BleDeviceState.connecting);
+      final connected = state.firstWhere(
+        (s) => s == BleDeviceState.connected,
+        orElse: () => BleDeviceState.disconnected,
+      );
       await _device
           .connect(timeout: null)
           .timeout(timeout, onTimeout: () async => throw TimeoutException(''));
 
       await connected; // Ensures that the connected state was emitted.
     } on TimeoutException {
-      _updateState(BleDeviceState.disconnected);
+      _device.disconnect();
       throw BleException(
         "Couldn't connect in time.",
-        detail: "Couldn't establish connection during  the $timeout.",
+        detail: "Couldn't establish connection during the $timeout.",
       );
     } catch (e) {
-      _updateState(BleDeviceState.disconnected);
       throw BleException("Connection failed.", exception: e);
     }
   }
 
   @override
   Future<void> disconnect() async {
-    if (!_isConnectingOrConnected) return;
-
-    // We have to emit the disconnecting state manually, because the flutter
-    // blue plugin won't emit it.
-    _updateState(BleDeviceState.disconnecting);
+    if (!(await _isConnected)) return;
     try {
       final disconnected = state.firstWhere(
         (state) => state == BleDeviceState.disconnected,
@@ -108,20 +93,14 @@ class FbBleDevice extends BleDevice {
       await _device.disconnect();
       await disconnected; // Ensures that the disconnect state was emitted.
     } catch (e) {
-      // The disconnected state might not have been emitted by the
-      // bluetooth device.
-      _updateState(BleDeviceState.disconnected);
       throw BleException("Disconnection failed.", exception: e);
     }
   }
 
   @override
   Future<List<Service>> discoverServices() async {
-    if (!_isConnectingOrConnected) {
-      throw BleException(
-        "Can't discover the services if not connected.",
-        detail: 'Currently in the ${currentState.name} state.',
-      );
+    if (!(await _isConnected)) {
+      throw const BleException("Can't discover the services if not connected.");
     }
 
     try {
@@ -136,10 +115,9 @@ class FbBleDevice extends BleDevice {
 
   @override
   Future<Uint8List> readCharacteristic(Characteristic characteristic) async {
-    if (!_isConnectingOrConnected) {
-      throw BleException(
+    if (!(await _isConnected)) {
+      throw const BleException(
         "Can't read the characteristic if not connected.",
-        detail: 'Currently in the ${currentState.name} state.',
       );
     }
 
@@ -157,10 +135,9 @@ class FbBleDevice extends BleDevice {
     required Uint8List value,
     bool response = true,
   }) async {
-    if (!_isConnectingOrConnected) {
-      throw BleException(
+    if (!(await _isConnected)) {
+      throw const BleException(
         "Can' write the characteristic if not connected.",
-        detail: 'Currently in the ${currentState.name} state.',
       );
     }
 
@@ -176,10 +153,9 @@ class FbBleDevice extends BleDevice {
   Future<Stream<Uint8List>> subscribeCharacteristic(
     Characteristic characteristic,
   ) async {
-    if (!_isConnectingOrConnected) {
-      throw BleException(
+    if (!(await _isConnected)) {
+      throw const BleException(
         "Can't subscribe to the characteristic if not connected.",
-        detail: 'Currently in the ${currentState.name} state.',
       );
     }
 
@@ -208,7 +184,7 @@ class FbBleDevice extends BleDevice {
     BluetoothCharacteristic characteristic,
     bool notify,
   ) async {
-    if (!_isConnectingOrConnected) return; // No need to (un)subscribe.
+    if (!(await _isConnected)) return; // No need to (un)subscribe.
     final action = notify ? 'enable' : 'disable';
 
     bool successful;

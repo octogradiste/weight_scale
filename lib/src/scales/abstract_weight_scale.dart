@@ -63,10 +63,11 @@ abstract class AbstractWeightScale implements WeightScale {
   Weight get currentWeight => _currentWeight;
 
   @override
-  bool get isConnected => _device.currentState == BleDeviceState.connected;
+  Future<bool> get isConnected async =>
+      await _device.currentState == BleDeviceState.connected;
 
   @override
-  BleDeviceState get currentState => _device.currentState;
+  Future<BleDeviceState> get currentState => _device.currentState;
 
   @override
   Stream<BleDeviceState> get state => _device.state;
@@ -81,10 +82,10 @@ abstract class AbstractWeightScale implements WeightScale {
 
   @override
   Future<void> connect({Duration timeout = const Duration(seconds: 15)}) async {
-    if (_device.currentState == BleDeviceState.connecting ||
-        _device.currentState == BleDeviceState.connected) {
-      throw const WeightScaleException('Is already connected to the device!');
-    }
+    // if (_device.currentState == BleDeviceState.connecting ||
+    //     _device.currentState == BleDeviceState.connected) {
+    //   throw const WeightScaleException('Is already connected to the device!');
+    // }
 
     final List<Service> services;
     try {

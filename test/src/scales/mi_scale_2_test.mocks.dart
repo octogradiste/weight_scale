@@ -44,9 +44,11 @@ class MockBleDevice extends _i1.Mock implements _i2.BleDevice {
               returnValue: Stream<_i2.BleDeviceState>.empty())
           as _i3.Stream<_i2.BleDeviceState>);
   @override
-  _i2.BleDeviceState get currentState =>
-      (super.noSuchMethod(Invocation.getter(#currentState),
-          returnValue: _i2.BleDeviceState.connected) as _i2.BleDeviceState);
+  _i3.Future<_i2.BleDeviceState> get currentState => (super.noSuchMethod(
+          Invocation.getter(#currentState),
+          returnValue:
+              Future<_i2.BleDeviceState>.value(_i2.BleDeviceState.connected))
+      as _i3.Future<_i2.BleDeviceState>);
   @override
   _i3.Future<void> connect({Duration? timeout = const Duration(seconds: 20)}) =>
       (super.noSuchMethod(Invocation.method(#connect, [], {#timeout: timeout}),
