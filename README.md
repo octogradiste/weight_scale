@@ -1,32 +1,39 @@
-# weight scale
+# Weight Scale
 
-Flutter package to connect to BLE weight scales.
+A flutter package to connect to bluetooth low energy weight scales.
 
 ## Setup
 
 This package currently uses [flutter_blue](https://pub.dev/packages/flutter_blue) as its backend. 
 Please follow the [setup](https://pub.dev/packages/flutter_blue#setup) for that plugin.
 
+## Weight scale support
+
+| Name                | Battery Level | Set Unit | Calibrate | Clear Cache |
+|---------------------|---------------|----------|-----------|-------------|
+| Xiaomi Mi Sacle 2   | [ ]           | [x]      | [x]       | [x]         |
+| Eufy Smart Scale P1 | [ ]           | [ ]      | [ ]       | [ ]         |
+
+
 ## Usage
+### Scanning weight scales
 
-### Searching weight scales
-
-Create a new `WeightScaleHub`.
+Create a new `WeightScaleManager`.
 ```Dart
-WeightScaleHub hub = WeightScaleHub.defaultBackend();
+WeightScaleManager manager = WeightScaleManager.defaultBackend();
 ```
 
 Initialize it.
 ```Dart
-await hub.initialize();
+await manager.initialize();
 ```
 
-Start searching for new weight scales.
+Start scanning for weight scales.
 ```Dart
-hub.search();
+manager.startScan();
 ```
 
-All the scales found during the search are emitted by `hub.scales`.
+All the `WeightScale` found during the scan are emitted by the `manager.scales` stream.
 
 ### Getting the weight measurements of a scale
 Use `WeightScale.connect()` to establish a connection.
