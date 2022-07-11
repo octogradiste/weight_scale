@@ -12,25 +12,40 @@ class ScalePage extends StatefulWidget {
 
 class _ScalePageState extends State<ScalePage> {
   var _connecting = true;
+  var _disconnecting = false;
+
+  Future<void> _connect() async {
+    try {
+      await widget.scale.connect();
+    } on WeightScaleException catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Exception: ${e.message}')));
+    } finally {
+      setState(() => _connecting = false);
+    }
+  }
 
   @override
   void initState() {
-    widget.scale
-        .connect()
-        .then((_) => setState(() => _connecting = false))
-        .catchError((e) {
-      setState(() => _connecting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Exception: ${(e as WeightScaleException).message}'),
-        ),
-      );
-    }, test: (e) => e is WeightScaleException);
+    _connect();
+
+    // Setting up automatic reconnection.
+    widget.scale.state.skip(1).listen((state) async {
+      if (state == BleDeviceState.disconnected && !_disconnecting) {
+        do {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Unexpected disconnect. Trying to reconnect...'),
+          ));
+          await _connect();
+        } while (!(await widget.scale.isConnected));
+      }
+    });
     super.initState();
   }
 
   @override
   void dispose() {
+    _disconnecting = true;
     widget.scale.disconnect();
     super.dispose();
   }
