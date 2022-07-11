@@ -68,7 +68,7 @@ class FbBleDevice extends BleDevice {
         orElse: () => BleDeviceState.disconnected,
       );
       await _device
-          .connect(timeout: null)
+          .connect(timeout: null, autoConnect: false)
           .timeout(timeout, onTimeout: () async => throw TimeoutException(''));
 
       await connected; // Ensures that the connected state was emitted.
