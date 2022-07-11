@@ -9,10 +9,10 @@ Please follow the [setup](https://pub.dev/packages/flutter_blue#setup) for that 
 
 ## Weight scale support
 
-| Name                | Battery Level | Set Unit | Calibrate | Clear Cache |
-|---------------------|---------------|----------|-----------|-------------|
-| Xiaomi Mi Sacle 2   | [ ]           | [x]      | [x]       | [x]         |
-| Eufy Smart Scale P1 | [ ]           | [ ]      | [ ]       | [ ]         |
+| Name | Battery Level | Set Unit | Calibrate | Clear Cache |
+|---|---|---|---|---|
+| Xiaomi Mi Sacle 2 | :x: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Eufy Smart Scale P1 | :x: | :x: | :x: | :x: |
 
 
 ## Usage
