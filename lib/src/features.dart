@@ -1,4 +1,4 @@
-import 'package:weight_scale/src/weight_scale.dart';
+import 'package:weight_scale/scale.dart';
 
 abstract class BatteryLevelFeature {
   /// The battery level from 0 to 100.
@@ -6,7 +6,7 @@ abstract class BatteryLevelFeature {
 }
 
 abstract class SetUnitFeature {
-  Future<void> setUnit(WeightScaleUnit unit);
+  Future<void> setUnit(WeightUnit unit);
 }
 
 abstract class CalibrateFeature {

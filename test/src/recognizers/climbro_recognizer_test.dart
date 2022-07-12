@@ -1,46 +1,39 @@
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
-import 'package:weight_scale/ble.dart';
 import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/recognizers/climbro_recognizer.dart';
 
-import '../ble_service_test.mocks.dart';
+import '../fake_ble_device.dart';
 
 void main() {
   late WeightScaleRecognizer recognizer;
-  late BleOperations operations;
 
-  setUp(() {
-    recognizer = ClimbroRecognizer();
-    operations = MockBleOperations();
-  });
+  group('recognize', () {
+    setUp(() {
+      recognizer = ClimbroRecognizer();
+    });
 
-  test('[recognize] returns a weight scale.', () {
-    BleDevice device =
-        BleDevice(id: "id", name: "Climbro_12345", operations: operations);
-    ScanResult scanResult = ScanResult(
-      device: device,
-      manufacturerData: Uint8List(0),
-      serviceData: {},
-      serviceUuids: [],
-      rssi: 0,
-    );
-    WeightScale? scale = recognizer.recognize(scanResult: scanResult);
-    expect(scale, isNotNull);
-  });
+    test('Should recognize and return the weight scale', () {
+      BleDevice device = FakeBleDevice(id: "id", name: "Climbro_12345");
+      ScanResult scanResult = ScanResult(
+        device: device,
+        serviceData: const {},
+        serviceUuids: const [],
+        rssi: 0,
+      );
+      WeightScale? scale = recognizer.recognize(scanResult: scanResult);
+      expect(scale, isNotNull);
+    });
 
-  test('does not [recognize] returns null', () {
-    BleDevice device =
-        BleDevice(id: "id", name: "name", operations: operations);
-    ScanResult scanResult = ScanResult(
-      device: device,
-      manufacturerData: Uint8List(0),
-      serviceData: {},
-      serviceUuids: [],
-      rssi: 0,
-    );
-    WeightScale? scale = recognizer.recognize(scanResult: scanResult);
-    expect(scale, isNull);
+    test('Should not recognize and return null', () {
+      BleDevice device = FakeBleDevice(id: "id", name: "not a climbro");
+      ScanResult scanResult = ScanResult(
+        device: device,
+        serviceData: const {},
+        serviceUuids: const [],
+        rssi: 0,
+      );
+      WeightScale? scale = recognizer.recognize(scanResult: scanResult);
+      expect(scale, isNull);
+    });
   });
 }

@@ -1,49 +1,55 @@
-import 'package:weight_scale/ble.dart';
-
-/// A weight scale exception.
-///
-/// This exception is thrown by classes implementing [WeightScale] when an ble
-/// operation fails.
-class WeightScaleException implements Exception {
-  const WeightScaleException(this.message);
-
-  /// The exception message.
-  ///
-  /// This [message] is guaranteed to be user readable.
-  final String message;
-}
-
-/// Unit in which the weight is measured.
-enum WeightScaleUnit { KG, LBS, UNKNOWN }
+import 'package:weight_scale/scale.dart';
 
 /// A connectable weight scale.
+///
+/// All exception during any ble operation will be thrown as an
+/// [WeightScaleException].
 abstract class WeightScale {
-  /// The name of the weight scale given by the manufacturer.
+  /// The product name of this weight scale given by the manufacturer.
   abstract final String name;
 
-  /// A stream of the weight measurements.
-  ///
-  /// You need to [connect] to the scale, to get the measurements.
-  abstract final Stream<double> weight;
+  /// The name of the manufacturer of this weight scale.
+  abstract final String manufacturer;
 
-  /// The unit in which the [weight] is given.
-  WeightScaleUnit get unit;
+  /// Information about the underlying ble device like its name or its id.
+  abstract final BleDeviceInformation information;
+
+  /// A broadcast stream of weight measurements.
+  ///
+  /// You need to first [connect] to this scale, to get the measurements.
+  ///
+  /// This stream emits all weight values received by the scale even if
+  /// the weight has not stabilized yet. To get the stabilized weight instead,
+  /// use the [takeWeightMeasurement] method.
+  abstract final Stream<Weight> weight;
 
   /// The last emitted measurement by [weight].
-  double get currentWeight;
+  Weight get currentWeight;
 
-  bool get isConnected;
-
-  /// This stream emits the state of this device.
+  /// Takes a weight measurement.
   ///
-  /// Note: It's possible that the [state] skips [BleDeviceState.disconnecting]
+  /// The future will return the measured weight when the weight has stabilized.
+  ///
+  /// Depending on the implementation, this might be implemented
+  /// on the weight scale or in software.
+  Future<Weight> takeWeightMeasurement();
+
+  /// True if is currently connected to this weight scale.
+  Future<bool> get isConnected;
+
+  // The current state of the underlying ble device.
+  Future<BleDeviceState> get currentState;
+
+  /// This stream emits the state of this ble device.
+  ///
+  /// It's possible that the [state] skips [BleDeviceState.disconnecting]
   /// and goes directly to [BleDeviceState.disconnected].
   Stream<BleDeviceState> get state;
 
   /// Connects to this weight scale.
   ///
-  /// Note: if you try to connect to an already connected [WeightScale],
-  /// an [WeightScaleException] will be thrown.
+  /// If you try to connect to an already connected [WeightScale] it will
+  /// try to reenable the characteristic notification on the ble device.
   Future<void> connect({Duration timeout = const Duration(seconds: 15)});
 
   /// Disconnects from this weight scale.

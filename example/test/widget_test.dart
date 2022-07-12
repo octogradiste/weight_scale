@@ -11,14 +11,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
 void main() {
-  testWidgets('Search FAB tap test', (WidgetTester tester) async {
-    await tester.pumpWidget(ExampleApp());
+  // testWidgets('Search FAB tap test', (WidgetTester tester) async {
+  //   await tester.pumpWidget(ExampleApp());
 
-    // Tap FAB.
-    await tester.tap(find.byIcon(Icons.search));
-    await tester.pump();
+  //   // Tap FAB.
+  //   await tester.tap(find.byIcon(Icons.search));
+  //   await tester.pump();
 
-    expect(find.byIcon(Icons.stop), findsOneWidget);
-    expect(find.byIcon(Icons.search), findsNothing);
-  });
+  //   expect(find.byIcon(Icons.stop), findsOneWidget);
+  //   expect(find.byIcon(Icons.search), findsNothing);
+  // });
 }
