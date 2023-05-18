@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_blue/flutter_blue.dart' as fb;
-import 'package:flutter_blue/gen/flutterblue.pbserver.dart' as protos;
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fb;
+import 'package:flutter_blue_plus/gen/flutterblueplus.pbserver.dart' as protos;
 import 'package:weight_scale/src/ble/backend/fb_backend.dart';
 import 'package:weight_scale/src/ble/ble.dart';
 

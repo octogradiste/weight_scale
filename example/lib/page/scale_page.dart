@@ -108,14 +108,14 @@ class WeightScreen extends StatelessWidget {
               return Center(
                 child: Text(
                   'No data available yet.',
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
               );
             } else {
               return Center(
                 child: Text(
                   _weightToString(data),
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
               );
             }

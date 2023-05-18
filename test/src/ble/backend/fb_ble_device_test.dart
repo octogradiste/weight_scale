@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:fake_async/fake_async.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -111,11 +111,11 @@ void main() {
   });
 
   group('services', () {
-    test('Should be empty When not discoverd services yet', () async {
+    test('Should be empty When not discovered services yet', () async {
       expect(await device.services, isEmpty);
     });
 
-    test('Should have the discoverd services When did discovery', () async {
+    test('Should have the discovered services When did discovery', () async {
       await device.connect();
       await device.discoverServices();
       expect(await device.services, services);

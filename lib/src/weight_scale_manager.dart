@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/recognizers/recognizer.dart';
 import 'ble/backend/fb_backend.dart';
@@ -32,7 +32,7 @@ class WeightScaleManager {
   /// [flutter_blue](https://pub.dev/packages/flutter_blue) implementation.
   factory WeightScaleManager.defaultBackend() {
     return WeightScaleManager(
-      manager: FbBleManager(FlutterBlue.instance, FbConversion()),
+      manager: FbBleManager(FlutterBluePlus.instance, FbConversion()),
     );
   }
 

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_blue/flutter_blue.dart' as fb;
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fb;
 import 'package:weight_scale/src/ble/ble.dart';
 
 import 'fb_backend.dart';
@@ -11,13 +11,13 @@ import 'fb_backend.dart';
 /// [startScan] and [stopScan] will throw a [BleException] and the [scanResults]
 /// stream won't emit the scan results of the flutter blue instance.
 class FbBleManager implements BleManager {
-  final fb.FlutterBlue _fb;
+  final fb.FlutterBluePlus _fb;
   final FbConversion _conversion;
   final _controller = StreamController<List<ScanResult>>.broadcast();
   bool _isInitialized = false;
   bool _isScanning = false;
 
-  FbBleManager(fb.FlutterBlue fb, FbConversion conversion)
+  FbBleManager(fb.FlutterBluePlus fb, FbConversion conversion)
       : _fb = fb,
         _conversion = conversion;
 

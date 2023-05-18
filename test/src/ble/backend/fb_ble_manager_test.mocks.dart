@@ -4,7 +4,7 @@
 
 import 'dart:async' as _i3;
 
-import 'package:flutter_blue/flutter_blue.dart' as _i2;
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -20,7 +20,7 @@ import 'package:mockito/mockito.dart' as _i1;
 /// A class which mocks [FlutterBlue].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFlutterBlue extends _i1.Mock implements _i2.FlutterBlue {
+class MockFlutterBlue extends _i1.Mock implements _i2.FlutterBluePlus {
   MockFlutterBlue() {
     _i1.throwOnMissingStub(this);
   }

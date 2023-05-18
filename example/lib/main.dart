@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:weight_scale/scale.dart';
-
 import 'page/home_page.dart';
 
 void main() async {
