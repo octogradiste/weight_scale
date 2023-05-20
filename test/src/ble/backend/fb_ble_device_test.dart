@@ -91,7 +91,7 @@ void main() {
           .toList();
     });
 
-    device = FbBleDevice(mockDevice, conversion);
+    device = FbBleDevice(mockDevice as BluetoothDevice, conversion);
   }));
 
   tearDown((() async {
@@ -327,7 +327,7 @@ void main() {
       when(mockConversion.toBleDeviceState(any)).thenAnswer((invocation) =>
           conversion.toBleDeviceState(invocation.positionalArguments[0]));
 
-      device = FbBleDevice(mockDevice, mockConversion);
+      device = FbBleDevice(mockDevice as BluetoothDevice, mockConversion);
     });
 
     group('read', () {
