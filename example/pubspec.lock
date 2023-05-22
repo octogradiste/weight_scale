@@ -82,10 +82,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_blue_plus
-      sha256: "50626b905b9fdd73157988ffbdb84e404a3d87a6e79e785ef7c8f6e0073e5993"
+      sha256: a977e90b7f9dcece90a95a287f8843e3b9028a61199c41bc279832c096d31d43
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.0"
+    version: "1.5.2"
   flutter_lints:
     dependency: "direct dev"
     description:
