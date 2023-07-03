@@ -1,39 +1,54 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Weight Scale
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+A flutter package to connect to bluetooth low energy weight scales.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+## Setup
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+This package currently uses [flutter_blue_plus](https://pub.dev/packages/flutter_blue_plus) as its backend. 
+Please follow the [setup](https://pub.dev/packages/flutter_blue_plus#getting-started) for that plugin.
 
 ## Usage
+### Scanning weight scales
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+Create a new `WeightScaleManager`.
+```Dart
+WeightScaleManager manager = WeightScaleManager.defaultBackend();
 ```
 
-## Additional information
+Initialize it.
+```Dart
+await manager.initialize();
+```
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+Start scanning for weight scales.
+```Dart
+manager.startScan();
+```
+
+All the `WeightScale` found during the scan are emitted by the `manager.scales` stream.
+
+### Getting the weight measurements of a scale
+Use `WeightScale.connect()` to establish a connection.
+
+After connecting to a scale, the weight measurement is available via the stream `WeightScale.weight`.
+
+## Weight scale support
+
+| Name | Battery Level | Set Unit | Calibrate | Clear Cache |
+|---|---|---|---|---|
+| Xiaomi Mi Sacle 2 | :x: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Eufy Smart Scale P1 | :x: | :x: | :x: | :x: |
+
+### Adding your own weight scale
+To add your own weight scale, you have to implement a `WeightScaleRecognizer`
+and the `WeightScale` itself. The job of the recognizer is to recognize your
+custom weight scale given a `ScanResult`. Don't forget to register your
+recognizer at the `WeightScaleManager` before stating a scan. Otherwise, your 
+weight sacle won't be recongized !
+
+To simplifiy the implementation of the `WeightSacle` you can extend the
+`AbstractWeightSacle` which already implements most of the inteface.
+
+## Credits
+- [flutter_blue_plus](https://pub.dev/packages/flutter_blue_plus)
+- [wiecosystem](https://github.com/wiecosystem/Bluetooth/blob/master/doc/devices/huami.health.scale2.md) for reverse engineering the mi scale.
