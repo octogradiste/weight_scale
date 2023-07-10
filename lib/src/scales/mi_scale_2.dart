@@ -64,8 +64,6 @@ class MiScale2 extends AbstractWeightScale
       case WeightUnit.lbs:
         value = Uint8List.fromList([6, 4, 0, 1]);
         break;
-      case WeightUnit.unknown:
-        return;
     }
 
     try {

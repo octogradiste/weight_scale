@@ -26,7 +26,7 @@ abstract class AbstractWeightScale implements WeightScale {
   // This will be reset to null once the weight has stabilized.
   Completer<Weight>? measuring;
 
-  Weight _currentWeight = const Weight(0, WeightUnit.unknown);
+  Weight _currentWeight = const Weight(0, WeightUnit.kg);
 
   /// The uuid of the service holding the characteristic.
   abstract final Uuid serviceUuid;

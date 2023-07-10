@@ -90,8 +90,6 @@ class WeightScreen extends StatelessWidget {
         return '$value kg';
       case WeightUnit.lbs:
         return '$value lbs';
-      case WeightUnit.unknown:
-        return value;
     }
   }
 

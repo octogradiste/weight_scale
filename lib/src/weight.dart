@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 /// Unit in which the weight is measured.
-enum WeightUnit { kg, lbs, unknown }
+enum WeightUnit { kg, lbs }
 
 /// Holds a [value] and its corresponding [unit].
 class Weight extends Equatable {

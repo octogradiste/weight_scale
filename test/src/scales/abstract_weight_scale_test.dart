@@ -178,7 +178,7 @@ void main() {
     });
 
     test('Should be 0 When no data was emitted so far', () {
-      expect(scale.currentWeight, const Weight(0, WeightUnit.unknown));
+      expect(scale.currentWeight, const Weight(0, WeightUnit.kg));
     });
 
     test('Should be the last emitted value', () async {
@@ -225,7 +225,7 @@ void main() {
       hasMeasured = false;
       weight = scale.takeWeightMeasurement();
       weight.whenComplete(() => hasMeasured = true);
-      scale.onDataHandler = (_) => const Weight(23, WeightUnit.unknown);
+      scale.onDataHandler = (_) => const Weight(23, WeightUnit.kg);
     });
 
     tearDown(() async {
@@ -249,7 +249,7 @@ void main() {
       controller.add(Uint8List.fromList([45]));
       await Future.delayed(Duration.zero);
       expect(hasMeasured, isTrue);
-      expect(await weight, const Weight(23, WeightUnit.unknown));
+      expect(await weight, const Weight(23, WeightUnit.kg));
     });
 
     test(
@@ -274,8 +274,8 @@ void main() {
       await Future.delayed(Duration.zero);
       expect(hasMeasured, isTrue);
       expect(otherHasMeasured, isTrue);
-      expect(await weight, const Weight(23, WeightUnit.unknown));
-      expect(await other, const Weight(23, WeightUnit.unknown));
+      expect(await weight, const Weight(23, WeightUnit.kg));
+      expect(await other, const Weight(23, WeightUnit.kg));
     });
 
     test('Should work When taking a second measurement', () async {
@@ -288,7 +288,7 @@ void main() {
       controller.add(Uint8List.fromList([36]));
       await Future.delayed(Duration.zero);
       expect(hasMeasured, isTrue);
-      expect(await weight, const Weight(23, WeightUnit.unknown));
+      expect(await weight, const Weight(23, WeightUnit.kg));
 
       scale.stabilized = false;
 
@@ -305,7 +305,7 @@ void main() {
       controller.add(Uint8List.fromList([45]));
       await Future.delayed(Duration.zero);
       expect(hasMeasured, isTrue);
-      expect(await weight, const Weight(23, WeightUnit.unknown));
+      expect(await weight, const Weight(23, WeightUnit.kg));
     });
   });
 

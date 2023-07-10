@@ -132,11 +132,6 @@ void main() {
       ));
     });
 
-    test('Should send nothing When setting to unknown', () async {
-      await scale.setUnit(WeightUnit.unknown);
-      verifyNever(device.writeCharacteristic(any));
-    });
-
     test('Should throw a weight scale exception When writing fails', () async {
       when(device.writeCharacteristic(
         configCharacteristic,
