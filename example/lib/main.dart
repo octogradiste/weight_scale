@@ -143,7 +143,8 @@ class ScalePage extends StatelessWidget {
                   ],
                 );
               case BleDeviceState.disconnected:
-                return Center(
+                return Align(
+                  alignment: Alignment.bottomCenter,
                   child: TextButton(
                     onPressed: () =>
                         showSnackBarOnException(scale.connect, context),
