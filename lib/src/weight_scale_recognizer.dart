@@ -2,25 +2,25 @@ import 'package:weight_scale/scale.dart';
 
 /// A [WeightScale] recognizer.
 ///
-/// Every weight scale must have implement its own [WeightScaleRecognizer].
-/// The recognizer is then used by the [WeightScaleManager] to distinguish the
+/// Every weight scale must implement its own [WeightScaleRecognizer].
+/// The recognizer is used by the [WeightScaleManager] to distinguish
 /// weight scales from other ble devices.
 ///
-/// Registering a weight scale recognizer:
+/// Registering a custom recognizer:
 /// ```dart
-/// // Get the default weight scale hub.
-/// WeightScaleHub hub = WeighScaleHub.defaultBackend();
+/// // Get the default weight scale manager.
+/// WeightScaleManager manager = WeighScaleManager.defaultBackend();
 ///
-/// // Don't forget to initialize the hub before using it!
-/// await hub.initialize();
+/// // Don't forget to initialize the manager before using it!
+/// await manager.initialize();
 ///
-/// // Register your custom recognizer
-/// hub.register(customRecognizer);
+/// // Register your custom recognizer.
+/// manager.register(customRecognizer);
 /// ```
 abstract class WeightScaleRecognizer {
   /// Recognizes if it's a [WeightScale].
   ///
   /// If the [scanResult] is recognized to be a [WeightScale], the recognized
-  /// weight scale is return. Otherwise null will be returned.
+  /// weight scale is return. Otherwise, null is returned.
   WeightScale? recognize({required ScanResult scanResult});
 }
