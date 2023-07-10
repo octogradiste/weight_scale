@@ -35,12 +35,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var isScanning = false;
+  var isScanning = true;
 
   @override
   void initState() {
     super.initState();
-    isScanning = widget.manager.isScanning;
+    widget.manager.startScan();
   }
 
   void toggleScan() {
