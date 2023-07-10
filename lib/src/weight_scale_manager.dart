@@ -29,7 +29,8 @@ class WeightScaleManager {
 
   /// Returns a [WeightScaleManager] using as [BleManager] the default
   /// implementation, namely the
-  /// [flutter_blue](https://pub.dev/packages/flutter_blue) implementation.
+  /// [flutter_blue_plus](https://pub.dev/packages/flutter_blue_plus)
+  /// implementation.
   factory WeightScaleManager.defaultBackend() {
     return WeightScaleManager(
       manager: FbBleManager(FlutterBluePlus.instance, FbConversion()),
