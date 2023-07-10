@@ -116,19 +116,31 @@ class ScalePage extends StatelessWidget {
           builder: (context, snapshot) {
             switch (snapshot.requireData) {
               case BleDeviceState.connected:
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      WeightDisplay(scale: scale),
-                      const SizedBox(height: 32),
-                      TextButton(
-                        onPressed: () =>
-                            showSnackBarOnException(scale.disconnect, context),
-                        child: const Text("DISCONNECT"),
-                      )
-                    ],
-                  ),
+                return Column(
+                  children: [
+                    Expanded(
+                      child: StreamBuilder(
+                        initialData: scale.currentWeight,
+                        stream: scale.weight,
+                        builder: (context, snapshot) {
+                          final weight = snapshot.requireData;
+                          return WeightDisplay(weight: weight);
+                        },
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) => TakeWeightDialog(scale: scale),
+                      ),
+                      child: const Text("Take Weight"),
+                    ),
+                    TextButton(
+                      onPressed: () =>
+                          showSnackBarOnException(scale.disconnect, context),
+                      child: const Text("DISCONNECT"),
+                    )
+                  ],
                 );
               case BleDeviceState.disconnected:
                 return Center(
@@ -148,31 +160,70 @@ class ScalePage extends StatelessWidget {
   }
 }
 
-class WeightDisplay extends StatelessWidget {
+class TakeWeightDialog extends StatelessWidget {
+  const TakeWeightDialog({
+    super.key,
+    required this.scale,
+  });
+
   final WeightScale scale;
-  const WeightDisplay({super.key, required this.scale});
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      initialData: scale.currentWeight,
-      stream: scale.weight,
-      builder: (context, snapshot) {
-        final weight = snapshot.requireData;
-        final textTheme = Theme.of(context).textTheme;
-        return Column(
-          children: [
-            Text(
-              weight.value.toStringAsPrecision(2),
-              style: textTheme.displayLarge,
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: SizedBox(
+          width: 250,
+          height: 250,
+          child: Center(
+            child: FutureBuilder(
+              future: scale.takeWeightMeasurement(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return WeightDisplay(
+                    weight: snapshot.requireData,
+                  );
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
             ),
-            Text(
-              weight.unit == WeightUnit.kg ? "kg" : "lbs",
-              style: textTheme.labelLarge,
-            ),
-          ],
-        );
-      },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class WeightDisplay extends StatelessWidget {
+  const WeightDisplay({
+    super.key,
+    required this.weight,
+  });
+
+  final Weight weight;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            weight.value.toStringAsPrecision(2),
+            style: textTheme.displayLarge,
+          ),
+          Text(
+            weight.unit == WeightUnit.kg ? "kg" : "lbs",
+            style: textTheme.labelLarge,
+          ),
+        ],
+      ),
     );
   }
 }
