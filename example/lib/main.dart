@@ -28,7 +28,7 @@ class ExampleApp extends StatelessWidget {
 
 class HomePage extends StatefulWidget {
   final WeightScaleManager manager;
-  const HomePage({required this.manager, Key? key}) : super(key: key);
+  const HomePage({super.key, required this.manager});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -49,9 +49,8 @@ class _HomePageState extends State<HomePage> {
       widget.manager.stopScan();
     } else {
       setState(() => isScanning = true);
-      widget.manager
-          .startScan()
-          .then((_) => setState(() => isScanning = false));
+      showSnackBarOnException(widget.manager.startScan, context)
+          .then((success) => setState(() => isScanning == success));
     }
   }
 
@@ -73,7 +72,15 @@ class _HomePageState extends State<HomePage> {
                 subtitle: Text(scale.manufacturer),
                 trailing: TextButton(
                   child: const Text("CONNECT"),
-                  onPressed: () {},
+                  onPressed: () {
+                    showSnackBarOnException(scale.connect, context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ScalePage(scale: scale),
+                      ),
+                    );
+                  },
                 ),
               );
             },
@@ -88,6 +95,88 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class ScalePage extends StatelessWidget {
+  final WeightScale scale;
+  const ScalePage({super.key, required this.scale});
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        showSnackBarOnException(scale.disconnect, context);
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(scale.name, overflow: TextOverflow.ellipsis),
+        ),
+        body: StreamBuilder(
+          initialData: scale.currentState,
+          stream: scale.state,
+          builder: (context, snapshot) {
+            switch (snapshot.requireData) {
+              case BleDeviceState.connected:
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      WeightDisplay(scale: scale),
+                      const SizedBox(height: 32),
+                      TextButton(
+                        onPressed: () =>
+                            showSnackBarOnException(scale.disconnect, context),
+                        child: const Text("DISCONNECT"),
+                      )
+                    ],
+                  ),
+                );
+              case BleDeviceState.disconnected:
+                return Center(
+                  child: TextButton(
+                    onPressed: () =>
+                        showSnackBarOnException(scale.connect, context),
+                    child: const Text("CONNECT"),
+                  ),
+                );
+              default:
+                return const LoadingScreen();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class WeightDisplay extends StatelessWidget {
+  final WeightScale scale;
+  const WeightDisplay({super.key, required this.scale});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      initialData: scale.currentWeight,
+      stream: scale.weight,
+      builder: (context, snapshot) {
+        final weight = snapshot.requireData;
+        final textTheme = Theme.of(context).textTheme;
+        return Column(
+          children: [
+            Text(
+              weight.value.toStringAsPrecision(2),
+              style: textTheme.displayLarge,
+            ),
+            Text(
+              weight.unit == WeightUnit.kg ? "kg" : "lbs",
+              style: textTheme.labelLarge,
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({Key? key}) : super(key: key);
 
@@ -96,5 +185,19 @@ class LoadingScreen extends StatelessWidget {
     return const Center(
       child: CircularProgressIndicator(),
     );
+  }
+}
+
+Future<bool> showSnackBarOnException(
+    Future<void> Function() method, BuildContext context) async {
+  try {
+    await method();
+    return true;
+  } on WeightScaleException catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(e.message),
+      duration: const Duration(milliseconds: 750),
+    ));
+    return false;
   }
 }
