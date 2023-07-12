@@ -61,7 +61,6 @@ const services = [
   service,
 ];
 
-@GenerateMocks([BluetoothDevice, BluetoothCharacteristic, FbConversion])
 void main() {
   late FbConversion conversion;
   late MockBluetoothDevice mockDevice;
@@ -87,10 +86,14 @@ void main() {
       yield currentState;
       yield* stateController.stream;
     });
-    when(mockDevice.connect(timeout: anyNamed('timeout'))).thenAnswer(
-        (_) async => updateMockDeviceState(BluetoothDeviceState.connected));
-    when(mockDevice.disconnect()).thenAnswer(
-        (_) async => updateMockDeviceState(BluetoothDeviceState.disconnected));
+    when(mockDevice.connect(timeout: anyNamed('timeout'), autoConnect: false))
+        .thenAnswer((_) async {
+      updateMockDeviceState(BluetoothDeviceState.connected);
+    });
+
+    when(mockDevice.disconnect()).thenAnswer((_) async {
+      updateMockDeviceState(BluetoothDeviceState.disconnected);
+    });
     when(mockDevice.discoverServices()).thenAnswer((_) async {
       return services
           .map((service) => conversion.fromService(service))
@@ -190,17 +193,15 @@ void main() {
     test(
         'Should call connect with null timeout on bluetooth device When called',
         () async {
-      // when(mockDevice.connect()).thenAnswer((_) async =>
-      //     mockDevice.updateState(BluetoothDeviceState.connected));
       const Duration timeout = Duration(seconds: 10);
       await device.connect(timeout: timeout);
-      verify(mockDevice.connect(timeout: null));
+      verify(mockDevice.connect(timeout: null, autoConnect: false)).called(1);
     });
 
     test('Should throw a ble exception When timeout is reached', () {
       fakeAsync((async) {
         const timeout = Duration(seconds: 15);
-        when(mockDevice.connect(timeout: null)).thenAnswer(
+        when(mockDevice.connect(timeout: null, autoConnect: false)).thenAnswer(
           (_) => Future.delayed(timeout * 2),
         );
         expect(
@@ -214,7 +215,8 @@ void main() {
     test('Should be in disconnect state When timeout is reached', () async {
       fakeAsync((async) {
         const timeout = Duration(seconds: 15);
-        when(mockDevice.connect(timeout: null)).thenAnswer((_) {
+        when(mockDevice.connect(timeout: null, autoConnect: false))
+            .thenAnswer((_) {
           return Future.delayed(timeout * 2);
         });
         device.state.take(2).toList().then((states) {
@@ -238,7 +240,8 @@ void main() {
     test('Should throw a ble exception When connection fails', () {
       const timeout = Duration(seconds: 15);
       final exception = Exception('exception');
-      when(mockDevice.connect(timeout: null)).thenThrow(exception);
+      when(mockDevice.connect(timeout: null, autoConnect: false))
+          .thenThrow(exception);
       expect(
         device.connect(timeout: timeout),
         throwsBleException(exception: exception),
@@ -248,7 +251,8 @@ void main() {
     test('Should be disconnected When connection fails', () async {
       const timeout = Duration(seconds: 15);
       final exception = Exception('exception');
-      when(mockDevice.connect(timeout: null)).thenThrow(exception);
+      when(mockDevice.connect(timeout: null, autoConnect: false))
+          .thenThrow(exception);
       expect(
         device.connect(timeout: timeout),
         throwsBleException(exception: exception),
