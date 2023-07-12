@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:weight_scale/scale.dart';
-import 'package:weight_scale/src/scales/abstract_weight_scale.dart';
+import 'package:weight_scale/src/scales/weight_scale_software_stabilizer.dart';
 
-class Climbro extends AbstractWeightScale {
+class Climbro extends WeightScaleSoftwareStabilizer {
   @override
   final serviceUuid = const Uuid("49535343-fe7d-4ae5-8fa9-9fafd205e455");
 
@@ -23,11 +23,5 @@ class Climbro extends AbstractWeightScale {
     return (data.length == 1)
         ? Weight(data.first.toDouble(), WeightUnit.kg)
         : null;
-  }
-
-  @override
-  bool hasStabilized(Uint8List data) {
-    // TODO: implement hasStabilized
-    throw UnimplementedError();
   }
 }

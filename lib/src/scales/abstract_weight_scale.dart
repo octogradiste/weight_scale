@@ -50,7 +50,8 @@ abstract class AbstractWeightScale implements WeightScale {
   /// stabilized.
   ///
   /// Often this is indicated by a flag in the received data. If this is not
-  /// the case you can also implement this feature in software.
+  /// the case you can also implement this feature in software
+  /// (see [WeightScaleSoftwareStabilizer]).
   bool hasStabilized(Uint8List data);
 
   @override
