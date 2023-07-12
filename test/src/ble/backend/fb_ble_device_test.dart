@@ -1,3 +1,4 @@
+@Timeout(Duration(seconds: 1))
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -91,7 +92,7 @@ void main() {
           .toList();
     });
 
-    device = FbBleDevice(mockDevice as BluetoothDevice, conversion);
+    device = FbBleDevice(mockDevice, conversion);
   }));
 
   tearDown((() async {
@@ -327,7 +328,7 @@ void main() {
       when(mockConversion.toBleDeviceState(any)).thenAnswer((invocation) =>
           conversion.toBleDeviceState(invocation.positionalArguments[0]));
 
-      device = FbBleDevice(mockDevice as BluetoothDevice, mockConversion);
+      device = FbBleDevice(mockDevice, mockConversion);
     });
 
     group('read', () {
