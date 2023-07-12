@@ -172,14 +172,14 @@ class _FakeUuid_13 extends _i1.SmartFake implements _i3.Uuid {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
-  MockBluetoothDevice() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i2.DeviceIdentifier get id => (super.noSuchMethod(
         Invocation.getter(#id),
         returnValue: _FakeDeviceIdentifier_0(
+          this,
+          Invocation.getter(#id),
+        ),
+        returnValueForMissingStub: _FakeDeviceIdentifier_0(
           this,
           Invocation.getter(#id),
         ),
@@ -188,36 +188,44 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
   String get name => (super.noSuchMethod(
         Invocation.getter(#name),
         returnValue: '',
+        returnValueForMissingStub: '',
       ) as String);
   @override
   _i2.BluetoothDeviceType get type => (super.noSuchMethod(
         Invocation.getter(#type),
         returnValue: _i2.BluetoothDeviceType.unknown,
+        returnValueForMissingStub: _i2.BluetoothDeviceType.unknown,
       ) as _i2.BluetoothDeviceType);
   @override
   _i4.Stream<bool> get isDiscoveringServices => (super.noSuchMethod(
         Invocation.getter(#isDiscoveringServices),
         returnValue: _i4.Stream<bool>.empty(),
+        returnValueForMissingStub: _i4.Stream<bool>.empty(),
       ) as _i4.Stream<bool>);
   @override
   _i4.Stream<List<_i2.BluetoothService>> get services => (super.noSuchMethod(
         Invocation.getter(#services),
         returnValue: _i4.Stream<List<_i2.BluetoothService>>.empty(),
+        returnValueForMissingStub:
+            _i4.Stream<List<_i2.BluetoothService>>.empty(),
       ) as _i4.Stream<List<_i2.BluetoothService>>);
   @override
   _i4.Stream<_i2.BluetoothDeviceState> get state => (super.noSuchMethod(
         Invocation.getter(#state),
         returnValue: _i4.Stream<_i2.BluetoothDeviceState>.empty(),
+        returnValueForMissingStub: _i4.Stream<_i2.BluetoothDeviceState>.empty(),
       ) as _i4.Stream<_i2.BluetoothDeviceState>);
   @override
   _i4.Stream<int> get mtu => (super.noSuchMethod(
         Invocation.getter(#mtu),
         returnValue: _i4.Stream<int>.empty(),
+        returnValueForMissingStub: _i4.Stream<int>.empty(),
       ) as _i4.Stream<int>);
   @override
   _i4.Future<bool> get canSendWriteWithoutResponse => (super.noSuchMethod(
         Invocation.getter(#canSendWriteWithoutResponse),
         returnValue: _i4.Future<bool>.value(false),
+        returnValueForMissingStub: _i4.Future<bool>.value(false),
       ) as _i4.Future<bool>);
   @override
   _i4.Future<void> connect({
@@ -274,6 +282,8 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         ),
         returnValue: _i4.Future<List<_i2.BluetoothService>>.value(
             <_i2.BluetoothService>[]),
+        returnValueForMissingStub: _i4.Future<List<_i2.BluetoothService>>.value(
+            <_i2.BluetoothService>[]),
       ) as _i4.Future<List<_i2.BluetoothService>>);
   @override
   _i4.Future<int> requestMtu(int? desiredMtu) => (super.noSuchMethod(
@@ -282,6 +292,7 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
           [desiredMtu],
         ),
         returnValue: _i4.Future<int>.value(0),
+        returnValueForMissingStub: _i4.Future<int>.value(0),
       ) as _i4.Future<int>);
   @override
   _i4.Future<int> readRssi() => (super.noSuchMethod(
@@ -290,6 +301,7 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
           [],
         ),
         returnValue: _i4.Future<int>.value(0),
+        returnValueForMissingStub: _i4.Future<int>.value(0),
       ) as _i4.Future<int>);
   @override
   _i4.Future<void> requestConnectionPriority(
@@ -329,6 +341,7 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
           [],
         ),
         returnValue: _i4.Future<bool>.value(false),
+        returnValueForMissingStub: _i4.Future<bool>.value(false),
       ) as _i4.Future<bool>);
 }
 
@@ -337,14 +350,14 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
 /// See the documentation for Mockito's code generation for more information.
 class MockBluetoothCharacteristic extends _i1.Mock
     implements _i2.BluetoothCharacteristic {
-  MockBluetoothCharacteristic() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i2.Guid get uuid => (super.noSuchMethod(
         Invocation.getter(#uuid),
         returnValue: _FakeGuid_1(
+          this,
+          Invocation.getter(#uuid),
+        ),
+        returnValueForMissingStub: _FakeGuid_1(
           this,
           Invocation.getter(#uuid),
         ),
@@ -356,11 +369,19 @@ class MockBluetoothCharacteristic extends _i1.Mock
           this,
           Invocation.getter(#deviceId),
         ),
+        returnValueForMissingStub: _FakeDeviceIdentifier_0(
+          this,
+          Invocation.getter(#deviceId),
+        ),
       ) as _i2.DeviceIdentifier);
   @override
   _i2.Guid get serviceUuid => (super.noSuchMethod(
         Invocation.getter(#serviceUuid),
         returnValue: _FakeGuid_1(
+          this,
+          Invocation.getter(#serviceUuid),
+        ),
+        returnValueForMissingStub: _FakeGuid_1(
           this,
           Invocation.getter(#serviceUuid),
         ),
@@ -372,16 +393,22 @@ class MockBluetoothCharacteristic extends _i1.Mock
           this,
           Invocation.getter(#properties),
         ),
+        returnValueForMissingStub: _FakeCharacteristicProperties_2(
+          this,
+          Invocation.getter(#properties),
+        ),
       ) as _i2.CharacteristicProperties);
   @override
   List<_i2.BluetoothDescriptor> get descriptors => (super.noSuchMethod(
         Invocation.getter(#descriptors),
         returnValue: <_i2.BluetoothDescriptor>[],
+        returnValueForMissingStub: <_i2.BluetoothDescriptor>[],
       ) as List<_i2.BluetoothDescriptor>);
   @override
   List<int> get lastValue => (super.noSuchMethod(
         Invocation.getter(#lastValue),
         returnValue: <int>[],
+        returnValueForMissingStub: <int>[],
       ) as List<int>);
   @override
   set lastValue(List<int>? _lastValue) => super.noSuchMethod(
@@ -395,16 +422,19 @@ class MockBluetoothCharacteristic extends _i1.Mock
   _i4.Stream<List<int>> get value => (super.noSuchMethod(
         Invocation.getter(#value),
         returnValue: _i4.Stream<List<int>>.empty(),
+        returnValueForMissingStub: _i4.Stream<List<int>>.empty(),
       ) as _i4.Stream<List<int>>);
   @override
   _i4.Stream<List<int>> get onValueChangedStream => (super.noSuchMethod(
         Invocation.getter(#onValueChangedStream),
         returnValue: _i4.Stream<List<int>>.empty(),
+        returnValueForMissingStub: _i4.Stream<List<int>>.empty(),
       ) as _i4.Stream<List<int>>);
   @override
   bool get isNotifying => (super.noSuchMethod(
         Invocation.getter(#isNotifying),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
   @override
   _i4.Future<List<int>> read() => (super.noSuchMethod(
@@ -413,6 +443,7 @@ class MockBluetoothCharacteristic extends _i1.Mock
           [],
         ),
         returnValue: _i4.Future<List<int>>.value(<int>[]),
+        returnValueForMissingStub: _i4.Future<List<int>>.value(<int>[]),
       ) as _i4.Future<List<int>>);
   @override
   _i4.Future<void> write(
@@ -435,6 +466,7 @@ class MockBluetoothCharacteristic extends _i1.Mock
           [notify],
         ),
         returnValue: _i4.Future<bool>.value(false),
+        returnValueForMissingStub: _i4.Future<bool>.value(false),
       ) as _i4.Future<bool>);
 }
 
@@ -442,10 +474,6 @@ class MockBluetoothCharacteristic extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
-  MockFbConversion() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i2.BluetoothDeviceState fromBleDeviceState(_i3.BleDeviceState? state) =>
       (super.noSuchMethod(
@@ -454,6 +482,7 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
           [state],
         ),
         returnValue: _i2.BluetoothDeviceState.disconnected,
+        returnValueForMissingStub: _i2.BluetoothDeviceState.disconnected,
       ) as _i2.BluetoothDeviceState);
   @override
   _i3.BleDevice toBleDevice(_i2.BluetoothDevice? device) => (super.noSuchMethod(
@@ -462,6 +491,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
           [device],
         ),
         returnValue: _FakeBleDevice_3(
+          this,
+          Invocation.method(
+            #toBleDevice,
+            [device],
+          ),
+        ),
+        returnValueForMissingStub: _FakeBleDevice_3(
           this,
           Invocation.method(
             #toBleDevice,
@@ -483,6 +519,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
             [device],
           ),
         ),
+        returnValueForMissingStub: _FakeBluetoothDevice_4(
+          this,
+          Invocation.method(
+            #fromBleDevice,
+            [device],
+          ),
+        ),
       ) as _i2.BluetoothDevice);
   @override
   _i3.BleDeviceState toBleDeviceState(_i2.BluetoothDeviceState? state) =>
@@ -492,6 +535,7 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
           [state],
         ),
         returnValue: _i3.BleDeviceState.connected,
+        returnValueForMissingStub: _i3.BleDeviceState.connected,
       ) as _i3.BleDeviceState);
   @override
   _i3.ScanResult toScanResult(_i2.ScanResult? scanResult) =>
@@ -501,6 +545,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
           [scanResult],
         ),
         returnValue: _FakeScanResult_5(
+          this,
+          Invocation.method(
+            #toScanResult,
+            [scanResult],
+          ),
+        ),
+        returnValueForMissingStub: _FakeScanResult_5(
           this,
           Invocation.method(
             #toScanResult,
@@ -522,6 +573,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
             [scanResult],
           ),
         ),
+        returnValueForMissingStub: _FakeScanResult_6(
+          this,
+          Invocation.method(
+            #fromScanResult,
+            [scanResult],
+          ),
+        ),
       ) as _i2.ScanResult);
   @override
   _i3.Service toService(_i2.BluetoothService? service) => (super.noSuchMethod(
@@ -536,6 +594,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
             [service],
           ),
         ),
+        returnValueForMissingStub: _FakeService_7(
+          this,
+          Invocation.method(
+            #toService,
+            [service],
+          ),
+        ),
       ) as _i3.Service);
   @override
   _i2.BluetoothService fromService(_i3.Service? service) => (super.noSuchMethod(
@@ -544,6 +609,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
           [service],
         ),
         returnValue: _FakeBluetoothService_8(
+          this,
+          Invocation.method(
+            #fromService,
+            [service],
+          ),
+        ),
+        returnValueForMissingStub: _FakeBluetoothService_8(
           this,
           Invocation.method(
             #fromService,
@@ -566,6 +638,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
             [characteristic],
           ),
         ),
+        returnValueForMissingStub: _FakeCharacteristic_9(
+          this,
+          Invocation.method(
+            #toCharacteristic,
+            [characteristic],
+          ),
+        ),
       ) as _i3.Characteristic);
   @override
   _i2.BluetoothCharacteristic fromCharacteristic(
@@ -576,6 +655,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
           [characteristic],
         ),
         returnValue: _FakeBluetoothCharacteristic_10(
+          this,
+          Invocation.method(
+            #fromCharacteristic,
+            [characteristic],
+          ),
+        ),
+        returnValueForMissingStub: _FakeBluetoothCharacteristic_10(
           this,
           Invocation.method(
             #fromCharacteristic,
@@ -597,6 +683,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
             [descriptor],
           ),
         ),
+        returnValueForMissingStub: _FakeDescriptor_11(
+          this,
+          Invocation.method(
+            #toDescriptor,
+            [descriptor],
+          ),
+        ),
       ) as _i3.Descriptor);
   @override
   _i2.BluetoothDescriptor fromDescriptor(_i3.Descriptor? descriptor) =>
@@ -606,6 +699,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
           [descriptor],
         ),
         returnValue: _FakeBluetoothDescriptor_12(
+          this,
+          Invocation.method(
+            #fromDescriptor,
+            [descriptor],
+          ),
+        ),
+        returnValueForMissingStub: _FakeBluetoothDescriptor_12(
           this,
           Invocation.method(
             #fromDescriptor,
@@ -626,6 +726,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
             [guid],
           ),
         ),
+        returnValueForMissingStub: _FakeUuid_13(
+          this,
+          Invocation.method(
+            #toUuid,
+            [guid],
+          ),
+        ),
       ) as _i3.Uuid);
   @override
   _i2.Guid fromUuid(_i3.Uuid? uuid) => (super.noSuchMethod(
@@ -634,6 +741,13 @@ class MockFbConversion extends _i1.Mock implements _i5.FbConversion {
           [uuid],
         ),
         returnValue: _FakeGuid_1(
+          this,
+          Invocation.method(
+            #fromUuid,
+            [uuid],
+          ),
+        ),
+        returnValueForMissingStub: _FakeGuid_1(
           this,
           Invocation.method(
             #fromUuid,

@@ -10,6 +10,11 @@ import 'package:mockito/mockito.dart';
 import 'package:weight_scale/src/ble/backend/fb_backend.dart';
 import 'package:weight_scale/src/ble/ble.dart';
 
+@GenerateNiceMocks([
+  MockSpec<BluetoothDevice>(),
+  MockSpec<BluetoothCharacteristic>(),
+  MockSpec<FbConversion>(),
+])
 import 'fb_ble_device_test.mocks.dart';
 
 const characteristic = Characteristic(
