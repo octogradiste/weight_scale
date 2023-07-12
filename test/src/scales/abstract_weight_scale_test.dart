@@ -215,6 +215,24 @@ void main() {
     });
   });
 
+  group('currentState', () {
+    test('Should return the same as the ble device', () async {
+      for (final state in BleDeviceState.values) {
+        when(device.currentState).thenAnswer((_) async => state);
+        expect(await scale.currentState, state);
+      }
+    });
+  });
+
+  group('state', () {
+    test('Should emit the same values as the ble device', () async {
+      const states = BleDeviceState.values;
+      when(device.state).thenAnswer((_) => Stream.fromIterable(states));
+      final result = scale.state.take(states.length).toList();
+      expect(await result, states);
+    });
+  });
+
   group('takeWeightMeasurement', () {
     late bool hasMeasured;
     late Future<Weight> weight;
