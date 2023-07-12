@@ -35,14 +35,14 @@ class _FakeBleDeviceInformation_0 extends _i1.SmartFake
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockBleDevice extends _i1.Mock implements _i2.BleDevice {
-  MockBleDevice() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i2.BleDeviceInformation get information => (super.noSuchMethod(
         Invocation.getter(#information),
         returnValue: _FakeBleDeviceInformation_0(
+          this,
+          Invocation.getter(#information),
+        ),
+        returnValueForMissingStub: _FakeBleDeviceInformation_0(
           this,
           Invocation.getter(#information),
         ),
@@ -51,16 +51,21 @@ class MockBleDevice extends _i1.Mock implements _i2.BleDevice {
   _i3.Future<List<_i2.Service>> get services => (super.noSuchMethod(
         Invocation.getter(#services),
         returnValue: _i3.Future<List<_i2.Service>>.value(<_i2.Service>[]),
+        returnValueForMissingStub:
+            _i3.Future<List<_i2.Service>>.value(<_i2.Service>[]),
       ) as _i3.Future<List<_i2.Service>>);
   @override
   _i3.Stream<_i2.BleDeviceState> get state => (super.noSuchMethod(
         Invocation.getter(#state),
         returnValue: _i3.Stream<_i2.BleDeviceState>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.BleDeviceState>.empty(),
       ) as _i3.Stream<_i2.BleDeviceState>);
   @override
   _i3.Future<_i2.BleDeviceState> get currentState => (super.noSuchMethod(
         Invocation.getter(#currentState),
         returnValue:
+            _i3.Future<_i2.BleDeviceState>.value(_i2.BleDeviceState.connected),
+        returnValueForMissingStub:
             _i3.Future<_i2.BleDeviceState>.value(_i2.BleDeviceState.connected),
       ) as _i3.Future<_i2.BleDeviceState>);
   @override
@@ -90,6 +95,8 @@ class MockBleDevice extends _i1.Mock implements _i2.BleDevice {
           [],
         ),
         returnValue: _i3.Future<List<_i2.Service>>.value(<_i2.Service>[]),
+        returnValueForMissingStub:
+            _i3.Future<List<_i2.Service>>.value(<_i2.Service>[]),
       ) as _i3.Future<List<_i2.Service>>);
   @override
   _i3.Future<_i4.Uint8List> readCharacteristic(
@@ -100,6 +107,8 @@ class MockBleDevice extends _i1.Mock implements _i2.BleDevice {
           [characteristic],
         ),
         returnValue: _i3.Future<_i4.Uint8List>.value(_i4.Uint8List(0)),
+        returnValueForMissingStub:
+            _i3.Future<_i4.Uint8List>.value(_i4.Uint8List(0)),
       ) as _i3.Future<_i4.Uint8List>);
   @override
   _i3.Future<void> writeCharacteristic(
@@ -128,6 +137,8 @@ class MockBleDevice extends _i1.Mock implements _i2.BleDevice {
           [characteristic],
         ),
         returnValue: _i3.Future<_i3.Stream<_i4.Uint8List>>.value(
+            _i3.Stream<_i4.Uint8List>.empty()),
+        returnValueForMissingStub: _i3.Future<_i3.Stream<_i4.Uint8List>>.value(
             _i3.Stream<_i4.Uint8List>.empty()),
       ) as _i3.Future<_i3.Stream<_i4.Uint8List>>);
 }

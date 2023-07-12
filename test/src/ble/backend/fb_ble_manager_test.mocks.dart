@@ -23,49 +23,53 @@ import 'package:mockito/mockito.dart' as _i1;
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockFlutterBluePlus extends _i1.Mock implements _i2.FlutterBluePlus {
-  MockFlutterBluePlus() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i2.LogLevel get logLevel => (super.noSuchMethod(
         Invocation.getter(#logLevel),
         returnValue: _i2.LogLevel.emergency,
+        returnValueForMissingStub: _i2.LogLevel.emergency,
       ) as _i2.LogLevel);
   @override
   _i3.Future<bool> get isAvailable => (super.noSuchMethod(
         Invocation.getter(#isAvailable),
         returnValue: _i3.Future<bool>.value(false),
+        returnValueForMissingStub: _i3.Future<bool>.value(false),
       ) as _i3.Future<bool>);
   @override
   _i3.Future<String> get name => (super.noSuchMethod(
         Invocation.getter(#name),
         returnValue: _i3.Future<String>.value(''),
+        returnValueForMissingStub: _i3.Future<String>.value(''),
       ) as _i3.Future<String>);
   @override
   _i3.Future<bool> get isOn => (super.noSuchMethod(
         Invocation.getter(#isOn),
         returnValue: _i3.Future<bool>.value(false),
+        returnValueForMissingStub: _i3.Future<bool>.value(false),
       ) as _i3.Future<bool>);
   @override
   _i3.Stream<bool> get isScanning => (super.noSuchMethod(
         Invocation.getter(#isScanning),
         returnValue: _i3.Stream<bool>.empty(),
+        returnValueForMissingStub: _i3.Stream<bool>.empty(),
       ) as _i3.Stream<bool>);
   @override
   bool get isScanningNow => (super.noSuchMethod(
         Invocation.getter(#isScanningNow),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
   @override
   _i3.Stream<List<_i2.ScanResult>> get scanResults => (super.noSuchMethod(
         Invocation.getter(#scanResults),
         returnValue: _i3.Stream<List<_i2.ScanResult>>.empty(),
+        returnValueForMissingStub: _i3.Stream<List<_i2.ScanResult>>.empty(),
       ) as _i3.Stream<List<_i2.ScanResult>>);
   @override
   _i3.Stream<_i2.BluetoothState> get state => (super.noSuchMethod(
         Invocation.getter(#state),
         returnValue: _i3.Stream<_i2.BluetoothState>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.BluetoothState>.empty(),
       ) as _i3.Stream<_i2.BluetoothState>);
   @override
   _i3.Future<List<_i2.BluetoothDevice>> get connectedDevices =>
@@ -73,12 +77,16 @@ class MockFlutterBluePlus extends _i1.Mock implements _i2.FlutterBluePlus {
         Invocation.getter(#connectedDevices),
         returnValue: _i3.Future<List<_i2.BluetoothDevice>>.value(
             <_i2.BluetoothDevice>[]),
+        returnValueForMissingStub: _i3.Future<List<_i2.BluetoothDevice>>.value(
+            <_i2.BluetoothDevice>[]),
       ) as _i3.Future<List<_i2.BluetoothDevice>>);
   @override
   _i3.Future<List<_i2.BluetoothDevice>> get bondedDevices =>
       (super.noSuchMethod(
         Invocation.getter(#bondedDevices),
         returnValue: _i3.Future<List<_i2.BluetoothDevice>>.value(
+            <_i2.BluetoothDevice>[]),
+        returnValueForMissingStub: _i3.Future<List<_i2.BluetoothDevice>>.value(
             <_i2.BluetoothDevice>[]),
       ) as _i3.Future<List<_i2.BluetoothDevice>>);
   @override
@@ -88,6 +96,7 @@ class MockFlutterBluePlus extends _i1.Mock implements _i2.FlutterBluePlus {
           [],
         ),
         returnValue: _i3.Future<bool>.value(false),
+        returnValueForMissingStub: _i3.Future<bool>.value(false),
       ) as _i3.Future<bool>);
   @override
   _i3.Future<bool> turnOff() => (super.noSuchMethod(
@@ -96,6 +105,7 @@ class MockFlutterBluePlus extends _i1.Mock implements _i2.FlutterBluePlus {
           [],
         ),
         returnValue: _i3.Future<bool>.value(false),
+        returnValueForMissingStub: _i3.Future<bool>.value(false),
       ) as _i3.Future<bool>);
   @override
   _i3.Stream<_i2.ScanResult> scan({
@@ -120,6 +130,7 @@ class MockFlutterBluePlus extends _i1.Mock implements _i2.FlutterBluePlus {
           },
         ),
         returnValue: _i3.Stream<_i2.ScanResult>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.ScanResult>.empty(),
       ) as _i3.Stream<_i2.ScanResult>);
   @override
   _i3.Future<dynamic> startScan({
@@ -144,6 +155,7 @@ class MockFlutterBluePlus extends _i1.Mock implements _i2.FlutterBluePlus {
           },
         ),
         returnValue: _i3.Future<dynamic>.value(),
+        returnValueForMissingStub: _i3.Future<dynamic>.value(),
       ) as _i3.Future<dynamic>);
   @override
   _i3.Future<dynamic> stopScan() => (super.noSuchMethod(
@@ -152,6 +164,7 @@ class MockFlutterBluePlus extends _i1.Mock implements _i2.FlutterBluePlus {
           [],
         ),
         returnValue: _i3.Future<dynamic>.value(),
+        returnValueForMissingStub: _i3.Future<dynamic>.value(),
       ) as _i3.Future<dynamic>);
   @override
   void setLogLevel(_i2.LogLevel? level) => super.noSuchMethod(

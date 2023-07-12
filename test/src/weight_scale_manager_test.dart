@@ -11,9 +11,9 @@ import 'package:weight_scale/src/scales/mi_scale_2.dart';
 
 import 'ble/backend/fb_ble_device_test.dart';
 import 'fake_ble_device.dart';
+@GenerateNiceMocks([MockSpec<BleManager>()])
 import 'weight_scale_manager_test.mocks.dart';
 
-@GenerateMocks([BleManager])
 void main() {
   late StreamController<List<ScanResult>> scanController;
   late MockBleManager bleManager;

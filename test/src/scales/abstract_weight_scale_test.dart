@@ -7,6 +7,7 @@ import 'package:mockito/mockito.dart';
 import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/scales/abstract_weight_scale.dart';
 
+@GenerateNiceMocks([MockSpec<BleDevice>()])
 import 'abstract_weight_scale_test.mocks.dart';
 
 class TestAbstractWeightScale extends AbstractWeightScale {
@@ -42,7 +43,6 @@ class TestAbstractWeightScale extends AbstractWeightScale {
   }
 }
 
-@GenerateMocks([BleDevice])
 void main() {
   const information = BleDeviceInformation(name: "name", id: "id");
   const serviceUuid = Uuid('5cc63afd-37f2-46d6-8467-f9c27eced9ca');

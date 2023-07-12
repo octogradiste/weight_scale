@@ -6,6 +6,7 @@ import 'package:mockito/mockito.dart';
 import 'package:weight_scale/scale.dart';
 import 'package:weight_scale/src/scales/mi_scale_2.dart';
 
+@GenerateNiceMocks([MockSpec<BleDevice>()])
 import 'mi_scale_2_test.mocks.dart';
 
 const customService = Uuid("00001530-0000-3512-2118-0009af100700");
@@ -17,7 +18,6 @@ const configCharacteristic = Characteristic(
   uuid: scaleConfig,
 );
 
-@GenerateMocks([BleDevice])
 void main() {
   late MockBleDevice device;
   late MiScale2 scale;

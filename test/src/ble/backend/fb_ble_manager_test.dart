@@ -10,9 +10,10 @@ import 'package:weight_scale/src/ble/backend/fb_backend.dart';
 import 'package:weight_scale/src/ble/ble.dart';
 
 import 'fb_ble_device_test.dart';
+
+@GenerateNiceMocks([MockSpec<fb.FlutterBluePlus>()])
 import 'fb_ble_manager_test.mocks.dart';
 
-@GenerateMocks([fb.FlutterBluePlus])
 void main() {
   late MockFlutterBluePlus flutterBlue;
   late FbConversion conversion;

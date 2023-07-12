@@ -23,29 +23,30 @@ import 'package:weight_scale/src/ble/ble.dart' as _i2;
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockBleManager extends _i1.Mock implements _i2.BleManager {
-  MockBleManager() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i3.Future<Set<_i2.BleDevice>> get connectedDevices => (super.noSuchMethod(
         Invocation.getter(#connectedDevices),
         returnValue: _i3.Future<Set<_i2.BleDevice>>.value(<_i2.BleDevice>{}),
+        returnValueForMissingStub:
+            _i3.Future<Set<_i2.BleDevice>>.value(<_i2.BleDevice>{}),
       ) as _i3.Future<Set<_i2.BleDevice>>);
   @override
   _i3.Stream<List<_i2.ScanResult>> get scanResults => (super.noSuchMethod(
         Invocation.getter(#scanResults),
         returnValue: _i3.Stream<List<_i2.ScanResult>>.empty(),
+        returnValueForMissingStub: _i3.Stream<List<_i2.ScanResult>>.empty(),
       ) as _i3.Stream<List<_i2.ScanResult>>);
   @override
   bool get isInitialized => (super.noSuchMethod(
         Invocation.getter(#isInitialized),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
   @override
   bool get isScanning => (super.noSuchMethod(
         Invocation.getter(#isScanning),
         returnValue: false,
+        returnValueForMissingStub: false,
       ) as bool);
   @override
   _i3.Future<void> initialize() => (super.noSuchMethod(
