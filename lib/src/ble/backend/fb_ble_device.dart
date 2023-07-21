@@ -20,8 +20,6 @@ class FbBleDevice extends BleDevice {
   final BluetoothDevice _device;
   final FbConversion _conversion;
 
-  // final _stateController = StreamController<BleDeviceState>.broadcast();
-
   List<Service> _services = [];
 
   @override
@@ -30,23 +28,14 @@ class FbBleDevice extends BleDevice {
   FbBleDevice(BluetoothDevice device, FbConversion conversion)
       : information = BleDeviceInformation(name: device.name, id: device.id.id),
         _device = device,
-        _conversion = conversion {
-    // StreamSubscription? sub;
-    // _stateController.onListen = () {
-    //   sub = _device.state.listen((state) {
-    //     _stateController.add(_conversion.toBleDeviceState(state));
-    //   });
-    // };
-    // _stateController.onCancel = () => sub?.cancel();
-  }
+        _conversion = conversion;
 
   @override
   Future<List<Service>> get services async => _services;
 
   @override
-  // Stream<BleDeviceState> get state => _stateController.stream.distinct();
-  Stream<BleDeviceState> get state => _device.state
-      .map((state) => _conversion.toBleDeviceState(state))
+  Stream<bool> get connected => _device.state
+      .map((state) => state == BluetoothDeviceState.connected)
       .asBroadcastStream();
 
   @override
@@ -63,15 +52,16 @@ class FbBleDevice extends BleDevice {
     }
 
     try {
-      final connected = state.firstWhere(
-        (s) => s == BleDeviceState.connected,
-        orElse: () => BleDeviceState.disconnected,
+      final done = connected.firstWhere(
+        (connected) => connected,
+        // Happens when the connection fails and the connected stream is closed.
+        orElse: () => false,
       );
       await _device
           .connect(timeout: null, autoConnect: false)
           .timeout(timeout, onTimeout: () async => throw TimeoutException(''));
 
-      await connected; // Ensures that the connected state was emitted.
+      await done; // Ensures that the connected state was emitted.
     } on TimeoutException {
       _device.disconnect();
       throw BleException(
@@ -87,11 +77,13 @@ class FbBleDevice extends BleDevice {
   Future<void> disconnect() async {
     if (!(await _isConnected)) return;
     try {
-      final disconnected = state.firstWhere(
-        (state) => state == BleDeviceState.disconnected,
+      final done = connected.firstWhere(
+        (state) => !state,
+        // Happens when the connection fails and the connected stream is closed.
+        orElse: () => true,
       );
       await _device.disconnect();
-      await disconnected; // Ensures that the disconnect state was emitted.
+      await done; // Ensures that the disconnect state was emitted.
     } catch (e) {
       throw BleException("Disconnection failed.", exception: e);
     }

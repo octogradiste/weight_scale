@@ -112,10 +112,10 @@ class ScalePage extends StatelessWidget {
         ),
         body: StreamBuilder(
           initialData: scale.currentState,
-          stream: scale.state,
+          stream: scale.connected,
           builder: (context, snapshot) {
             switch (snapshot.requireData) {
-              case BleDeviceState.connected:
+              case true:
                 return Column(
                   children: [
                     Expanded(
@@ -142,7 +142,7 @@ class ScalePage extends StatelessWidget {
                     )
                   ],
                 );
-              case BleDeviceState.disconnected:
+              case false:
                 return Align(
                   alignment: Alignment.bottomCenter,
                   child: TextButton(

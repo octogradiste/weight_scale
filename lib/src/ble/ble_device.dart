@@ -4,9 +4,6 @@ import 'dart:typed_data';
 import 'package:weight_scale/src/ble/ble.dart';
 
 /// The different states in which a [BleDevice] can be in.
-///
-/// Note: The state of a [BleDevice] is not guaranteed to transition via the
-/// states [disconnecting] and [connecting].
 enum BleDeviceState {
   connected,
   disconnected,
@@ -33,8 +30,9 @@ abstract class BleDevice {
   /// Returns the services discoverd during service discovery.
   Future<List<Service>> get services;
 
-  /// Returns a stream which emits every new ble state.
-  Stream<BleDeviceState> get state;
+  /// Returns stream which emits a boolean value whenever the connection
+  /// changes from connected to disconnected or vice versa.
+  Stream<bool> get connected;
 
   /// Returns the current state of this ble device.
   Future<BleDeviceState> get currentState;

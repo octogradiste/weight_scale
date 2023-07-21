@@ -55,11 +55,11 @@ class MockBleDevice extends _i1.Mock implements _i2.BleDevice {
             _i3.Future<List<_i2.Service>>.value(<_i2.Service>[]),
       ) as _i3.Future<List<_i2.Service>>);
   @override
-  _i3.Stream<_i2.BleDeviceState> get state => (super.noSuchMethod(
-        Invocation.getter(#state),
-        returnValue: _i3.Stream<_i2.BleDeviceState>.empty(),
-        returnValueForMissingStub: _i3.Stream<_i2.BleDeviceState>.empty(),
-      ) as _i3.Stream<_i2.BleDeviceState>);
+  _i3.Stream<bool> get connected => (super.noSuchMethod(
+        Invocation.getter(#connected),
+        returnValue: _i3.Stream<bool>.empty(),
+        returnValueForMissingStub: _i3.Stream<bool>.empty(),
+      ) as _i3.Stream<bool>);
   @override
   _i3.Future<_i2.BleDeviceState> get currentState => (super.noSuchMethod(
         Invocation.getter(#currentState),

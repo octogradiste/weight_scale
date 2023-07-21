@@ -71,7 +71,7 @@ abstract class AbstractWeightScale implements WeightScale {
   Future<BleDeviceState> get currentState => _device.currentState;
 
   @override
-  Stream<BleDeviceState> get state => _device.state;
+  Stream<bool> get connected => _device.connected;
 
   @override
   Future<Weight> takeWeightMeasurement() async {

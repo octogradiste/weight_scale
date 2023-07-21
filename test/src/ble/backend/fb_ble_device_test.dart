@@ -131,13 +131,13 @@ void main() {
     });
   });
 
-  group('state', () {
+  group('connected', () {
     test('Should be a broadcast stream', () {
-      expect(device.state.isBroadcast, isTrue);
+      expect(device.connected.isBroadcast, isTrue);
     });
 
     test('Should emit the same state as the device stream', () async {
-      final states = device.state.take(7).toList();
+      final states = device.connected.take(7).toList();
       await flushMicroTasks();
 
       // Random states before connecting.
@@ -159,13 +159,13 @@ void main() {
       await flushMicroTasks();
 
       expect(await states, const [
-        BleDeviceState.disconnected,
-        BleDeviceState.connecting,
-        BleDeviceState.disconnecting,
-        BleDeviceState.connected,
-        BleDeviceState.disconnected,
-        BleDeviceState.connected,
-        BleDeviceState.disconnected,
+        false,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
       ]);
     });
   });
@@ -219,11 +219,8 @@ void main() {
             .thenAnswer((_) {
           return Future.delayed(timeout * 2);
         });
-        device.state.take(2).toList().then((states) {
-          expect(states, const [
-            BleDeviceState.disconnected,
-            BleDeviceState.disconnected,
-          ]);
+        device.connected.take(2).toList().then((states) {
+          expect(states, const [false, false]);
         });
         expect(
           device.connect(timeout: timeout),

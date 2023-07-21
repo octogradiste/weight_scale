@@ -224,11 +224,11 @@ void main() {
     });
   });
 
-  group('state', () {
+  group('connected', () {
     test('Should emit the same values as the ble device', () async {
-      const states = BleDeviceState.values;
-      when(device.state).thenAnswer((_) => Stream.fromIterable(states));
-      final result = scale.state.take(states.length).toList();
+      const states = [true, false, true, false, true, false];
+      when(device.connected).thenAnswer((_) => Stream.fromIterable(states));
+      final result = scale.connected.take(states.length).toList();
       expect(await result, states);
     });
   });
