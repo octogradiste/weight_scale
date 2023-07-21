@@ -1,4 +1,4 @@
-.PHONY: coverage brunner
+.PHONY: coverage brunner doc
 
 coverage:
 	flutter test --coverage
@@ -8,3 +8,7 @@ coverage:
 
 brunner:
 	dart run build_runner build --delete-conflicting-outputs
+
+doc:
+	dart doc
+	open doc/api/index.html
