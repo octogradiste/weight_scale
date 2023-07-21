@@ -44,10 +44,10 @@ To add your own weight scale, you have to implement a `WeightScaleRecognizer`
 and the `WeightScale` itself. The job of the recognizer is to recognize your
 custom weight scale given a `ScanResult`. Don't forget to register your
 recognizer at the `WeightScaleManager` before stating a scan. Otherwise, your 
-weight sacle won't be recongized !
+weight scale won't be recognized !
 
-To simplifiy the implementation of the `WeightSacle` you can extend the
-`AbstractWeightSacle` which already implements most of the inteface.
+To simplify the implementation of the `WeightScale` you can extend the
+`AbstractWeightScale` which already implements most of the interface.
 
 ## Credits
 - [flutter_blue_plus](https://pub.dev/packages/flutter_blue_plus)
