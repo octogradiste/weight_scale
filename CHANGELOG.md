@@ -8,4 +8,6 @@
 
 ## 0.3.0
 
+* EUFY Smart Scale support.
+* WeightScale: renamed state to connected.
 * Publishing to [pub.dev](https://www.pub.dev).
