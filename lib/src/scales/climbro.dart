@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:weight_scale/scale.dart';
+import 'package:weight_scale/weight_scale.dart';
 import 'package:weight_scale/src/scales/weight_scale_software_stabilizer.dart';
 
 class Climbro extends WeightScaleSoftwareStabilizer {

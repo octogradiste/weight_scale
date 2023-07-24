@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:weight_scale/scale.dart';
+import 'package:weight_scale/weight_scale.dart';
 import 'package:weight_scale/src/recognizers/eufy_smart_scale_p1_recognizer.dart';
 import 'package:weight_scale/src/scales/eufy_smart_scale_p1.dart';
 

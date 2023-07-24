@@ -1,4 +1,4 @@
-import 'package:weight_scale/scale.dart';
+import 'package:weight_scale/weight_scale.dart';
 import 'package:weight_scale/src/scales/mi_scale_2.dart';
 
 class MiScale2Recognizer implements WeightScaleRecognizer {

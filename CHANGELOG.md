@@ -2,6 +2,7 @@
 
 - EUFY Smart Scale support
 - WeightScale: renamed state to connected to avoid confusion.
+- Renamed scale.dart to weight_scale.dart to match package name.
 - Publishing to [pub.dev](https://www.pub.dev).
 
 # 0.2.0
