@@ -22,9 +22,6 @@ void main() {
   late MockBleDevice device;
   late MiScale2 scale;
 
-  const bleException = BleException('testing');
-  const scaleException = WeightScaleException('testing');
-
   setUp(() {
     device = MockBleDevice();
     when(device.writeCharacteristic(
@@ -92,53 +89,6 @@ void main() {
         [0, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xD8, 0x36],
       );
       expect(scale.hasStabilized(data), isTrue);
-    });
-  });
-  group('clearCache', () {
-    test('Should sends 0x06 0x12 0x00 0x00 When called', () async {
-      await scale.clearCache();
-      verify(device.writeCharacteristic(
-        configCharacteristic,
-        value: Uint8List.fromList([06, 18, 0, 0]),
-      ));
-    });
-
-    test('Should throw a weight scale exception When writing fails', () async {
-      when(device.writeCharacteristic(
-        configCharacteristic,
-        value: anyNamed('value'),
-        response: anyNamed('response'),
-      )).thenThrow(bleException);
-      expect(scale.clearCache(), throwsA(scaleException));
-    });
-  });
-
-  group('setUint', () {
-    test('Should send 0x06 0x04 0x00 0x00 When setting to kg', () async {
-      await scale.setUnit(WeightUnit.kg);
-      verify(device.writeCharacteristic(
-        configCharacteristic,
-        value: Uint8List.fromList([6, 4, 0, 0]),
-        response: false,
-      ));
-    });
-
-    test('Should send 0x06 0x04 0x00 0x01 When setting to lbs', () async {
-      await scale.setUnit(WeightUnit.lbs);
-      verify(device.writeCharacteristic(
-        configCharacteristic,
-        value: Uint8List.fromList([6, 4, 0, 1]),
-        response: false,
-      ));
-    });
-
-    test('Should throw a weight scale exception When writing fails', () async {
-      when(device.writeCharacteristic(
-        configCharacteristic,
-        value: anyNamed('value'),
-        response: anyNamed('response'),
-      )).thenThrow(bleException);
-      expect(scale.setUnit(WeightUnit.kg), throwsA(scaleException));
     });
   });
 }

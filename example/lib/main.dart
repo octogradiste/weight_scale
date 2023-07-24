@@ -196,7 +196,7 @@ class _ScalePageState extends State<ScalePage> {
                           ),
                           ElevatedButton(
                             onPressed: isTakingWeight ? null : takeWeight,
-                            child: const Text("Take Weight"),
+                            child: const Text("Take weight"),
                           ),
                           TextButton(
                             onPressed: disconnect,
