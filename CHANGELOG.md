@@ -1,3 +1,8 @@
+# 0.4.0
+
+- Removing BLE abstraction layer.
+- Upgrading to `flutter_blue_plus` 1.10.x.
+
 # 0.3.0
 
 - EUFY Smart Scale support.
