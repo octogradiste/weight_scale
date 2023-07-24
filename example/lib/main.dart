@@ -87,9 +87,10 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: toggleScan,
-        child: Icon(isScanning ? Icons.square : Icons.search),
+        label: Text(isScanning ? "Stop Scan" : "Start Scan"),
+        icon: Icon(isScanning ? Icons.square : Icons.search),
       ),
     );
   }
