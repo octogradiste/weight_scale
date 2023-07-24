@@ -2,18 +2,15 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:weight_scale/weight_scale.dart';
-import 'package:weight_scale/src/scales/abstract_weight_scale.dart';
 import 'package:weight_scale/src/scales/climbro.dart';
 
-import '../fake_ble_device.dart';
+import 'abstract_weight_scale_test.mocks.dart';
 
 void main() {
-  late BleDevice device;
-  late AbstractWeightScale scale;
+  late Climbro scale;
 
   setUp(() {
-    device = FakeBleDevice(id: "id", name: "name");
-    scale = Climbro(device: device);
+    scale = Climbro(device: MockBluetoothDevice());
   });
 
   group('onData', () {

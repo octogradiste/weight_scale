@@ -1,38 +1,16 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 import 'package:weight_scale/weight_scale.dart';
 import 'package:weight_scale/src/scales/mi_scale_2.dart';
 
-@GenerateNiceMocks([MockSpec<BleDevice>()])
-import 'mi_scale_2_test.mocks.dart';
-
-const customService = Uuid("00001530-0000-3512-2118-0009af100700");
-const scaleConfig = Uuid("00001542-0000-3512-2118-0009af100700");
-
-const configCharacteristic = Characteristic(
-  deviceId: 'id',
-  serviceUuid: customService,
-  uuid: scaleConfig,
-);
+import 'abstract_weight_scale_test.mocks.dart';
 
 void main() {
-  late MockBleDevice device;
   late MiScale2 scale;
 
   setUp(() {
-    device = MockBleDevice();
-    when(device.writeCharacteristic(
-      any,
-      value: anyNamed('value'),
-      response: anyNamed('response'),
-    )).thenAnswer((_) async {});
-    when(device.information).thenReturn(
-      const BleDeviceInformation(name: 'name', id: 'id'),
-    );
-    scale = MiScale2(device: device);
+    scale = MiScale2(device: MockBluetoothDevice());
   });
 
   group('onData', () {

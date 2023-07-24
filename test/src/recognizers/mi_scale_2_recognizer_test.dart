@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:weight_scale/weight_scale.dart';
 import 'package:weight_scale/src/recognizers/mi_scale_2_recognizer.dart';
 
-import '../fake_ble_device.dart';
-
 void main() {
   group('recognize', () {
     late WeightScaleRecognizer recognizer;
@@ -15,13 +13,13 @@ void main() {
     });
 
     test('Should recognize and return the weight scale', () {
-      BleDevice device = FakeBleDevice(id: "id", name: "MIBFS");
-      ScanResult scanResult = ScanResult(
+      const device = BleDeviceInformation(id: "id", name: "MIBFS");
+      final scanResult = ScanResult(
         deviceInformation: device,
         serviceData: {
           const Uuid("00000000-0000-0000-0000-000000000000"): Uint8List(13)
         },
-        serviceUuids: const [],
+        serviceUuids: [],
         rssi: 0,
       );
       WeightScale? scale = recognizer.recognize(scanResult: scanResult);
@@ -32,13 +30,13 @@ void main() {
     });
 
     test('Should not recognize the scale and return null', () {
-      BleDevice device = FakeBleDevice(id: "id", name: "not MIBFS");
-      ScanResult scanResult = ScanResult(
+      const device = BleDeviceInformation(id: "id", name: "not MIBFS");
+      final scanResult = ScanResult(
         deviceInformation: device,
         serviceData: {
           const Uuid("00000000-0000-0000-0000-000000000000"): Uint8List(13)
         },
-        serviceUuids: const [],
+        serviceUuids: [],
         rssi: 0,
       );
       WeightScale? scale = recognizer.recognize(scanResult: scanResult);

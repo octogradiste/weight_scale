@@ -2,8 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:weight_scale/weight_scale.dart';
 import 'package:weight_scale/src/recognizers/climbro_recognizer.dart';
 
-import '../fake_ble_device.dart';
-
 void main() {
   late WeightScaleRecognizer recognizer;
 
@@ -13,11 +11,11 @@ void main() {
     });
 
     test('Should recognize and return the weight scale', () {
-      BleDevice device = FakeBleDevice(id: "id", name: "Climbro_12345");
-      ScanResult scanResult = ScanResult(
+      const device = BleDeviceInformation(id: "id", name: "Climbro_12345");
+      const scanResult = ScanResult(
         deviceInformation: device,
-        serviceData: const {},
-        serviceUuids: const [],
+        serviceData: {},
+        serviceUuids: [],
         rssi: 0,
       );
       WeightScale? scale = recognizer.recognize(scanResult: scanResult);
@@ -25,11 +23,11 @@ void main() {
     });
 
     test('Should not recognize and return null', () {
-      BleDevice device = FakeBleDevice(id: "id", name: "not a climbro");
-      ScanResult scanResult = ScanResult(
+      const device = BleDeviceInformation(id: "id", name: "not a climbro");
+      const scanResult = ScanResult(
         deviceInformation: device,
-        serviceData: const {},
-        serviceUuids: const [],
+        serviceData: {},
+        serviceUuids: [],
         rssi: 0,
       );
       WeightScale? scale = recognizer.recognize(scanResult: scanResult);

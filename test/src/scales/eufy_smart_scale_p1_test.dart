@@ -2,18 +2,15 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:weight_scale/weight_scale.dart';
-import 'package:weight_scale/src/scales/abstract_weight_scale.dart';
 import 'package:weight_scale/src/scales/eufy_smart_scale_p1.dart';
 
-import '../fake_ble_device.dart';
+import 'abstract_weight_scale_test.mocks.dart';
 
 void main() {
-  late BleDevice bleDevice;
-  late AbstractWeightScale scale;
+  late EufySmartScaleP1 scale;
 
   setUp(() {
-    bleDevice = FakeBleDevice(id: "id", name: "name");
-    scale = EufySmartScaleP1(device: bleDevice);
+    scale = EufySmartScaleP1(device: MockBluetoothDevice());
   });
 
   group('onData', () {

@@ -45,7 +45,7 @@ void main() {
   setUp(() {
     weightController = StreamController<Weight>();
     scale = TestWeightScaleSoftwareStabilizer(
-      device: MockBleDevice(),
+      device: MockBluetoothDevice(),
       stabilizationTime: stabilizationTime,
       weightController: weightController,
     );
