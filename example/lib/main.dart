@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
     } else {
       setState(() => isScanning = true);
       showSnackBarOnException(widget.manager.startScan, context)
-          .then((success) => setState(() => isScanning == success));
+          .then((_) => setState(() => isScanning == false));
     }
   }
 
@@ -73,13 +73,10 @@ class _HomePageState extends State<HomePage> {
                 trailing: TextButton(
                   child: const Text("CONNECT"),
                   onPressed: () {
-                    showSnackBarOnException(scale.connect, context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ScalePage(scale: scale),
-                      ),
+                    final route = MaterialPageRoute(
+                      builder: (_) => ScalePage(scale: scale),
                     );
+                    Navigator.push(context, route);
                   },
                 ),
               );
@@ -96,12 +93,71 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class ScalePage extends StatelessWidget {
+class ScalePage extends StatefulWidget {
   final WeightScale scale;
   const ScalePage({super.key, required this.scale});
 
   @override
+  State<ScalePage> createState() => _ScalePageState();
+}
+
+class _ScalePageState extends State<ScalePage> {
+  var isLoading = true;
+  var isTakingWeight = false;
+
+  @override
+  void initState() {
+    super.initState();
+    connect();
+  }
+
+  Future<void> connect() async {
+    setState(() => isLoading = true);
+    await showSnackBarOnException(widget.scale.connect, context);
+    setState(() => isLoading = false);
+  }
+
+  Future<void> disconnect() async {
+    setState(() => isLoading = true);
+    await showSnackBarOnException(widget.scale.disconnect, context);
+    setState(() => isLoading = false);
+  }
+
+  Future<void> takeWeight() async {
+    setState(() => isTakingWeight = true);
+    final weight = await showSnackBarOnException(
+        widget.scale.takeWeightMeasurement, context);
+    if (weight != null) showWeightDialog(weight);
+    setState(() => isTakingWeight = false);
+  }
+
+  Future<void> showWeightDialog(Weight weight) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Measured Weight'),
+          content: SizedBox(
+            height: 160,
+            child: WeightDisplay(weight: weight),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final scale = widget.scale;
+
     return WillPopScope(
       onWillPop: () async {
         showSnackBarOnException(scale.disconnect, context);
@@ -111,90 +167,55 @@ class ScalePage extends StatelessWidget {
         appBar: AppBar(
           title: Text(scale.name, overflow: TextOverflow.ellipsis),
         ),
-        body: StreamBuilder(
-          initialData: scale.currentState,
-          stream: scale.connected,
-          builder: (context, snapshot) {
-            switch (snapshot.requireData) {
-              case true:
-                return Column(
-                  children: [
-                    Expanded(
-                      child: StreamBuilder(
-                        initialData: scale.currentWeight,
-                        stream: scale.weight,
-                        builder: (context, snapshot) {
-                          final weight = snapshot.requireData;
-                          return WeightDisplay(weight: weight);
-                        },
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => showDialog(
-                        context: context,
-                        builder: (context) => TakeWeightDialog(scale: scale),
-                      ),
-                      child: const Text("Take Weight"),
-                    ),
-                    TextButton(
-                      onPressed: () =>
-                          showSnackBarOnException(scale.disconnect, context),
-                      child: const Text("DISCONNECT"),
-                    )
-                  ],
-                );
-              case false:
-                return Align(
-                  alignment: Alignment.bottomCenter,
-                  child: TextButton(
-                    onPressed: () =>
-                        showSnackBarOnException(scale.connect, context),
-                    child: const Text("CONNECT"),
-                  ),
-                );
-              default:
-                return const LoadingScreen();
-            }
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class TakeWeightDialog extends StatelessWidget {
-  const TakeWeightDialog({
-    super.key,
-    required this.scale,
-  });
-
-  final WeightScale scale;
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: SizedBox(
-          width: 250,
-          height: 250,
-          child: Center(
-            child: FutureBuilder(
-              future: scale.takeWeightMeasurement(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return WeightDisplay(
-                    weight: snapshot.requireData,
-                  );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
-          ),
-        ),
+        body: isLoading
+            ? const LoadingScreen()
+            : Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: StreamBuilder(
+                  initialData: false,
+                  stream: scale.connected,
+                  builder: (context, snapshot) {
+                    if (snapshot.requireData) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: StreamBuilder(
+                              initialData: scale.currentWeight,
+                              stream: scale.weight,
+                              builder: (context, snapshot) {
+                                if (isTakingWeight) {
+                                  return const LoadingScreen();
+                                } else {
+                                  final weight = snapshot.requireData;
+                                  return WeightDisplay(weight: weight);
+                                }
+                              },
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: isTakingWeight ? null : takeWeight,
+                            child: const Text("Take Weight"),
+                          ),
+                          TextButton(
+                            onPressed: disconnect,
+                            child: const Text("DISCONNECT"),
+                          )
+                        ],
+                      );
+                    } else {
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: TextButton(
+                          onPressed: connect,
+                          child: const Text("CONNECT"),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
       ),
     );
   }
@@ -241,16 +262,20 @@ class LoadingScreen extends StatelessWidget {
   }
 }
 
-Future<bool> showSnackBarOnException(
-    Future<void> Function() method, BuildContext context) async {
+/// Shows a [SnackBar] with the [WeightScaleException.message] if the [method]
+/// throws a [WeightScaleException]. Returns the result of the [method] if it
+/// succeeds, otherwise returns `null`.
+Future<T?> showSnackBarOnException<T>(
+  Future<T> Function() method,
+  BuildContext context,
+) async {
   try {
-    await method();
-    return true;
+    return await method();
   } on WeightScaleException catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(e.message),
       duration: const Duration(milliseconds: 750),
     ));
-    return false;
+    return null;
   }
 }
