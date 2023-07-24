@@ -15,7 +15,7 @@ void main() {
     test('Should recognize and return the weight scale', () {
       BleDevice device = FakeBleDevice(id: "id", name: "Climbro_12345");
       ScanResult scanResult = ScanResult(
-        device: device,
+        deviceInformation: device,
         serviceData: const {},
         serviceUuids: const [],
         rssi: 0,
@@ -27,7 +27,7 @@ void main() {
     test('Should not recognize and return null', () {
       BleDevice device = FakeBleDevice(id: "id", name: "not a climbro");
       ScanResult scanResult = ScanResult(
-        device: device,
+        deviceInformation: device,
         serviceData: const {},
         serviceUuids: const [],
         rssi: 0,

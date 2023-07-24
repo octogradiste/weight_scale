@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue;
+import 'package:weight_scale/src/ble/backend/flutter_blue_plus_converter.dart';
 import 'package:weight_scale/weight_scale.dart';
 
 /// A class implementing most of the [WeightScale] interface.
@@ -15,7 +17,8 @@ import 'package:weight_scale/weight_scale.dart';
 /// can be counted as a valid measurement which is then returned by the
 /// [takeWeightMeasurement] method.
 abstract class AbstractWeightScale implements WeightScale {
-  final BleDevice _device;
+  final _converter = FlutterBluePlusConverter();
+  final blue.BluetoothDevice _device;
   final _controller = StreamController<Weight>.broadcast();
 
   // If not null, this is the subscription to the characteristic emitting the
@@ -37,7 +40,7 @@ abstract class AbstractWeightScale implements WeightScale {
   /// Needs the underlying ble [device] as well as the uuid of the service and
   /// characteristic holding the weight data.
   AbstractWeightScale({
-    required BleDevice device,
+    required blue.BluetoothDevice device,
   }) : _device = device;
 
   /// This should transform the data received by the scale to a
@@ -55,7 +58,8 @@ abstract class AbstractWeightScale implements WeightScale {
   bool hasStabilized(Uint8List data);
 
   @override
-  BleDeviceInformation get information => _device.information;
+  BleDeviceInformation get information =>
+      BleDeviceInformation(name: _device.localName, id: _device.remoteId.str);
 
   @override
   Stream<Weight> get weight => _controller.stream;
@@ -65,13 +69,15 @@ abstract class AbstractWeightScale implements WeightScale {
 
   @override
   Future<bool> get isConnected async =>
-      await _device.currentState == BleDeviceState.connected;
+      await currentState == BleDeviceState.connected;
 
   @override
-  Future<BleDeviceState> get currentState => _device.currentState;
+  Future<BleDeviceState> get currentState =>
+      _device.connectionState.map(_converter.toBleDeviceState).first;
 
   @override
-  Stream<bool> get connected => _device.connected;
+  Stream<bool> get connected => _device.connectionState
+      .map((state) => state == blue.BluetoothConnectionState.connected);
 
   @override
   Future<Weight> takeWeightMeasurement() async {
@@ -83,58 +89,71 @@ abstract class AbstractWeightScale implements WeightScale {
 
   @override
   Future<void> connect({Duration timeout = const Duration(seconds: 15)}) async {
-    final List<Service> services;
-    try {
-      if (await _device.currentState != BleDeviceState.connected) {
-        await _device.connect(timeout: timeout);
-      }
-      services = await _device.discoverServices();
-    } on BleException catch (e) {
-      throw WeightScaleException(e.message);
-    }
+    // Connect to device if not already connected.
+    // Discover services.
+    // Find correct service.
+    // Find correct characteristic.
+    // Subscribe to characteristic.
+    // Listen to stream and convert data to weight.
+    // If [hasStabilized] is true, complete the [measuring] completer.
 
-    final Service service;
-    try {
-      // Finds the correct service.
-      service = services.where((s) => s.uuid == serviceUuid).first;
-    } on StateError {
-      throw const WeightScaleException('The service was not discovered.');
-    }
+    // final List<Service> services;
+    // try {
+    //   if (await currentState != BleDeviceState.connected) {
+    //     await _device.connect(timeout: timeout);
+    //   }
+    //   services =
+    //       (await _device.discoverServices()).map(_converter.toService).toList();
+    // } on BleException catch (e) {
+    //   throw WeightScaleException(e.message);
+    // }
 
-    final Characteristic characteristic;
-    try {
-      // Finds the correct characteristic.
-      characteristic = service.characteristics
-          .where((c) => c.uuid == characteristicUuid)
-          .first;
-    } on StateError {
-      throw const WeightScaleException(
-        'The characteristic was not discovered.',
-      );
-    }
+    // final Service service;
+    // try {
+    //   // Finds the correct service.
+    //   service = services.where((s) => s.uuid == serviceUuid).first;
+    // } on StateError {
+    //   throw const WeightScaleException('The service was not discovered.');
+    // }
 
-    try {
-      final stream = await _device.subscribeCharacteristic(characteristic);
-      _subscription = stream.listen((data) {
-        final weight = onData(data);
-        if (weight != null) {
-          _currentWeight = weight;
-          _controller.add(weight);
-          if (measuring != null && hasStabilized(data)) {
-            measuring!.complete(weight);
-            measuring = null;
-          }
-        }
-      });
-    } on BleException catch (e) {
-      throw WeightScaleException(e.message);
-    }
+    // final Characteristic characteristic;
+    // try {
+    //   // Finds the correct characteristic.
+    //   characteristic = service.characteristics
+    //       .where((c) => c.uuid == characteristicUuid)
+    //       .first;
+    // } on StateError {
+    //   throw const WeightScaleException(
+    //     'The characteristic was not discovered.',
+    //   );
+    // }
+
+    // try {
+    //   final stream = (await _device.subscribeCharacteristic(characteristic))
+    //       .map(_converter.toCharacteristic);
+    //   _subscription = stream.listen((data) {
+    //     final weight = onData(data);
+    //     if (weight != null) {
+    //       _currentWeight = weight;
+    //       _controller.add(weight);
+    //       if (measuring != null && hasStabilized(data)) {
+    //         measuring!.complete(weight);
+    //         measuring = null;
+    //       }
+    //     }
+    //   });
+    // } on BleException catch (e) {
+    //   throw WeightScaleException(e.message);
+    // }
   }
 
   @override
   Future<void> disconnect() async {
-    await _subscription?.cancel();
-    _subscription = null;
-    await _device.disconnect();
+    // Stop listening to weight stream.
+    // Disconnect from device.
+
+    // await _subscription?.cancel();
+    // _subscription = null;
+    // await _device.disconnect();
   }
 }

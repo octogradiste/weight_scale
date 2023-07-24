@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:weight_scale/weight_scale.dart';
 import 'package:weight_scale/src/scales/abstract_weight_scale.dart';
 
-@GenerateNiceMocks([MockSpec<BleDevice>()])
+@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 import 'abstract_weight_scale_test.mocks.dart';
 
 class TestAbstractWeightScale extends AbstractWeightScale {

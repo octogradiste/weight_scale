@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:weight_scale/src/ble/backend/flutter_blue_plus_wrapper.dart';
 import 'package:weight_scale/weight_scale.dart';
 import 'package:weight_scale/src/recognizers/recognizer.dart';
-import 'ble/backend/fb_backend.dart';
 
 /// A manager for weight scales.
 ///
@@ -18,24 +17,25 @@ import 'ble/backend/fb_backend.dart';
 /// low energy, you should check for those exception during the initialization
 /// and the scanning process.
 class WeightScaleManager {
-  final BleManager _manager;
+  final FlutterBluePlusWrapper _manager;
   final _recognizers = <WeightScaleRecognizer>[];
   final _scalesController = StreamController<List<WeightScale>>();
 
   var _isInitialized = false;
   var _isScanning = false;
 
-  WeightScaleManager({required BleManager manager}) : _manager = manager;
+  WeightScaleManager({required FlutterBluePlusWrapper manager})
+      : _manager = manager;
 
   /// Returns a [WeightScaleManager] using as [BleManager] the default
   /// implementation, namely the
   /// [flutter_blue_plus](https://pub.dev/packages/flutter_blue_plus)
   /// implementation.
-  factory WeightScaleManager.defaultBackend() {
-    return WeightScaleManager(
-      manager: FbBleManager(FlutterBluePlus.instance, FbConversion()),
-    );
-  }
+  // factory WeightScaleManager.defaultBackend() {
+  //   return WeightScaleManager(
+  //     manager: FbBleManager(FlutterBluePlus.instance, FbConversion()),
+  //   );
+  // }
 
   /// True once [initialize] has been called and has completed without
   /// exception.
@@ -64,7 +64,7 @@ class WeightScaleManager {
     register(EufySmartScaleP1Recognizer());
 
     try {
-      await _manager.initialize();
+      // await _manager.initialize();
 
       _manager.scanResults.forEach((scanResults) {
         _scalesController.add(scanResults
@@ -78,8 +78,8 @@ class WeightScaleManager {
             .whereType<WeightScale>()
             .toList());
       });
-    } on BleException catch (e) {
-      throw WeightScaleException(e.message);
+    } catch (e) {
+      throw const WeightScaleException("Couldn't initialize.");
     }
 
     _isInitialized = true;
@@ -112,9 +112,9 @@ class WeightScaleManager {
 
     try {
       await _manager.startScan(timeout: timeout);
-    } on BleException catch (e) {
+    } catch (e) {
       _isScanning = false;
-      throw WeightScaleException(e.message);
+      throw const WeightScaleException("Couldn't start scan.");
     }
   }
 
@@ -134,8 +134,8 @@ class WeightScaleManager {
     try {
       await _manager.stopScan();
       _isScanning = false;
-    } on BleException catch (e) {
-      throw WeightScaleException(e.message);
+    } catch (e) {
+      throw const WeightScaleException("Couldn't stop scan.");
     }
   }
 

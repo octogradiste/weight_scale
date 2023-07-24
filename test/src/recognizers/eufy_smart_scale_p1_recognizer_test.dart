@@ -16,7 +16,7 @@ void main() {
     test('Should recognize scale When the name is eufy T9147', () {
       BleDevice device = FakeBleDevice(id: "id", name: "eufy T9147");
       ScanResult scanResult = ScanResult(
-        device: device,
+        deviceInformation: device,
         serviceData: const {},
         serviceUuids: const [],
         rssi: 0,
@@ -30,7 +30,7 @@ void main() {
     test('Should not recognize scale When the name is eufy fake', () {
       BleDevice device = FakeBleDevice(id: "id", name: "eufy fake");
       ScanResult scanResult = ScanResult(
-        device: device,
+        deviceInformation: device,
         serviceData: const {},
         serviceUuids: const [],
         rssi: 0,

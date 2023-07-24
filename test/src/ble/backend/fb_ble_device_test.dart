@@ -13,7 +13,7 @@ import 'package:weight_scale/src/ble/ble.dart';
 @GenerateNiceMocks([
   MockSpec<BluetoothDevice>(),
   MockSpec<BluetoothCharacteristic>(),
-  MockSpec<FbConversion>(),
+  MockSpec<FlutterBluePlusConverter>(),
 ])
 import 'fb_ble_device_test.mocks.dart';
 
@@ -62,7 +62,7 @@ const services = [
 ];
 
 void main() {
-  late FbConversion conversion;
+  late FlutterBluePlusConverter conversion;
   late MockBluetoothDevice mockDevice;
   late StreamController<BluetoothDeviceState> stateController;
   late BluetoothDeviceState currentState;
@@ -74,7 +74,7 @@ void main() {
   }
 
   setUp((() {
-    conversion = FbConversion();
+    conversion = FlutterBluePlusConverter();
     mockDevice = MockBluetoothDevice();
 
     stateController = StreamController.broadcast();

@@ -177,7 +177,7 @@ void main() {
       final futureScales = manager.scales.first;
       scanController.add([
         ScanResult(
-          device: device,
+          deviceInformation: device,
           serviceData: {
             const Uuid("00000000-0000-0000-0000-000000000000"): Uint8List(13),
           },
@@ -185,7 +185,7 @@ void main() {
           rssi: 0,
         ),
         ScanResult(
-          device: FakeBleDevice(id: id, name: "not MIBCS"),
+          deviceInformation: FakeBleDevice(id: id, name: "not MIBCS"),
           serviceData: const {},
           serviceUuids: const [],
           rssi: 0,

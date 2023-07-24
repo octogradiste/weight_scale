@@ -16,13 +16,13 @@ import 'fb_ble_manager_test.mocks.dart';
 
 void main() {
   late MockFlutterBluePlus flutterBlue;
-  late FbConversion conversion;
+  late FlutterBluePlusConverter conversion;
   late StreamController<List<fb.ScanResult>> resultsController;
   late BleManager manager;
 
   setUp(() {
     flutterBlue = MockFlutterBluePlus();
-    conversion = FbConversion();
+    conversion = FlutterBluePlusConverter();
     resultsController = StreamController.broadcast();
     when(flutterBlue.scanResults).thenAnswer((_) => resultsController.stream);
     manager = FbBleManager(flutterBlue, conversion);

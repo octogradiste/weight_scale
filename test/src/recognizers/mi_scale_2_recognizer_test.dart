@@ -17,7 +17,7 @@ void main() {
     test('Should recognize and return the weight scale', () {
       BleDevice device = FakeBleDevice(id: "id", name: "MIBFS");
       ScanResult scanResult = ScanResult(
-        device: device,
+        deviceInformation: device,
         serviceData: {
           const Uuid("00000000-0000-0000-0000-000000000000"): Uint8List(13)
         },
@@ -34,7 +34,7 @@ void main() {
     test('Should not recognize the scale and return null', () {
       BleDevice device = FakeBleDevice(id: "id", name: "not MIBFS");
       ScanResult scanResult = ScanResult(
-        device: device,
+        deviceInformation: device,
         serviceData: {
           const Uuid("00000000-0000-0000-0000-000000000000"): Uint8List(13)
         },

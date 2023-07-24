@@ -58,10 +58,10 @@ void main() {
     isPrimary: false,
   );
 
-  late FbConversion conversion;
+  late FlutterBluePlusConverter conversion;
 
   setUp(() {
-    conversion = FbConversion();
+    conversion = FlutterBluePlusConverter();
   });
 
   test('BleDeviceState', () {
@@ -98,7 +98,7 @@ void main() {
       conversion,
     );
     final scanResult = ScanResult(
-      device: device,
+      deviceInformation: device,
       serviceData: {
         const Uuid('c6fa47ab-868a-40bc-ba46-39a79017037a'):
             Uint8List.fromList([1, 2, 3]),
