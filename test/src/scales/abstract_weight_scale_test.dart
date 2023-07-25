@@ -55,26 +55,6 @@ void main() {
   const serviceUuid = Uuid('5cc63afd-37f2-46d6-8467-f9c27eced9ca');
   const characteristicUuid = Uuid('7801bcaf-aa7a-45af-b4c3-baf205d89478');
 
-  // final characteristic = blue.BmBluetoothCharacteristic(
-  //   remoteId: 'id',
-  //   characteristicUuid: blue.Guid(characteristicUuid.uuid),
-  //   serviceUuid: blue.Guid(serviceUuid.uuid),
-  //   secondaryServiceUuid: null,
-  //   descriptors: [],
-  //   properties: blue.BmCharacteristicProperties.fromMap({}),
-  //   value: [],
-  // );
-
-  // final service = blue.BluetoothService.fromProto(
-  //   blue.BmBluetoothService(
-  //     remoteId: 'id',
-  //     serviceUuid: blue.Guid(serviceUuid.uuid),
-  //     isPrimary: true,
-  //     characteristics: [characteristic],
-  //     includedServices: [],
-  //   ),
-  // );
-
   final otherCharacteristic = blue.BmBluetoothCharacteristic(
     remoteId: 'id',
     characteristicUuid: blue.Guid('2fd5b7ea-42bb-468b-892b-55fdda8bd805'),
@@ -114,7 +94,7 @@ void main() {
     );
   }
 
-  Future<void> flushMicrotasks() async {
+  Future<void> flushMicroTasks() async {
     await Future.delayed(Duration.zero);
   }
 
@@ -258,7 +238,7 @@ void main() {
 
     test('Should disable notification', () async {
       await scale.disconnect();
-      await flushMicrotasks();
+      await flushMicroTasks();
       verify(characteristic.setNotifyValue(false)).called(1);
     });
 
@@ -303,7 +283,7 @@ void main() {
       scale.onDataHandler = (_) => null;
       controller.add(Uint8List.fromList([24, 12, 2, 3]));
 
-      await flushMicrotasks();
+      await flushMicroTasks();
       scale.onDataHandler = (_) => const Weight(10, WeightUnit.kg);
       controller.add(Uint8List.fromList([1, 3, 4]));
 
@@ -385,189 +365,97 @@ void main() {
     });
   });
 
-//   group('takeWeightMeasurement', () {
-//     late bool hasMeasured;
-//     late Future<Weight> weight;
+  group('takeWeightMeasurement', () {
+    late bool hasMeasured;
+    late Future<Weight> weight;
 
-//     setUp(() async {
-//       await scale.connect();
+    setUp(() async {
+      await scale.connect();
 
-//       hasMeasured = false;
-//       weight = scale.takeWeightMeasurement();
-//       weight.whenComplete(() => hasMeasured = true);
-//       scale.onDataHandler = (_) => const Weight(23, WeightUnit.kg);
-//     });
+      hasMeasured = false;
+      weight = scale.takeWeightMeasurement();
+      weight.whenComplete(() => hasMeasured = true);
+      scale.onDataHandler = (_) => const Weight(23, WeightUnit.kg);
+    });
 
-//     tearDown(() async {
-//       await scale.disconnect();
-//     });
+    tearDown(() async {
+      await scale.disconnect();
+    });
 
-//     test('Should complete When has stabilized returns true', () async {
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isFalse);
+    test('Should complete When has stabilized returns true', () async {
+      await Future.delayed(Duration.zero);
+      expect(hasMeasured, isFalse);
 
-//       controller.add(Uint8List.fromList([1, 1]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isFalse);
+      controller.add(Uint8List.fromList([1, 1]));
+      await flushMicroTasks();
+      expect(hasMeasured, isFalse);
 
-//       controller.add(Uint8List.fromList([18]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isFalse);
+      controller.add(Uint8List.fromList([18]));
+      await flushMicroTasks();
+      expect(hasMeasured, isFalse);
 
-//       scale.stabilized = true;
+      scale.stabilized = true;
 
-//       controller.add(Uint8List.fromList([45]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isTrue);
-//       expect(await weight, const Weight(23, WeightUnit.kg));
-//     });
+      controller.add(Uint8List.fromList([45]));
+      await flushMicroTasks();
+      expect(hasMeasured, isTrue);
+      expect(await weight, const Weight(23, WeightUnit.kg));
+    });
 
-//     test(
-//         'Should also complete When called multiple times during the same measurement',
-//         () async {
-//       controller.add(Uint8List.fromList([1, 1]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isFalse);
+    test(
+        'Should also complete When called multiple times during the same measurement',
+        () async {
+      controller.add(Uint8List.fromList([1, 1]));
+      await flushMicroTasks();
+      expect(hasMeasured, isFalse);
 
-//       var otherHasMeasured = false;
-//       final other = scale.takeWeightMeasurement();
-//       other.whenComplete(() => otherHasMeasured = true);
+      var otherHasMeasured = false;
+      final other = scale.takeWeightMeasurement();
+      other.whenComplete(() => otherHasMeasured = true);
 
-//       controller.add(Uint8List.fromList([18]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isFalse);
-//       expect(otherHasMeasured, isFalse);
+      controller.add(Uint8List.fromList([18]));
+      await flushMicroTasks();
+      expect(hasMeasured, isFalse);
+      expect(otherHasMeasured, isFalse);
 
-//       scale.stabilized = true;
+      scale.stabilized = true;
 
-//       controller.add(Uint8List.fromList([45]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isTrue);
-//       expect(otherHasMeasured, isTrue);
-//       expect(await weight, const Weight(23, WeightUnit.kg));
-//       expect(await other, const Weight(23, WeightUnit.kg));
-//     });
+      controller.add(Uint8List.fromList([45]));
+      await flushMicroTasks();
+      expect(hasMeasured, isTrue);
+      expect(otherHasMeasured, isTrue);
+      expect(await weight, const Weight(23, WeightUnit.kg));
+      expect(await other, const Weight(23, WeightUnit.kg));
+    });
 
-//     test('Should work When taking a second measurement', () async {
-//       controller.add(Uint8List.fromList([1, 1]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isFalse);
+    test('Should work When taking a second measurement', () async {
+      controller.add(Uint8List.fromList([1, 1]));
+      await flushMicroTasks();
+      expect(hasMeasured, isFalse);
 
-//       scale.stabilized = true;
+      scale.stabilized = true;
 
-//       controller.add(Uint8List.fromList([36]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isTrue);
-//       expect(await weight, const Weight(23, WeightUnit.kg));
+      controller.add(Uint8List.fromList([36]));
+      await flushMicroTasks();
+      expect(hasMeasured, isTrue);
+      expect(await weight, const Weight(23, WeightUnit.kg));
 
-//       scale.stabilized = false;
+      scale.stabilized = false;
 
-//       weight = scale.takeWeightMeasurement();
-//       hasMeasured = false;
-//       weight.whenComplete(() => hasMeasured = true);
+      weight = scale.takeWeightMeasurement();
+      hasMeasured = false;
+      weight.whenComplete(() => hasMeasured = true);
 
-//       controller.add(Uint8List.fromList([18]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isFalse);
+      controller.add(Uint8List.fromList([18]));
+      await flushMicroTasks();
+      expect(hasMeasured, isFalse);
 
-//       scale.stabilized = true;
+      scale.stabilized = true;
 
-//       controller.add(Uint8List.fromList([45]));
-//       await Future.delayed(Duration.zero);
-//       expect(hasMeasured, isTrue);
-//       expect(await weight, const Weight(23, WeightUnit.kg));
-//     });
-//   });
-
-//   group('connect', () {
-//     const timeout = Duration(seconds: 5);
-//     const bleException = BleException("testing");
-//     const scaleException = WeightScaleException("testing");
-
-//     test('Should call connect on the ble device When called', () async {
-//       await scale.connect(timeout: timeout);
-//       verify(device.connect(timeout: timeout));
-//     });
-
-//     test('Should throw a weight scale exception When connection fails', () {
-//       when(device.connect(timeout: timeout)).thenThrow(bleException);
-//       expect(scale.connect(timeout: timeout), throwsA(scaleException));
-//     });
-
-//     test('Should call discover devices on the ble device When called',
-//         () async {
-//       await scale.connect(timeout: timeout);
-//       verify(device.discoverServices());
-//     });
-
-//     test('Should throw a weight scale exception When the discovery fails', () {
-//       when(device.discoverServices()).thenThrow(bleException);
-//       expect(scale.connect(timeout: timeout), throwsA(scaleException));
-//     });
-
-//     test('Should not call connect on ble device When is already connected',
-//         () async {
-//       when(device.currentState)
-//           .thenAnswer((_) async => BleDeviceState.connected);
-//       await scale.connect(timeout: timeout);
-
-//       verifyNever(device.connect(timeout: timeout));
-//     });
-
-//     test('Should try to reenable the notification When is already connected',
-//         () async {
-//       when(device.currentState)
-//           .thenAnswer((_) async => BleDeviceState.connected);
-//       await scale.connect(timeout: timeout);
-
-//       verify(device.discoverServices());
-//       verify(device.subscribeCharacteristic(characteristic));
-//     });
-
-//     test(
-//         'Should throw a weight scale exception When the service is not present',
-//         () async {
-//       when(device.discoverServices()).thenAnswer((_) async => [otherService]);
-//       expect(scale.connect(), throwsWeightScaleException);
-//     });
-
-//     test('Should throw a weight scale exception When no service is not present',
-//         () async {
-//       when(device.discoverServices()).thenAnswer((_) async => []);
-//       expect(scale.connect(), throwsWeightScaleException);
-//     });
-
-//     test(
-//         'Should throw a weight scale exception When the characteristic is not present',
-//         () async {
-//       const wrong = Service(
-//         deviceId: 'id',
-//         uuid: serviceUuid,
-//         characteristics: [
-//           Characteristic(
-//             deviceId: 'id',
-//             serviceUuid: serviceUuid,
-//             uuid: Uuid('54f9c48d-439f-4187-b72d-d880748c2406'),
-//           ),
-//         ],
-//         includedServices: [],
-//         isPrimary: true,
-//       );
-
-//       when(device.discoverServices()).thenAnswer((_) async => [wrong]);
-//       expect(scale.connect(), throwsWeightScaleException);
-//     });
-
-//     test('Should enable notification on the characteristic When called',
-//         () async {
-//       await scale.connect();
-//       verify(device.subscribeCharacteristic(characteristic));
-//     });
-
-//     test('Should throw a weight scale exception When subscribing fails', () {
-//       when(device.subscribeCharacteristic(characteristic))
-//           .thenThrow(bleException);
-//       expect(scale.connect(), throwsA(scaleException));
-//     });
-//   });
+      controller.add(Uint8List.fromList([45]));
+      await flushMicroTasks();
+      expect(hasMeasured, isTrue);
+      expect(await weight, const Weight(23, WeightUnit.kg));
+    });
+  });
 }

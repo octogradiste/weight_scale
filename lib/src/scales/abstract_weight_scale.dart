@@ -26,7 +26,7 @@ abstract class AbstractWeightScale implements WeightScale {
 
   // If not null, this should complete when the weight has stabilized.
   // This will be reset to null once the weight has stabilized.
-  Completer<Weight>? measuring;
+  Completer<Weight>? _measuring;
 
   Weight _currentWeight = const Weight(0, WeightUnit.kg);
 
@@ -83,8 +83,8 @@ abstract class AbstractWeightScale implements WeightScale {
   Future<Weight> takeWeightMeasurement() async {
     // If no measurement is currently being done, create a new completer.
     // Else we can just return the future of the ongoing measurement.
-    measuring ??= Completer();
-    return measuring!.future;
+    _measuring ??= Completer();
+    return _measuring!.future;
   }
 
   @override
@@ -149,10 +149,10 @@ abstract class AbstractWeightScale implements WeightScale {
         if (weight != null) {
           _currentWeight = weight;
           _controller.add(weight);
-          // if (measuring != null && hasStabilized(data)) {
-          //   measuring!.complete(weight);
-          //   measuring = null;
-          // }
+          if (_measuring != null && hasStabilized(data)) {
+            _measuring!.complete(weight);
+            _measuring = null;
+          }
         }
       },
     );
@@ -161,55 +161,6 @@ abstract class AbstractWeightScale implements WeightScale {
       await subscription.cancel();
       await characteristic.setNotifyValue(false);
     };
-
-    // final List<Service> services;
-    // try {
-    //   if (await currentState != BleDeviceState.connected) {
-    //     await _device.connect(timeout: timeout);
-    //   }
-    //   services =
-    //       (await _device.discoverServices()).map(_converter.toService).toList();
-    // } on BleException catch (e) {
-    //   throw WeightScaleException(e.message);
-    // }
-
-    // final Service service;
-    // try {
-    //   // Finds the correct service.
-    //   service = services.where((s) => s.uuid == serviceUuid).first;
-    // } on StateError {
-    //   throw const WeightScaleException('The service was not discovered.');
-    // }
-
-    // final Characteristic characteristic;
-    // try {
-    //   // Finds the correct characteristic.
-    //   characteristic = service.characteristics
-    //       .where((c) => c.uuid == characteristicUuid)
-    //       .first;
-    // } on StateError {
-    //   throw const WeightScaleException(
-    //     'The characteristic was not discovered.',
-    //   );
-    // }
-
-    // try {
-    //   final stream = (await _device.subscribeCharacteristic(characteristic))
-    //       .map(_converter.toCharacteristic);
-    //   _subscription = stream.listen((data) {
-    //     final weight = onData(data);
-    //     if (weight != null) {
-    //       _currentWeight = weight;
-    //       _controller.add(weight);
-    //       if (measuring != null && hasStabilized(data)) {
-    //         measuring!.complete(weight);
-    //         measuring = null;
-    //       }
-    //     }
-    //   });
-    // } on BleException catch (e) {
-    //   throw WeightScaleException(e.message);
-    // }
   }
 
   @override
