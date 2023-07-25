@@ -4,8 +4,6 @@ import 'package:weight_scale/src/ble/model.dart';
 import 'flutter_blue_plus_converter.dart';
 
 class FlutterBluePlusWrapper {
-  final converter = FlutterBluePlusConverter();
-
   Future<void> startScan({
     Duration timeout = const Duration(seconds: 20),
   }) async {
@@ -17,7 +15,8 @@ class FlutterBluePlusWrapper {
   }
 
   Stream<List<ScanResult>> get scanResults {
-    return blue.FlutterBluePlus.scanResults
-        .map((scanResults) => scanResults.map(converter.toScanResult).toList());
+    return blue.FlutterBluePlus.scanResults.map(
+      (results) => results.map(FlutterBluePlusConverter.toScanResult).toList(),
+    );
   }
 }

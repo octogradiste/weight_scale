@@ -5,7 +5,7 @@ import 'package:weight_scale/src/ble/model.dart';
 
 /// A helper class for converting from and to flutter blue objects.
 class FlutterBluePlusConverter {
-  BleDeviceState toBleDeviceState(blue.BluetoothConnectionState state) {
+  static BleDeviceState toBleDeviceState(blue.BluetoothConnectionState state) {
     switch (state) {
       case blue.BluetoothConnectionState.disconnected:
         return BleDeviceState.disconnected;
@@ -18,14 +18,16 @@ class FlutterBluePlusConverter {
     }
   }
 
-  BleDeviceInformation toBleDeviceInformation(blue.BluetoothDevice device) {
+  static BleDeviceInformation toBleDeviceInformation(
+    blue.BluetoothDevice device,
+  ) {
     return BleDeviceInformation(
       id: device.remoteId.str,
       name: device.localName,
     );
   }
 
-  ScanResult toScanResult(blue.ScanResult scanResult) {
+  static ScanResult toScanResult(blue.ScanResult scanResult) {
     return ScanResult(
       deviceInformation: toBleDeviceInformation(scanResult.device),
       serviceData: scanResult.advertisementData.serviceData
@@ -38,7 +40,7 @@ class FlutterBluePlusConverter {
     );
   }
 
-  Uuid toUuid(blue.Guid guid) {
+  static Uuid toUuid(blue.Guid guid) {
     return Uuid(guid.toString());
   }
 }

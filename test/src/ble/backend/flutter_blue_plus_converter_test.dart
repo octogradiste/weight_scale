@@ -6,27 +6,29 @@ import 'package:weight_scale/src/ble/backend/flutter_blue_plus_converter.dart';
 import 'package:weight_scale/src/ble/model.dart';
 
 void main() {
-  late FlutterBluePlusConverter converter;
-
-  setUp(() {
-    converter = FlutterBluePlusConverter();
-  });
-
   test('BleDeviceState', () {
     expect(
-      converter.toBleDeviceState(blue.BluetoothConnectionState.connecting),
+      FlutterBluePlusConverter.toBleDeviceState(
+        blue.BluetoothConnectionState.connecting,
+      ),
       BleDeviceState.connecting,
     );
     expect(
-      converter.toBleDeviceState(blue.BluetoothConnectionState.connected),
+      FlutterBluePlusConverter.toBleDeviceState(
+        blue.BluetoothConnectionState.connected,
+      ),
       BleDeviceState.connected,
     );
     expect(
-      converter.toBleDeviceState(blue.BluetoothConnectionState.disconnecting),
+      FlutterBluePlusConverter.toBleDeviceState(
+        blue.BluetoothConnectionState.disconnecting,
+      ),
       BleDeviceState.disconnecting,
     );
     expect(
-      converter.toBleDeviceState(blue.BluetoothConnectionState.disconnected),
+      FlutterBluePlusConverter.toBleDeviceState(
+        blue.BluetoothConnectionState.disconnected,
+      ),
       BleDeviceState.disconnected,
     );
   });
@@ -48,8 +50,8 @@ void main() {
       txPowerLevel: 5,
     );
 
-    final actual =
-        converter.toScanResult(blue.ScanResult.fromProto(blue.BmScanResult(
+    final actual = FlutterBluePlusConverter.toScanResult(
+        blue.ScanResult.fromProto(blue.BmScanResult(
       advertisementData: blue.BmAdvertisementData(
         localName: 'name',
         txPowerLevel: 5,
@@ -76,6 +78,6 @@ void main() {
 
   test('Uuid', () {
     const uuid = '12670607-b9ed-488e-acc7-6567c14ede00';
-    expect(converter.toUuid(blue.Guid(uuid)), const Uuid(uuid));
+    expect(FlutterBluePlusConverter.toUuid(blue.Guid(uuid)), const Uuid(uuid));
   });
 }

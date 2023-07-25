@@ -31,11 +31,11 @@ class WeightScaleManager {
   /// implementation, namely the
   /// [flutter_blue_plus](https://pub.dev/packages/flutter_blue_plus)
   /// implementation.
-  // factory WeightScaleManager.defaultBackend() {
-  //   return WeightScaleManager(
-  //     manager: FbBleManager(FlutterBluePlus.instance, FbConversion()),
-  //   );
-  // }
+  factory WeightScaleManager.defaultBackend() {
+    return WeightScaleManager(
+      manager: FlutterBluePlusWrapper(),
+    );
+  }
 
   /// True once [initialize] has been called and has completed without
   /// exception.
