@@ -5,6 +5,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:weight_scale/src/ble/backend/flutter_blue_plus_converter.dart';
 import 'package:weight_scale/weight_scale.dart';
 import 'package:weight_scale/src/scales/abstract_weight_scale.dart';
 
@@ -113,6 +114,10 @@ void main() {
     );
   }
 
+  Future<void> flushMicrotasks() async {
+    await Future.delayed(Duration.zero);
+  }
+
   setUp(() {
     controller = StreamController();
     device = MockBluetoothDevice();
@@ -219,118 +224,141 @@ void main() {
     });
   });
 
-//   group('weight', () {
-//     setUp(() async {
-//       await scale.connect();
-//       scale.onDataHandler =
-//           (data) => Weight(data.first.toDouble(), WeightUnit.lbs);
-//     });
+  group('disconnect', () {
+    setUp(() async {
+      await scale.connect();
+    });
 
-//     tearDown(() async {
-//       await scale.disconnect();
-//     });
+    test('Should call disconnect on the ble device', () async {
+      await scale.disconnect();
+      verify(device.disconnect());
+    });
 
-//     test('Should be a broadcast stream', () {
-//       expect(scale.weight.isBroadcast, isTrue);
-//     });
+    test('Should unsubscribe of the lastValueStream', () async {
+      await scale.disconnect();
+      expect(controller.hasListener, isFalse);
+    });
 
-//     test(
-//         'Should emit the transformed data When the characteristic has a new value',
-//         () async {
-//       final weights = scale.weight.take(2).toList();
+    test('Should disable notification', () async {
+      await scale.disconnect();
+      await flushMicrotasks();
+      verify(characteristic.setNotifyValue(false)).called(1);
+    });
 
-//       controller.add(Uint8List.fromList([24]));
-//       controller.add(Uint8List.fromList([10]));
+    test('Should throw an exception When cannot disconnect', () {
+      when(device.disconnect()).thenAnswer(throwException);
+      expect(scale.disconnect(), throwsWeightScaleException);
+    });
+  });
 
-//       expect(await weights, [
-//         const Weight(24, WeightUnit.lbs),
-//         const Weight(10, WeightUnit.lbs),
-//       ]);
-//     });
+  group('weight', () {
+    setUp(() async {
+      await scale.connect();
+      scale.onDataHandler =
+          (data) => Weight(data.first.toDouble(), WeightUnit.lbs);
+    });
 
-//     test('Should not emit data When the transformed data is null', () async {
-//       final weight = scale.weight.first;
+    tearDown(() async {
+      await scale.disconnect();
+    });
 
-//       scale.onDataHandler = (_) => null;
-//       controller.add(Uint8List.fromList([24, 12, 2, 3]));
+    test('Should be a broadcast stream', () {
+      expect(scale.weight.isBroadcast, isTrue);
+    });
 
-//       await Future.delayed(Duration.zero);
-//       scale.onDataHandler = (_) => const Weight(10, WeightUnit.kg);
-//       controller.add(Uint8List.fromList([1, 3, 4]));
+    test(
+        'Should emit the transformed data When the characteristic has a new value',
+        () async {
+      final weights = scale.weight.take(2).toList();
 
-//       expect(await weight, const Weight(10, WeightUnit.kg));
-//     });
+      controller.add(Uint8List.fromList([24]));
+      controller.add(Uint8List.fromList([10]));
 
-//     test(
-//         'Should unsubscribe of the characteristic notification stream When disconnecting',
-//         () async {
-//       await scale.disconnect();
-//       expect(controller.hasListener, isFalse);
-//     });
-//   });
+      expect(await weights, [
+        const Weight(24, WeightUnit.lbs),
+        const Weight(10, WeightUnit.lbs),
+      ]);
+    });
 
-//   group('currentWeight', () {
-//     setUp(() async {
-//       await scale.connect();
-//       scale.onDataHandler =
-//           (data) => Weight(data.first.toDouble(), WeightUnit.kg);
-//     });
+    test('Should not emit data When the transformed data is null', () async {
+      final weight = scale.weight.first;
 
-//     test('Should be 0 When no data was emitted so far', () {
-//       expect(scale.currentWeight, const Weight(0, WeightUnit.kg));
-//     });
+      scale.onDataHandler = (_) => null;
+      controller.add(Uint8List.fromList([24, 12, 2, 3]));
 
-//     test('Should be the last emitted value', () async {
-//       controller.add(Uint8List.fromList([24]));
-//       controller.add(Uint8List.fromList([10]));
-//       await Future.delayed(Duration.zero);
-//       expect(scale.currentWeight, const Weight(10, WeightUnit.kg));
-//     });
-//   });
+      await flushMicrotasks();
+      scale.onDataHandler = (_) => const Weight(10, WeightUnit.kg);
+      controller.add(Uint8List.fromList([1, 3, 4]));
 
-//   group('isConnected', () {
-//     test('Should be true When is connected', () async {
-//       when(device.currentState)
-//           .thenAnswer((_) async => BleDeviceState.connected);
-//       expect(await scale.isConnected, true);
-//     });
+      expect(await weight, const Weight(10, WeightUnit.kg));
+    });
+  });
 
-//     test('Should be false When is connecting', () async {
-//       when(device.currentState)
-//           .thenAnswer((_) async => BleDeviceState.connecting);
-//       expect(await scale.isConnected, false);
-//     });
+  group('currentWeight', () {
+    setUp(() async {
+      await scale.connect();
+      scale.onDataHandler =
+          (data) => Weight(data.first.toDouble(), WeightUnit.kg);
+    });
 
-//     test('Should be false When is disconnecting', () async {
-//       when(device.currentState)
-//           .thenAnswer((_) async => BleDeviceState.disconnecting);
-//       expect(await scale.isConnected, false);
-//     });
+    tearDown(() async {
+      await scale.disconnect();
+    });
 
-//     test('Should be false When is disconnected', () async {
-//       when(device.currentState)
-//           .thenAnswer((_) async => BleDeviceState.disconnected);
-//       expect(await scale.isConnected, false);
-//     });
-//   });
+    test('Should be 0 When no data was emitted so far', () {
+      expect(scale.currentWeight, const Weight(0, WeightUnit.kg));
+    });
 
-//   group('currentState', () {
-//     test('Should return the same as the ble device', () async {
-//       for (final state in BleDeviceState.values) {
-//         when(device.currentState).thenAnswer((_) async => state);
-//         expect(await scale.currentState, state);
-//       }
-//     });
-//   });
+    test('Should be the last emitted value', () async {
+      controller.add(Uint8List.fromList([24]));
+      controller.add(Uint8List.fromList([10]));
+      await Future.delayed(Duration.zero);
+      expect(scale.currentWeight, const Weight(10, WeightUnit.kg));
+    });
+  });
 
-//   group('connected', () {
-//     test('Should emit the same values as the ble device', () async {
-//       const states = [true, false, true, false, true, false];
-//       when(device.connected).thenAnswer((_) => Stream.fromIterable(states));
-//       final result = scale.connected.take(states.length).toList();
-//       expect(await result, states);
-//     });
-//   });
+  group('isConnected', () {
+    test('Should be true When is connected', () async {
+      setDeviceState(blue.BluetoothConnectionState.connected);
+      expect(await scale.isConnected, true);
+    });
+
+    test('Should be false When is not connected', () async {
+      const states = [
+        blue.BluetoothConnectionState.connecting,
+        blue.BluetoothConnectionState.disconnecting,
+        blue.BluetoothConnectionState.disconnected,
+      ];
+
+      for (final state in states) {
+        setDeviceState(state);
+        expect(await scale.isConnected, false);
+      }
+    });
+  });
+
+  group('currentState', () {
+    test('Should return the same as the ble device', () async {
+      for (final state in blue.BluetoothConnectionState.values) {
+        setDeviceState(state);
+        expect(
+          await scale.currentState,
+          FlutterBluePlusConverter.toBleDeviceState(state),
+        );
+      }
+    });
+  });
+
+  // group('connected', () {
+  //   test('Should emit the same values as the ble device', () async {
+  //     const states = [true, false, true, false, true, false];
+  //     when(device.connectionState).thenAnswer(
+  //       (_) => Stream.fromIterable(states),
+  //     );
+  //     final result = scale.connected.take(states.length).toList();
+  //     expect(await result, states);
+  //   });
+  // });
 
 //   group('takeWeightMeasurement', () {
 //     late bool hasMeasured;
@@ -515,14 +543,6 @@ void main() {
 //       when(device.subscribeCharacteristic(characteristic))
 //           .thenThrow(bleException);
 //       expect(scale.connect(), throwsA(scaleException));
-//     });
-//   });
-
-//   group('disconnect', () {
-//     test('Should call disconnect on the ble device When called', () async {
-//       await scale.connect();
-//       await scale.disconnect();
-//       verify(device.disconnect());
 //     });
 //   });
 }

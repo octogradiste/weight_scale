@@ -17,13 +17,12 @@ import 'package:weight_scale/weight_scale.dart';
 /// can be counted as a valid measurement which is then returned by the
 /// [takeWeightMeasurement] method.
 abstract class AbstractWeightScale implements WeightScale {
-  final FlutterBluePlusConverter _converter;
   final blue.BluetoothDevice _device;
   final _controller = StreamController<Weight>.broadcast();
 
-  // If not null, this is the subscription to the characteristic emitting the
-  // weight data.
-  StreamSubscription? _subscription;
+  // Assigned when connecting to the device and called during disconnect.
+  // Performs cleanup (cancel subscription and disable notification).
+  Future<void> Function() _onDisconnect = () => Future.value();
 
   // If not null, this should complete when the weight has stabilized.
   // This will be reset to null once the weight has stabilized.
@@ -41,9 +40,7 @@ abstract class AbstractWeightScale implements WeightScale {
   /// characteristic holding the weight data.
   AbstractWeightScale({
     required blue.BluetoothDevice device,
-    FlutterBluePlusConverter converter = const FlutterBluePlusConverter(),
-  })  : _device = device,
-        _converter = converter;
+  }) : _device = device;
 
   /// This should transform the data received by the scale to a
   /// weight measurement. If the data isn't a valid weight measurement, this
@@ -74,8 +71,9 @@ abstract class AbstractWeightScale implements WeightScale {
       await currentState == BleDeviceState.connected;
 
   @override
-  Future<BleDeviceState> get currentState =>
-      _device.connectionState.map(_converter.toBleDeviceState).first;
+  Future<BleDeviceState> get currentState => _device.connectionState
+      .map(FlutterBluePlusConverter.toBleDeviceState)
+      .first;
 
   @override
   Stream<bool> get connected => _device.connectionState
@@ -142,18 +140,25 @@ abstract class AbstractWeightScale implements WeightScale {
 
     // Listen to stream and convert data to weight.
     // If [hasStabilized] is true, complete the [measuring] completer.
-    characteristic.lastValueStream.listen((dataInt) {
-      final data = Uint8List.fromList(dataInt); // TODO: Change onData to int
-      final weight = onData(data);
-      if (weight != null) {
-        _currentWeight = weight;
-        _controller.add(weight);
-        // if (measuring != null && hasStabilized(data)) {
-        //   measuring!.complete(weight);
-        //   measuring = null;
-        // }
-      }
-    });
+    final subscription = characteristic.lastValueStream.listen(
+      (dataInt) {
+        final data = Uint8List.fromList(dataInt); // TODO: Change onData to int
+        final weight = onData(data);
+        if (weight != null) {
+          _currentWeight = weight;
+          _controller.add(weight);
+          // if (measuring != null && hasStabilized(data)) {
+          //   measuring!.complete(weight);
+          //   measuring = null;
+          // }
+        }
+      },
+    );
+
+    _onDisconnect = () async {
+      await subscription.cancel();
+      await characteristic.setNotifyValue(false);
+    };
 
     // final List<Service> services;
     // try {
@@ -207,11 +212,14 @@ abstract class AbstractWeightScale implements WeightScale {
 
   @override
   Future<void> disconnect() async {
-    // Stop listening to weight stream.
-    // Disconnect from device.
+    // Perform cleanup.
+    await _onDisconnect();
 
-    // await _subscription?.cancel();
-    // _subscription = null;
-    // await _device.disconnect();
+    // Disconnect from device.
+    try {
+      await _device.disconnect();
+    } catch (_) {
+      throw const WeightScaleException("Could not disconnect from device.");
+    }
   }
 }
