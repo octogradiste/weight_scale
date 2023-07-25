@@ -366,16 +366,24 @@ void main() {
     });
   });
 
-  // group('connected', () {
-  //   test('Should emit the same values as the ble device', () async {
-  //     const states = [true, false, true, false, true, false];
-  //     when(device.connectionState).thenAnswer(
-  //       (_) => Stream.fromIterable(states),
-  //     );
-  //     final result = scale.connected.take(states.length).toList();
-  //     expect(await result, states);
-  //   });
-  // });
+  group('connected', () {
+    test('Should emit true When device emits connected', () async {
+      const states = [
+        blue.BluetoothConnectionState.connected,
+        blue.BluetoothConnectionState.disconnecting,
+        blue.BluetoothConnectionState.connecting,
+        blue.BluetoothConnectionState.connected,
+        blue.BluetoothConnectionState.disconnecting,
+        blue.BluetoothConnectionState.disconnected,
+      ];
+      const expected = [true, false, false, true, false, false];
+      when(device.connectionState).thenAnswer(
+        (_) => Stream.fromIterable(states),
+      );
+      final result = scale.connected.take(states.length).toList();
+      expect(await result, expected);
+    });
+  });
 
 //   group('takeWeightMeasurement', () {
 //     late bool hasMeasured;
