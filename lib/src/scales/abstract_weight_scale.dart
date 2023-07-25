@@ -96,6 +96,8 @@ abstract class AbstractWeightScale implements WeightScale {
       } catch (_) {
         throw const WeightScaleException("Could not connect to device.");
       }
+    } else {
+      _onDisconnect();
     }
     // Ensure connected state has been emitted.
     // Discover services.

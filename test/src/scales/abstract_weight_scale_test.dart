@@ -119,7 +119,7 @@ void main() {
   }
 
   setUp(() {
-    controller = StreamController();
+    controller = StreamController.broadcast();
     device = MockBluetoothDevice();
     characteristic = MockBluetoothCharacteristic();
     service = MockBluetoothService();
@@ -221,6 +221,23 @@ void main() {
     test('Should listen to lastValueStream When called', () async {
       await scale.connect();
       expect(controller.hasListener, isTrue);
+    });
+
+    test('Should disable notification When already connected', () async {
+      await scale.connect();
+      setDeviceState(blue.BluetoothConnectionState.connected);
+      await scale.connect();
+      verify(characteristic.setNotifyValue(false)).called(1);
+    });
+
+    test('Should not listen to lastValueStream When already connected',
+        () async {
+      await scale.connect();
+      setDeviceState(blue.BluetoothConnectionState.connected);
+      when(characteristic.lastValueStream)
+          .thenAnswer((_) => const Stream.empty());
+      await scale.connect();
+      expect(controller.hasListener, isFalse);
     });
   });
 
