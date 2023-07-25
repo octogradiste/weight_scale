@@ -17,7 +17,7 @@ import 'package:weight_scale/weight_scale.dart';
 /// can be counted as a valid measurement which is then returned by the
 /// [takeWeightMeasurement] method.
 abstract class AbstractWeightScale implements WeightScale {
-  final _converter = FlutterBluePlusConverter();
+  final FlutterBluePlusConverter _converter;
   final blue.BluetoothDevice _device;
   final _controller = StreamController<Weight>.broadcast();
 
@@ -41,7 +41,9 @@ abstract class AbstractWeightScale implements WeightScale {
   /// characteristic holding the weight data.
   AbstractWeightScale({
     required blue.BluetoothDevice device,
-  }) : _device = device;
+    FlutterBluePlusConverter converter = const FlutterBluePlusConverter(),
+  })  : _device = device,
+        _converter = converter;
 
   /// This should transform the data received by the scale to a
   /// weight measurement. If the data isn't a valid weight measurement, this
@@ -90,12 +92,68 @@ abstract class AbstractWeightScale implements WeightScale {
   @override
   Future<void> connect({Duration timeout = const Duration(seconds: 15)}) async {
     // Connect to device if not already connected.
+    if (await currentState != BleDeviceState.connected) {
+      try {
+        await _device.connect(timeout: timeout);
+      } catch (_) {
+        throw const WeightScaleException("Could not connect to device.");
+      }
+    }
+    // Ensure connected state has been emitted.
     // Discover services.
+    final List<blue.BluetoothService> services;
+    try {
+      services = await _device.discoverServices();
+    } catch (_) {
+      throw const WeightScaleException("Could not discover services.");
+    }
+
     // Find correct service.
+    final blue.BluetoothService service;
+    try {
+      service = services.firstWhere(
+        (s) => s.serviceUuid == blue.Guid(serviceUuid.uuid),
+      );
+    } on StateError catch (_) {
+      throw const WeightScaleException("Could not find service.");
+    }
+
     // Find correct characteristic.
+    final blue.BluetoothCharacteristic characteristic;
+    try {
+      characteristic = service.characteristics.firstWhere(
+        (c) => c.characteristicUuid == blue.Guid(characteristicUuid.uuid),
+      );
+    } on StateError catch (_) {
+      throw const WeightScaleException("Could not find characteristic.");
+    }
+
     // Subscribe to characteristic.
+    var success = false;
+    try {
+      success = await characteristic.setNotifyValue(true);
+    } catch (_) {
+      success = false;
+    }
+
+    if (!success) {
+      throw const WeightScaleException("Could not enable notification.");
+    }
+
     // Listen to stream and convert data to weight.
     // If [hasStabilized] is true, complete the [measuring] completer.
+    characteristic.lastValueStream.listen((dataInt) {
+      final data = Uint8List.fromList(dataInt); // TODO: Change onData to int
+      final weight = onData(data);
+      if (weight != null) {
+        _currentWeight = weight;
+        _controller.add(weight);
+        // if (measuring != null && hasStabilized(data)) {
+        //   measuring!.complete(weight);
+        //   measuring = null;
+        // }
+      }
+    });
 
     // final List<Service> services;
     // try {
