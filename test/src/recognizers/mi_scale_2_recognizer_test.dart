@@ -19,7 +19,7 @@ void main() {
         serviceData: {
           const Uuid("00000000-0000-0000-0000-000000000000"): Uint8List(13)
         },
-        serviceUuids: [],
+        serviceUuids: const [],
         rssi: 0,
       );
       WeightScale? scale = recognizer.recognize(scanResult: scanResult);
@@ -36,7 +36,7 @@ void main() {
         serviceData: {
           const Uuid("00000000-0000-0000-0000-000000000000"): Uint8List(13)
         },
-        serviceUuids: [],
+        serviceUuids: const [],
         rssi: 0,
       );
       WeightScale? scale = recognizer.recognize(scanResult: scanResult);
