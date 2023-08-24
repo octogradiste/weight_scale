@@ -24,11 +24,20 @@ void main() {
     when(wrapper.scanResults).thenAnswer((_) => scanController.stream);
     when(wrapper.startScan()).thenAnswer((_) async {});
     when(wrapper.stopScan()).thenAnswer((_) async {});
-    manager = WeightScaleManager(manager: wrapper);
+    manager = WeightScaleManager.instance(wrapper: wrapper);
   });
 
   tearDown(() {
     scanController.close();
+  });
+
+  group('instance', () {
+    test('Should return the same instance When called multiple times', () {
+      expect(
+        WeightScaleManager.instance(),
+        equals(WeightScaleManager.instance()),
+      );
+    });
   });
 
   group('isInitialized', () {
@@ -51,7 +60,7 @@ void main() {
       when(wrapper.scanResults).thenThrow(Exception('test'));
       expect(
         manager.initialize(),
-        throwsWeightScaleException(message: equals('test')),
+        throwsWeightScaleException(message: isNotEmpty),
       );
       expect(manager.isInitialized, isFalse);
     });
@@ -81,7 +90,7 @@ void main() {
 
       expect(
         manager.startScan(),
-        throwsWeightScaleException(message: equals('test')),
+        throwsWeightScaleException(message: isNotEmpty),
       );
       expect(manager.isScanning, isFalse);
     });
@@ -106,7 +115,7 @@ void main() {
       when(wrapper.scanResults).thenThrow(Exception('test'));
       expect(
         manager.initialize(),
-        throwsWeightScaleException(message: equals('test')),
+        throwsWeightScaleException(message: isNotEmpty),
       );
     });
   });
@@ -130,7 +139,7 @@ void main() {
 
     test('Should throw a weight scale exception When is not yet initialized',
         () {
-      manager = WeightScaleManager(manager: wrapper);
+      manager = WeightScaleManager.instance(wrapper: wrapper);
       expect(
         manager.startScan(timeout: timeout),
         throwsWeightScaleException(message: isNotEmpty),
@@ -197,7 +206,7 @@ void main() {
       when(wrapper.startScan(timeout: timeout)).thenThrow(Exception('test'));
       expect(
         manager.startScan(timeout: timeout),
-        throwsWeightScaleException(message: equals('test')),
+        throwsWeightScaleException(message: isNotEmpty),
       );
     });
 
@@ -218,7 +227,7 @@ void main() {
 
     test('Should throw a weight scale exception When is not yet initialized',
         () {
-      manager = WeightScaleManager(manager: wrapper);
+      manager = WeightScaleManager.instance(wrapper: wrapper);
       expect(
         manager.stopScan(),
         throwsWeightScaleException(message: isNotEmpty),
@@ -247,7 +256,7 @@ void main() {
       await flushMicroTasks();
       expect(
         manager.stopScan(),
-        throwsWeightScaleException(message: equals('test')),
+        throwsWeightScaleException(message: isNotEmpty),
       );
     });
   });

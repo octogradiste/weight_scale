@@ -3,7 +3,7 @@ import 'package:weight_scale/weight_scale.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final manager = WeightScaleManager.defaultBackend();
+  final manager = WeightScaleManager.instance();
   await manager.initialize();
 
   runApp(ExampleApp(manager: manager));

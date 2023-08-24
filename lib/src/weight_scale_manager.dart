@@ -17,24 +17,36 @@ import 'package:weight_scale/src/recognizers/recognizer.dart';
 /// low energy, you should check for those exception during the initialization
 /// and the scanning process.
 class WeightScaleManager {
-  final FlutterBluePlusWrapper _manager;
+  final FlutterBluePlusWrapper _wrapper;
   final _recognizers = <WeightScaleRecognizer>[];
   final _scalesController = StreamController<List<WeightScale>>();
 
   var _isInitialized = false;
   var _isScanning = false;
 
-  WeightScaleManager({required FlutterBluePlusWrapper manager})
-      : _manager = manager;
+  static WeightScaleManager? _instance;
 
-  /// Returns a [WeightScaleManager] using as [BleManager] the default
-  /// implementation, namely the
-  /// [flutter_blue_plus](https://pub.dev/packages/flutter_blue_plus)
-  /// implementation.
-  factory WeightScaleManager.defaultBackend() {
-    return WeightScaleManager(
-      manager: FlutterBluePlusWrapper(),
-    );
+  WeightScaleManager._internal({
+    required FlutterBluePlusWrapper wrapper,
+  }) : _wrapper = wrapper;
+
+  /// Returns the [WeightScaleManager] instance.
+  ///
+  /// This will create a new instance if it doesn't exist yet, otherwise it will
+  /// return the existing one.
+  /// It uses [flutter_blue_plus](https://pub.dev/packages/flutter_blue_plus) as
+  /// backend to perform bluetooth low energy operations.
+  /// The [wrapper] is only used for testing purposes and should be omitted.
+  /// Note that this will always create a new instance when a [wrapper] is
+  /// provided.
+  factory WeightScaleManager.instance({FlutterBluePlusWrapper? wrapper}) {
+    if (wrapper != null) {
+      _instance = WeightScaleManager._internal(wrapper: wrapper);
+    } else if (_instance == null) {
+      wrapper = FlutterBluePlusWrapper();
+      _instance = WeightScaleManager._internal(wrapper: wrapper);
+    }
+    return _instance!;
   }
 
   /// True once [initialize] has been called and has completed without
@@ -64,14 +76,11 @@ class WeightScaleManager {
     register(EufySmartScaleP1Recognizer());
 
     try {
-      // await _manager.initialize();
-
-      _manager.scanResults.forEach((scanResults) {
+      _wrapper.scanResults.forEach((scanResults) {
         _scalesController.add(scanResults
             .map((scanResult) {
               for (WeightScaleRecognizer recognizer in _recognizers) {
-                WeightScale? scale =
-                    recognizer.recognize(scanResult: scanResult);
+                final scale = recognizer.recognize(scanResult: scanResult);
                 if (scale != null) return scale;
               }
             })
@@ -111,7 +120,7 @@ class WeightScaleManager {
     _isScanning = true;
 
     try {
-      await _manager.startScan(timeout: timeout);
+      await _wrapper.startScan(timeout: timeout);
     } catch (e) {
       _isScanning = false;
       throw const WeightScaleException("Couldn't start scan.");
@@ -132,7 +141,7 @@ class WeightScaleManager {
     if (!_isScanning) return;
 
     try {
-      await _manager.stopScan();
+      await _wrapper.stopScan();
       _isScanning = false;
     } catch (e) {
       throw const WeightScaleException("Couldn't stop scan.");
