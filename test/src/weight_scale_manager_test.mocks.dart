@@ -3,14 +3,12 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:weight_scale/src/ble/backend/flutter_blue_plus_converter.dart'
-    as _i2;
 import 'package:weight_scale/src/ble/backend/flutter_blue_plus_wrapper.dart'
-    as _i3;
-import 'package:weight_scale/src/ble/model.dart' as _i5;
+    as _i2;
+import 'package:weight_scale/src/ble/model.dart' as _i4;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -23,42 +21,19 @@ import 'package:weight_scale/src/ble/model.dart' as _i5;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeFlutterBluePlusConverter_0 extends _i1.SmartFake
-    implements _i2.FlutterBluePlusConverter {
-  _FakeFlutterBluePlusConverter_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
 /// A class which mocks [FlutterBluePlusWrapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockFlutterBluePlusWrapper extends _i1.Mock
-    implements _i3.FlutterBluePlusWrapper {
+    implements _i2.FlutterBluePlusWrapper {
   @override
-  _i2.FlutterBluePlusConverter get converter => (super.noSuchMethod(
-        Invocation.getter(#converter),
-        returnValue: _FakeFlutterBluePlusConverter_0(
-          this,
-          Invocation.getter(#converter),
-        ),
-        returnValueForMissingStub: _FakeFlutterBluePlusConverter_0(
-          this,
-          Invocation.getter(#converter),
-        ),
-      ) as _i2.FlutterBluePlusConverter);
-  @override
-  _i4.Stream<List<_i5.ScanResult>> get scanResults => (super.noSuchMethod(
+  _i3.Stream<List<_i4.ScanResult>> get scanResults => (super.noSuchMethod(
         Invocation.getter(#scanResults),
-        returnValue: _i4.Stream<List<_i5.ScanResult>>.empty(),
-        returnValueForMissingStub: _i4.Stream<List<_i5.ScanResult>>.empty(),
-      ) as _i4.Stream<List<_i5.ScanResult>>);
+        returnValue: _i3.Stream<List<_i4.ScanResult>>.empty(),
+        returnValueForMissingStub: _i3.Stream<List<_i4.ScanResult>>.empty(),
+      ) as _i3.Stream<List<_i4.ScanResult>>);
   @override
-  _i4.Future<void> startScan(
+  _i3.Future<void> startScan(
           {Duration? timeout = const Duration(seconds: 20)}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -66,16 +41,16 @@ class MockFlutterBluePlusWrapper extends _i1.Mock
           [],
           {#timeout: timeout},
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
   @override
-  _i4.Future<void> stopScan() => (super.noSuchMethod(
+  _i3.Future<void> stopScan() => (super.noSuchMethod(
         Invocation.method(
           #stopScan,
           [],
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
 }
