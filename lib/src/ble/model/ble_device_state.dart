@@ -1,7 +1,5 @@
-/// The different states in which a [BleDevice] can be in.
+/// The different states of a BLE device.
 enum BleDeviceState {
   connected,
   disconnected,
-  connecting,
-  disconnecting,
 }

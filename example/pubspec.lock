@@ -66,18 +66,18 @@ packages:
     dependency: transitive
     description:
       name: flutter_blue_plus
-      sha256: ad6f7076519c7f5c6cb0336ba10e919bb6c228e8f83bad5df275f01d3591a945
+      sha256: "41d7cf583b377459c35d04c56d0958b38ad5a6631206ada3a798d113508e5431"
       url: "https://pub.dev"
     source: hosted
-    version: "1.14.11"
+    version: "1.14.14"
   flutter_lints:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      sha256: "2118df84ef0c3ca93f96123a616ae8540879991b8b57af2f81b76a7ada49b2a4"
+      sha256: a25a15ebbdfc33ab1cd26c63a6ee519df92338a9c10f122adda92938253bef04
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter

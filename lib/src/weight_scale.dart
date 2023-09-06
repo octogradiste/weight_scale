@@ -37,12 +37,11 @@ abstract class WeightScale {
   /// True if is currently connected to this weight scale.
   Future<bool> get isConnected;
 
-  // The current state of the underlying ble device.
+  /// The current state of the underlying ble device.
   Future<BleDeviceState> get currentState;
 
-  /// A stream which emits a boolean value whenever the connection
-  /// changes from connected to disconnected or vice versa.
-  Stream<bool> get connected;
+  /// A broadcast stream of the current state of the underlying ble device.
+  Stream<BleDeviceState> get state;
 
   /// Connects to this weight scale.
   ///

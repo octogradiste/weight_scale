@@ -322,8 +322,6 @@ void main() {
 
     test('Should be false When is not connected', () async {
       const states = [
-        blue.BluetoothConnectionState.connecting,
-        blue.BluetoothConnectionState.disconnecting,
         blue.BluetoothConnectionState.disconnected,
       ];
 
@@ -346,21 +344,22 @@ void main() {
     });
   });
 
-  group('connected', () {
-    test('Should emit true When device emits connected', () async {
+  group('state', () {
+    test('Should emit the same states as the ble device', () async {
       const states = [
         blue.BluetoothConnectionState.connected,
-        blue.BluetoothConnectionState.disconnecting,
-        blue.BluetoothConnectionState.connecting,
         blue.BluetoothConnectionState.connected,
-        blue.BluetoothConnectionState.disconnecting,
         blue.BluetoothConnectionState.disconnected,
       ];
-      const expected = [true, false, false, true, false, false];
+      const expected = [
+        BleDeviceState.connected,
+        BleDeviceState.connected,
+        BleDeviceState.disconnected,
+      ];
       when(device.connectionState).thenAnswer(
         (_) => Stream.fromIterable(states),
       );
-      final result = scale.connected.take(states.length).toList();
+      final result = scale.state.take(states.length).toList();
       expect(await result, expected);
     });
   });

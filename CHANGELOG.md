@@ -1,3 +1,8 @@
+#  0.5.0
+
+- Upgrading to `flutter_blue_plus` 1.14.x.
+- Renamed `WeightScale.connected` to `WeightScale.state` for consistency.
+
 # 0.4.0
 
 - Removing BLE abstraction layer.

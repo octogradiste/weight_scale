@@ -1,6 +1,6 @@
 name: weight_scale
 description: Flutter package to connect to BLE weight scales.
-version: 0.4.0
+version: 0.5.0
 homepage: https://github.com/octogradiste/weight_scale
 repository: https://github.com/octogradiste/weight_scale 
 
@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_blue_plus: ^1.10.3
+  flutter_blue_plus: ^1.14.14
 
 dev_dependencies:
   flutter_test:

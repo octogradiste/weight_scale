@@ -9,21 +9,9 @@ void main() {
   test('BleDeviceState', () {
     expect(
       FlutterBluePlusConverter.toBleDeviceState(
-        blue.BluetoothConnectionState.connecting,
-      ),
-      BleDeviceState.connecting,
-    );
-    expect(
-      FlutterBluePlusConverter.toBleDeviceState(
         blue.BluetoothConnectionState.connected,
       ),
       BleDeviceState.connected,
-    );
-    expect(
-      FlutterBluePlusConverter.toBleDeviceState(
-        blue.BluetoothConnectionState.disconnecting,
-      ),
-      BleDeviceState.disconnecting,
     );
     expect(
       FlutterBluePlusConverter.toBleDeviceState(

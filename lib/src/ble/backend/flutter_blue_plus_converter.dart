@@ -6,15 +6,10 @@ import 'package:weight_scale/src/ble/model.dart';
 /// A helper class for converting from and to flutter blue objects.
 class FlutterBluePlusConverter {
   static BleDeviceState toBleDeviceState(blue.BluetoothConnectionState state) {
-    switch (state) {
-      case blue.BluetoothConnectionState.disconnected:
-        return BleDeviceState.disconnected;
-      case blue.BluetoothConnectionState.connecting:
-        return BleDeviceState.connecting;
-      case blue.BluetoothConnectionState.connected:
-        return BleDeviceState.connected;
-      case blue.BluetoothConnectionState.disconnecting:
-        return BleDeviceState.disconnecting;
+    if (state == blue.BluetoothConnectionState.connected) {
+      return BleDeviceState.connected;
+    } else {
+      return BleDeviceState.disconnected;
     }
   }
 

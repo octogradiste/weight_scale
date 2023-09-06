@@ -76,8 +76,8 @@ abstract class AbstractWeightScale implements WeightScale {
       .first;
 
   @override
-  Stream<bool> get connected => _device.connectionState
-      .map((state) => state == blue.BluetoothConnectionState.connected);
+  Stream<BleDeviceState> get state =>
+      _device.connectionState.map(FlutterBluePlusConverter.toBleDeviceState);
 
   @override
   Future<Weight> takeWeightMeasurement() async {

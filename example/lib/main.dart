@@ -174,9 +174,9 @@ class _ScalePageState extends State<ScalePage> {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: StreamBuilder(
                   initialData: false,
-                  stream: scale.connected,
+                  stream: scale.state,
                   builder: (context, snapshot) {
-                    if (snapshot.requireData) {
+                    if (snapshot.requireData == BleDeviceState.connected) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [

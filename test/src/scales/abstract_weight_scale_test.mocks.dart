@@ -494,6 +494,7 @@ class MockBluetoothCharacteristic extends _i1.Mock
   _i3.Future<void> write(
     List<int>? value, {
     bool? withoutResponse = false,
+    bool? allowSplits = false,
     int? timeout = 15,
   }) =>
       (super.noSuchMethod(
@@ -502,6 +503,7 @@ class MockBluetoothCharacteristic extends _i1.Mock
           [value],
           {
             #withoutResponse: withoutResponse,
+            #allowSplits: allowSplits,
             #timeout: timeout,
           },
         ),
